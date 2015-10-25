@@ -18,15 +18,15 @@ local optimizer = nn.Optim(model, optimState)
 
 local function paramsForEpoch(epoch)
   local regimes = {
-      -- start, end,    LR,   WD,
-      {  1,      9,   opt.LR,   0.00002 },
-      { 10,     18,   opt.LR/2,  0.00002 },
-      { 19,     26,   opt.LR/2/2, 0.00002 },
-      { 27,     36,   opt.LR/2/2/2,0.00002 },
-      { 37,     50,   opt.LR/2/2/2/2,   0 },
-      { 50,     60,   opt.LR/2/2/2/2/2,   0 },
-      { 61,     70,   opt.LR/2/2/2/2/2/2, 0},
-      { 71,     1e-8, opt.LR/2/2/2/2/2/2/2, 0},
+    -- start, end,    LR,   WD,
+    {  1,      9,   opt.LR, 0.00002 },
+    { 10,     18,   opt.LR/2, 0.00002 },
+    { 19,     26,   opt.LR/2/2, 0.00002 },
+    { 27,     36,   opt.LR/2/2/2, 0.00002 },
+    { 37,     50,   opt.LR/2/2/2/2, 0 },
+    { 50,     60,   opt.LR/2/2/2/2/2, 0 },
+    { 61,     70,   opt.LR/2/2/2/2/2/2, 0},
+    { 71,     1e-8, opt.LR/2/2/2/2/2/2/2, 0},
   }
   for _, row in ipairs(regimes) do
     if epoch >= row[1] and epoch <= row[2] then
@@ -94,7 +94,7 @@ function train()
   collectgarbage()
 
 end -- of train()
--------------------------------------------------------------------------------------------
+
 
 function conditional_save()
   -- clear the intermediate states in the model before saving to disk
@@ -115,6 +115,7 @@ function conditional_save()
       end
     end
   end
+
   sanitize(model)
   local dump_model_path = paths.concat(opt.save, 'model_' .. epoch .. '.t7')
   local dump_optimState_path = paths.concat(opt.save, 'optimState_' .. epoch .. '.t7')
