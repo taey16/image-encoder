@@ -8,6 +8,9 @@ torch.setnumthreads(4)
 local use_cuda = false
 local backend
 if use_cuda then
+  require 'cutorch'
+  require 'cunn'
+  require 'cudnn'
   backend = 'cudnn'
 else
   backend = 'nn'

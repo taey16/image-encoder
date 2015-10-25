@@ -9,19 +9,21 @@ function createModel(nGPU, backend)
   local backend = backend or 'cudnn'
   local model = loadcaffe.load(deploy_file, weight_file, backend) 
   local LogSoftMax = {}
-  if backend == 'cudnn' then 
+  if backend == 'nn' then 
+    LogSoftMax = nn.LogSoftMax
+  else
     require 'cunn'
     require 'cudnn'
     LogSoftMax = cudnn.LogSoftMax
-  else
-    LogSoftMax = nn.LogSoftMax
   end
 
   -- remove nn.SoftMax()
   model:remove(40)
   model:add(LogSoftMax)
 
-  model = makeDataParallel( model, nGPU )
+  if backend == 'cudnn' then 
+    model = makeDataParallel( model, nGPU )
+  end
 
   return model
 end
