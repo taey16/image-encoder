@@ -1,6 +1,7 @@
 
 require 'cudnn'
 paths.dofile('init_model_weight.lua')
+paths.dofile('../utils/parallel_utils.lua')
 
 function createModel(nGPU)
   -- on a titan black, B/D/E run out of memory even for batch-size 32
@@ -48,8 +49,9 @@ function createModel(nGPU)
   classifier:add(nn.Threshold(0, 1e-6))
   classifier:add(nn.Dropout(0.5))
   classifier:add(nn.Linear(4096, 1000))
-  classifier:add(nn.LogSoftMax())
+  classifier:add(cudnn.LogSoftMax())
 
+  --[[
   if nGPU > 1 then
     assert(nGPU <= cutorch.getDeviceCount(), 'number of GPUs less than nGPU specified')
     local features_single = features
@@ -58,6 +60,8 @@ function createModel(nGPU)
       cutorch.withDevice(i, function() features:add(features_single:clone()) end)
     end
   end
+  --]]
+  features = makeDataParallel(features, nGPU)
 
   local model = nn.Sequential()
   model:add(features):add(classifier)
