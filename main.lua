@@ -19,9 +19,6 @@ torch.setdefaulttensortype('torch.FloatTensor')
 torch.manualSeed(opt.manualSeed)
 cutorch.setDevice(opt.GPU)
 
-print('===> Saving everything to: ' .. opt.save)
-os.execute('mkdir -p ' .. opt.save)
-
 paths.dofile('data.lua')
 paths.dofile('model.lua')
 paths.dofile('train.lua')
@@ -32,7 +29,8 @@ paths.dofile('util.lua')
 epoch = opt.epochNumber
 if opt.test_initialization then test() end
 for i=1,opt.nEpochs do
-   train()
-   test()
-   epoch = epoch + 1
+  train()
+  test()
+  epoch = epoch + 1
 end
+

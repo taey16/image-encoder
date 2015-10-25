@@ -61,6 +61,10 @@ function M.parse(arg)
   -- add commandline specified options
   opt.save = paths.concat(opt.cache, cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
   opt.save = paths.concat(opt.save, 'stn_' .. os.date():gsub(' ',''))
+
+  print('===> Saving everything to: ' .. opt.save)
+  os.execute('mkdir -p ' .. opt.save)
+
   return opt
 end
 

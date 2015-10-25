@@ -45,34 +45,35 @@ function M.parse(arg)
   cmd:option('-nGPU', 1, 'Number of GPUs to use by default')
   cmd:option('-backend', backend, 'Options: cudnn | fbcunn | cunn')
 
-
   cmd:option('-nEpochs', 300, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
   cmd:option('-epochNumber', 1,'Manual epoch number (useful on restarts)')
-  cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
+
+  cmd:option('-batchSize', batchsize, 'mini-batch size')
   cmd:option('-test_batchSize', batchsize, 'test mini-batch size')
   cmd:option('-test_initialization', false, 'test_initalization')
 
-  cmd:option('-LR', 0.0001, 'learning rate; if set, overrides default LR/WD recipe')
-  cmd:option('-momentum', 0.9,  'momentum')
-  cmd:option('-weightDecay', 0.00000, 'weight decay')
+  cmd:option('-LR', 0.0001, 'Base learning rate')
+  cmd:option('-momentum', 0.9, 'momentum')
+  cmd:option('-weightDecay', 0.0000, 'weight decay')
 
-  cmd:option('-use_stn', true, 'wether to use stn or not')
-  cmd:option('-netType', network, 'Options: alexnet | overfeat')
+  cmd:option('-use_stn', true, 'wether to use spatial transformer or not')
+  cmd:option('-netType', network, 'Network model to use')
   cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
-
   cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
 
-  cmd:option('-display', 10, 'interval for printing train loss per minibatch')
-  cmd:option('-snapshot', 4000, 'interval for conditional_save')
+  cmd:option('-display', 10, 'Intervals for printing train loss per minibatch')
+  cmd:option('-snapshot', 4000, 'Intervals for conditional_save')
   cmd:text()
 
   local opt = cmd:parse(arg or {})
-  -- add commandline specified options
   opt.save = paths.concat(opt.cache, 
     cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
   opt.save = paths.concat(opt.save, 'no_stn' )
-  print('===> opt.save: ' .. opt.save)
+
+  print('===> Saving everything to: ' .. opt.save)
+  os.execute('mkdir -p ' .. opt.save)
+
   return opt
 end
 
