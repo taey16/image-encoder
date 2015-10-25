@@ -38,6 +38,10 @@ function M.parse(arg)
   opt.save = paths.concat(opt.cache, cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
   -- add date/time
   opt.save = paths.concat(opt.save, 'solverstate_' .. os.date():gsub(' ','_'))
+
+  print('===> Saving everything to: ' .. opt.save)
+  os.execute('mkdir -p ' .. opt.save)
+
   return opt
 end
 

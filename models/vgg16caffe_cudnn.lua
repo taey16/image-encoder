@@ -1,26 +1,28 @@
 
 require 'loadcaffe'
+require 'nn'
 require 'cunn'
 require 'cudnn'
+paths.dofile('../utils/parallel_utils.lua')
 
-function createModel(nGPU)
+function createModel(nGPU, backend)
   local deploy_file = '/storage/models/vgg/vgg_layer16_deploy.prototxt'
   local weight_file = '/storage/models/vgg/vgg_layer16.caffemodel'
-  local backend = opt.backend
+  local backend = backend or 'cudnn'
   local model = loadcaffe.load(deploy_file, weight_file, backend) 
+  local LogSoftMax = {}
+  if backend == 'cudnn' then 
+    LogSoftMax = cudnn.LogSoftMax
+  else
+    LogSoftMax = nn.LogSoftMax
+  end
 
   -- remove nn.SoftMax()
   model:remove(40)
-  model:add(cudnn.LogSoftMax())
+  model:add(LogSoftMax)
 
-  if nGPU > 1 then
-    assert(nGPU <= cutorch.getDeviceCount(), 'number of GPUs less than nGPU specified')
-    local model_single = model
-    model = nn.DataParallel(1)
-    for i=1,nGPU do
-      cutorch.withDevice(i, function() model:add(model_single:clone()) end)
-    end
-  end
+  model = makeDataParallel( model, nGPU )
+
   return model
 end
 
