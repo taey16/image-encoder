@@ -1,8 +1,6 @@
 
 require 'loadcaffe'
 require 'nn'
-require 'cunn'
-require 'cudnn'
 paths.dofile('../utils/parallel_utils.lua')
 
 function createModel(nGPU, backend)
@@ -12,6 +10,8 @@ function createModel(nGPU, backend)
   local model = loadcaffe.load(deploy_file, weight_file, backend) 
   local LogSoftMax = {}
   if backend == 'cudnn' then 
+    require 'cunn'
+    require 'cudnn'
     LogSoftMax = cudnn.LogSoftMax
   else
     LogSoftMax = nn.LogSoftMax
