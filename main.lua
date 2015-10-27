@@ -21,6 +21,7 @@ cutorch.setDevice(opt.GPU)
 
 paths.dofile('data.lua')
 paths.dofile('model.lua')
+paths.dofile('utils/net_utils.lua')
 paths.dofile('train.lua')
 paths.dofile('test.lua')
 paths.dofile('util.lua')

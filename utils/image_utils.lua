@@ -162,7 +162,7 @@ function random_flip(input, do_flip)
   return input
 end
 
-function random_jitter(input)
+function random_jitter(input, sampleSize)
   local iW = input:size(3)
   local iH = input:size(2)
   local oW = sampleSize[3]

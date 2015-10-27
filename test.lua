@@ -38,6 +38,8 @@ function test()
   donkeys:synchronize()
   cutorch.synchronize()
 
+  conditional_save(model, optimState, epoch)
+
   top1_center = top1_center * 100 / nTest
   loss = loss / (nTest/opt.test_batchSize)
   local elapsed = timer:time().real
