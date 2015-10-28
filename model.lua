@@ -22,6 +22,9 @@ if opt.retrain then
   --model:insert(nn.Dropout(0.4))
   --model:insert(nn.Linear(1024,16))
   --model:insert(cudnn.LogSoftMax())
+  -- remove dropout
+  --model:remove(26)
+  --model:insert(nn.Dropout(0.0), 26)
 else
   print('===> Creating model from file: ' .. model_filepath)
   model = createModel(opt.nGPU)

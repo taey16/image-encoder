@@ -21,10 +21,10 @@ function M.parse(arg)
     initial_optimState = nil
   end
   --]]
-  local retrain_path = '/storage/product/det/torch_cache/inception6/stn/'
+  local retrain_path = '/storage/product/det/torch_cache/inception6/stn_epoch28/'
   if retrain_path then
-    initial_model = paths.concat(retrain_path, 'model_1.t7') 
-    initial_optimState = paths.concat(retrain_path, 'optimState_1.t7')
+    initial_model = paths.concat(retrain_path, 'model_28.t7') 
+    initial_optimState = paths.concat(retrain_path, 'optimState_28.t7')
   else
     initial_model = nil
     initial_optimState = nil
@@ -39,7 +39,7 @@ function M.parse(arg)
   cmd:option('-nDonkeys', 4, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-donkey_filename', ('donkey/%s'):format(donkey_filename), '')
 
-  cmd:option('-manualSeed', 120, 'Manually set RNG seed')
+  cmd:option('-manualSeed', 1234, 'Manually set RNG seed')
 
   cmd:option('-GPU', 1, 'Default preferred GPU')
   cmd:option('-nGPU', 1, 'Number of GPUs to use by default')
@@ -47,13 +47,13 @@ function M.parse(arg)
 
   cmd:option('-nEpochs', 300, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
-  cmd:option('-epochNumber', 1,'Manual epoch number (useful on restarts)')
+  cmd:option('-epochNumber', 28,'Manual epoch number (useful on restarts)')
 
   cmd:option('-batchSize', batchsize, 'mini-batch size')
   cmd:option('-test_batchSize', batchsize, 'test mini-batch size')
-  cmd:option('-test_initialization', false, 'test_initalization')
+  cmd:option('-test_initialization', true, 'test_initalization')
 
-  cmd:option('-LR', 0.0001, 'Base learning rate')
+  cmd:option('-LR', 0.002, 'Base learning rate')
   cmd:option('-momentum', 0.9, 'momentum')
   cmd:option('-weightDecay', 0.0000, 'weight decay')
 
@@ -69,7 +69,7 @@ function M.parse(arg)
   local opt = cmd:parse(arg or {})
   opt.save = paths.concat(opt.cache, 
     cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
-  opt.save = paths.concat(opt.save, 'no_stn' )
+  opt.save = paths.concat(opt.save, 'stn_epoch28' )
 
   print('===> Saving everything to: ' .. opt.save)
   os.execute('mkdir -p ' .. opt.save)
