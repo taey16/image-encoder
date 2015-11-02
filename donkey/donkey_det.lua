@@ -13,8 +13,8 @@ local trainCache = paths.concat(opt.cache, 'trainCache.t7')
 local testCache  = paths.concat(opt.cache, 'testCache.t7')
 local meanstdCache=paths.concat(opt.cache, 'meanstdCache.t7')
 
-local loadSize   = {3, 256, 256}
-local sampleSize = {3, 224, 224}
+-- local loadSize   = {3, 256, 256}
+-- local sampleSize = {3, 224, 224}
 -- channel-wise mean and std.
 local mean, std
 
@@ -55,8 +55,8 @@ else
   print('===> Creating train metadata')
   trainLoader = dataLoader{
     paths = {paths.concat(opt.data, 'train')},
-    loadSize  = loadSize,
-    sampleSize= sampleSize,
+    loadSize  = opt.loadSize,
+    sampleSize= opt.sampleSize,
     split = 100,
     verbose = true
   }
@@ -101,13 +101,14 @@ if paths.filep(testCache) then
          .. testCache .. ' and rerun the program')
 else
   print('===> Creating test metadata')
-  testLoader = dataLoader{
+  testLoader = dataLoader {
     paths = {paths.concat(opt.data, 'val')},
-    loadSize  = loadSize,
-    sampleSize= sampleSize,
+    loadSize  = opt.loadSize,
+    sampleSize= opt.sampleSize,
     split = 0,
     verbose = true,
-    -- force consistent class indices between trainLoader and testLoader
+    -- force consistent class indices 
+    -- between trainLoader and testLoader
     forceClasses = trainLoader.classes
   }
   print(testLoader)
