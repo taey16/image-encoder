@@ -8,8 +8,10 @@ void THLongStorage_free(THLongStorage *self);
 ]]
 
 function setFloatStorage(tensor, storage_p)
-  assert(storage_p and storage_p ~= 0, "FloatStorage is NULL pointer");
-  local cstorage = ffi.cast('THFloatStorage*', torch.pointer(tensor:storage()))
+  assert(storage_p and storage_p ~= 0, 
+    "FloatStorage is NULL pointer");
+  local cstorage = ffi.cast('THFloatStorage*', 
+    torch.pointer(tensor:storage()))
   if cstorage ~= nil then
     ffi.C['THFloatStorage_free'](cstorage)
   end
@@ -18,8 +20,10 @@ function setFloatStorage(tensor, storage_p)
 end
 
 function setLongStorage(tensor, storage_p)
-  assert(storage_p and storage_p ~= 0, "LongStorage is NULL pointer");
-  local cstorage = ffi.cast('THLongStorage*', torch.pointer(tensor:storage()))
+  assert(storage_p and storage_p ~= 0, 
+    "LongStorage is NULL pointer");
+  local cstorage = ffi.cast('THLongStorage*', 
+    torch.pointer(tensor:storage()))
   if cstorage ~= nil then
     ffi.C['THLongStorage_free'](cstorage)
   end
@@ -29,16 +33,18 @@ end
 
 function sendTensor(inputs)
   local size = inputs:size()
-  local ttype = inputs:type()
-  local i_stg =  tonumber(ffi.cast('intptr_t', torch.pointer(inputs:storage())))
+  local ttype= inputs:type()
+  local i_stg= tonumber(
+    ffi.cast('intptr_t', torch.pointer(inputs:storage()))
+  )
   inputs:cdata().storage = nil
   return {i_stg, size, ttype}
 end
 
 function receiveTensor(obj, buffer)
-  local pointer = obj[1]
-  local size = obj[2]
-  local ttype = obj[3]
+  local pointer= obj[1]
+  local size   = obj[2]
+  local ttype  = obj[3]
   if buffer then
     buffer:resize(size)
     assert(buffer:type() == ttype, 'Buffer is wrong type')

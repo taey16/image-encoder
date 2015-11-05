@@ -11,12 +11,10 @@ local top1_center, loss
 local timer = torch.Timer()
 
 function test()
-
   batchNumber = 0
   cutorch.synchronize()
   timer:reset()
 
-  -- set the dropouts to evaluate mode
   model:evaluate()
 
   top1_center = 0
@@ -27,10 +25,9 @@ function test()
     local indexEnd  = (indexStart + opt.test_batchSize - 1)
     donkeys:addjob(
       function()
-        local inputs, labels = testLoader:get(indexStart, indexEnd)
-        return sendTensor(inputs), sendTensor(labels)
+        local  inputs, labels = testLoader:get(indexStart, indexEnd)
+        return inputs, labels
       end,
-      -- callback that is run in the main thread once the work is done
       testBatch
     )
   end
@@ -55,24 +52,20 @@ function test()
 
 end -- of test()
 
-local inputsCPU = torch.FloatTensor()
-local labelsCPU = torch.LongTensor()
 local inputs = torch.CudaTensor()
 local labels = torch.CudaTensor()
 
-function testBatch(inputsThread, labelsThread)
+function testBatch(inputsCPU, labelsCPU)
   batchNumber = batchNumber + opt.test_batchSize
 
-  receiveTensor(inputsThread, inputsCPU)
-  receiveTensor(labelsThread, labelsCPU)
   inputs:resize(inputsCPU:size()):copy(inputsCPU)
   labels:resize(labelsCPU:size()):copy(labelsCPU)
 
   local outputs = model:forward(inputs)
-  local err = criterion:forward(outputs, labels)
+  local loss_batch = criterion:forward(outputs, labels)
   cutorch.synchronize()
 
-  loss = loss + err
+  loss = loss + loss_batch
 
   local outputsCPU = outputs:float()
 

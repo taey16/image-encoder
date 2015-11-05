@@ -1,7 +1,7 @@
 
 require 'image'
 paths.dofile('../dataset.lua')
-paths.dofile('../util.lua')
+paths.dofile('../utils/util.lua')
 paths.dofile('../utils/image_utils.lua')
 
 -- This file contains the data-loading logic and details.
@@ -18,13 +18,6 @@ local meanstdCache=paths.concat(opt.cache, 'meanstdCache.t7')
 -- channel-wise mean and std.
 local mean, std
 
-local function mean_std_norm(input)
-  for i=1,3 do
-    if mean then input[{{i},{},{}}]:add(-mean[i]) end
-    if  std then input[{{i},{},{}}]:div(std[i]) end
-  end
-  return input 
-end
 
 if not os.execute('cd ' .. opt.data) then
   error(("could not chdir to '%s'"):format(opt.data))
@@ -40,7 +33,7 @@ local trainHook = function(self, path)
   collectgarbage()
   local input = loadImage(path, self.loadSize)
   local output = random_jitter(input, self.sampleSize)
-  output = mean_std_norm(output)
+  output = mean_std_norm(output, mean, std)
   return output
 end
 
@@ -88,7 +81,7 @@ local testHook = function(self, path)
   collectgarbage()
   local input = loadImage(path, self.loadSize)
   local output= center_crop(input, self.sampleSize)
-  output = mean_std_norm(output)
+  output = mean_std_norm(output, mean, std)
   return output
 end
 

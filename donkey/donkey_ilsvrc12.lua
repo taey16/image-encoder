@@ -1,14 +1,8 @@
 
-require 'image'
 paths.dofile('../dataset.lua')
-paths.dofile('../util.lua')
+paths.dofile('../utils/util.lua')
 paths.dofile('../utils/image_utils.lua')
 
--- This file contains the data-loading logic and details.
--- It is run by each data-loader thread.
-------------------------------------------
-
--- a cache file of the training metadata (if doesnt exist, will be created)
 local trainCache = paths.concat(opt.cache, 'trainCache.t7')
 local testCache  = paths.concat(opt.cache, 'testCache.t7')
 local meanstdCache=paths.concat(opt.cache, 'meanstdCache.t7')
@@ -20,12 +14,12 @@ if not os.execute('cd ' .. opt.data) then
   error(("could not chdir to '%s'"):format(opt.data))
 end
 
--- function to load the image, jitter it appropriately (random crops etc.)
+-- function to load the image, jitter it appropriately
 local trainHook = function(self, path)
   collectgarbage()
-  local input = loadImage(path)
-  local output = random_jitter(input)
-  output = mean_std_norm(output)
+  local input = loadImage(path, self.loadSize)
+  local output = random_jitter(input, self.sampleSize)
+  output = mean_std_norm(output, mean, std)
   return output
 end
 
@@ -34,16 +28,16 @@ if paths.filep(trainCache) then
   trainLoader = torch.load(trainCache)
   trainLoader.sampleHookTrain = trainHook
   assert(trainLoader.paths[1] == paths.concat(opt.data, 'train'),
-         'cached files dont have the same path as opt.data. Remove your cached files at: '
-         .. trainCache .. ' and rerun the program')
+    'cached files dont have the same path as opt.data. Remove your cached files at: '
+    .. trainCache .. ' and rerun the program')
 else
   print('===> Creating train metadata')
   trainLoader = dataLoader{
-     paths = {paths.concat(opt.data, 'train')},
-     loadSize  = loadSize,
-     sampleSize= sampleSize,
-     split = 100,
-     verbose = true
+    paths = {paths.concat(opt.data, 'train')},
+    loadSize  = opt.loadSize,
+    sampleSize= opt.sampleSize,
+    split = 100,
+    verbose = true
   }
   print(trainLoader)
   torch.save(trainCache, trainLoader)
@@ -62,30 +56,12 @@ end
 -- End of train loader section
 
 
---------------------------------------------------------------------------------
---[[
-   Section 2: Create a test data loader (testLoader),
-   which can iterate over the test set and returns an image's
---]]
-
-local function center_crop(input)
-  local oH = sampleSize[2]
-  local oW = sampleSize[3]
-  local iW = input:size(3)
-  local iH = input:size(2)
-  local w1 = math.ceil((iW-oW)/2)
-  local h1 = math.ceil((iH-oH)/2)
-  -- center patch
-  local output = image.crop(input, w1, h1, w1+oW, h1+oW)
-  return output
-end
-
 -- function to load the image
 local testHook = function(self, path)
   collectgarbage()
-  local input = loadImage(path)
-  local output= center_crop(input)
-  output = mean_std_norm(output)
+  local input = loadImage(path, self.loadSize)
+  local output= center_crop(input, self.sampleSize)
+  output = mean_std_norm(output, mean, std)
   return output
 end
 
@@ -94,14 +70,14 @@ if paths.filep(testCache) then
   testLoader = torch.load(testCache)
   testLoader.sampleHookTest = testHook
   assert(testLoader.paths[1] == paths.concat(opt.data, 'val'),
-         'cached files dont have the same path as opt.data. Remove your cached files at: '
-         .. testCache .. ' and rerun the program')
+    'cached files dont have the same path as opt.data. Remove your cached files at: '
+    .. testCache .. ' and rerun the program')
 else
   print('===> Creating test metadata')
   testLoader = dataLoader{
     paths = {paths.concat(opt.data, 'val')},
-    loadSize  = loadSize,
-    sampleSize= sampleSize,
+    loadSize  = opt.loadSize,
+    sampleSize= opt.sampleSize,
     split = 0,
     verbose = true,
     -- force consistent class indices between trainLoader and testLoader

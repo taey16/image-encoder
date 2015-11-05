@@ -3,6 +3,7 @@ require 'nn'
 require 'cunn'
 require 'optim'
 paths.dofile('models/init_model_weight.lua')
+paths.dofile('utils/parallel_utils.lua')
 
 -- Create Network
 local model_filename = opt.netType .. '_' .. opt.backend
@@ -37,17 +38,11 @@ if opt.use_stn and not opt.retrain then
   model:insert(spanet, 1)
 end
 
-criterion = nn.ClassNLLCriterion()
-
 if opt.nGPU > 1 then
-  assert(opt.nGPU <= cutorch.getDeviceCount(), 
-    'number of GPUs less than nGPU specified')
-  local model_single = model
-  model = nn.DataParallel(1)
-  for i=1,nGPU do
-    cutorch.withDevice(i, function() model:add(model_single:clone()) end)
-  end
+   model = makeDataParallel(model, opt.nGPU)
 end
+
+criterion = nn.ClassNLLCriterion()
 
 print(model)
 print(criterion)

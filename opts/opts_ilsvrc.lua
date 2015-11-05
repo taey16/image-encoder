@@ -18,8 +18,8 @@ function M.parse(arg)
     initial_model = paths.concat(retrain_path, 'model_28.t7') 
     initial_optimState = paths.concat(retrain_path, 'optimState_28.t7')
   else
-    initial_model = nil
-    initial_optimState = nil
+    initial_model = false
+    initial_optimState = false
   end
 
   local cmd = torch.CmdLine()
@@ -37,7 +37,6 @@ function M.parse(arg)
   cmd:option('-nGPU', 1, 'Number of GPUs to use by default')
   cmd:option('-backend', backend, 'Options: cudnn | fbcunn | cunn')
 
-
   cmd:option('-nEpochs', 100, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
   cmd:option('-epochNumber', 29,'Manual epoch number (useful on restarts)')
@@ -45,17 +44,16 @@ function M.parse(arg)
   cmd:option('-test_batchSize', batchsize, 'test mini-batch size')
   cmd:option('-test_initialization', false, 'test_initalization')
 
-  cmd:option('-LR', 0.0005, 'learning rate; if set, overrides default LR/WD recipe')
+  cmd:option('-LR', 0.00005, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
   cmd:option('-weightDecay', 0.00000, 'weight decay')
 
   cmd:option('-use_stn', true, '')
   cmd:option('-netType', network, 'Options: alexnet | overfeat')
   cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
-
   cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
 
-  cmd:option('-display', 10, 'interval for printing train loss per minibatch')
+  cmd:option('-display', 40, 'interval for printing train loss per minibatch')
   cmd:option('-snapshot', 4000, 'interval for conditional_save')
   cmd:text()
 

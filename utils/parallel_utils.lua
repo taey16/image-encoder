@@ -1,4 +1,4 @@
-local ffi=require 'ffi'
+--local ffi=require 'ffi'
 require 'cutorch'
 require 'cunn'
 
@@ -13,7 +13,7 @@ function makeDataParallel(model, nGPU)
       cutorch.setDevice(i)
       model:add(model_single:clone():cuda(), i)
     end
-    cutorch.setDevice(opt.GPU)
+    --cutorch.setDevice(opt.GPU)
   end
   return model
 end

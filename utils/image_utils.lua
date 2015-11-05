@@ -187,7 +187,7 @@ function mean_std_norm(input, mean, std)
 end
 
 
-function center_crop(input, sampleSize )
+function center_crop(input, sampleSize)
   local oH = sampleSize[2]
   local oW = sampleSize[3]
   local iW = input:size(3)
