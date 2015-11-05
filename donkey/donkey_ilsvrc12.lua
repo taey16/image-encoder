@@ -2,6 +2,7 @@
 require 'image'
 paths.dofile('../dataset.lua')
 paths.dofile('../util.lua')
+paths.dofile('../utils/image_utils.lua')
 
 -- This file contains the data-loading logic and details.
 -- It is run by each data-loader thread.
@@ -12,107 +13,11 @@ local trainCache = paths.concat(opt.cache, 'trainCache.t7')
 local testCache  = paths.concat(opt.cache, 'testCache.t7')
 local meanstdCache=paths.concat(opt.cache, 'meanstdCache.t7')
 
-local loadSize   = {3, 256, 256}
-local sampleSize = {3, 224, 224}
--- channel-wise mean and std.
 local mean, std
 
 -- Check for existence of opt.data
 if not os.execute('cd ' .. opt.data) then
   error(("could not chdir to '%s'"):format(opt.data))
-end
-
-local function resize_crop(input)
-  if torch.uniform() > 0.5 then
-    -- find the smaller dimension, and 
-    -- resize it to 256 (while keeping aspect ratio)
-    local iW = input:size(3)
-    local iH = input:size(2)
-    local output = torch.FloatTensor()
-    if iW < iH then
-      output = image.scale(input, loadSize[2], loadSize[2] * iH / iW)
-    else
-      output = image.scale(input, loadSize[3] * iW / iH, loadSize[3])
-    end
-  else
-    -- resize it to 256 (while breaking aspect ratio)
-    output = image.scale(input, loadSize[2], loadSize[3])
-  end
-  return output
-end
-
-local function loadImage(path)
-  local input = image.load(path)
-  -- 1-channel image loaded as 2D tensor
-  if input:dim() == 2 then
-    input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
-  -- 1-channel image
-  elseif input:dim() == 3 and input:size(1) == 1 then
-    input = input:repeatTensor(3,1,1)
-  elseif input:dim() == 3 and input:size(1) == 3 then 
-    -- 3-channel image
-  elseif input:dim() == 3 and input:size(1) == 4 then 
-    -- image with alpha
-    input = input[{{1,3},{},{}}]
-  else
-    print(#input)
-    error('not 2-channel or 3-channel image')
-  end
-
-  if torch.uniform() > 0.5 then
-    -- find the smaller dimension, and 
-    -- resize it to 256 (while keeping aspect ratio)
-    local iW = input:size(3)
-    local iH = input:size(2)
-    if iW < iH then
-      input = image.scale(input, loadSize[2], loadSize[2] * iH / iW)
-    else
-      input = image.scale(input, loadSize[3] * iW / iH, loadSize[3])
-    end
-  else
-    -- resize it to 256 (while breaking aspect ratio)
-    input = image.scale(input, loadSize[2], loadSize[3])
-  end
-  return input
-end
-
-
---------------------------------------------------------------------------------
---[[
-   Section 1: Create a train data loader (trainLoader),
-   which does class-balanced sampling from the dataset and does a random crop
---]]
-
-local function random_flip(input)
-  if torch.uniform() > 0.5 then
-    input = image.hflip(input)
-  end
-  return input
-end
-
-local function random_jitter(input)
-  local iW = input:size(3)
-  local iH = input:size(2)
-  local oW = sampleSize[3]
-  local oH = sampleSize[2]
-  local h1 = math.ceil(torch.uniform(1e-2, iH-oH))
-  local w1 = math.ceil(torch.uniform(1e-2, iW-oW))
-  local output = image.crop(input, w1, h1, w1 + oW, h1 + oH)
-  assert(output:size(3) == oW)
-  assert(output:size(2) == oH)
-
-  output = random_flip(output)
-
-  return output
-end
-
-local function mean_std_norm(input)
-  -- mean/std
-  for i=1,3 do -- channels
-    if mean then input[{{i},{},{}}]:add(-mean[i]) end
-    if  std then input[{{i},{},{}}]:div(std[i]) end
-  end
-  return input 
 end
 
 -- function to load the image, jitter it appropriately (random crops etc.)

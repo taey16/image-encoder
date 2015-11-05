@@ -26,7 +26,8 @@ local function paramsForEpoch(epoch)
     { 37,     50,   opt.LR/2/2/2/2, 0 },
     { 50,     60,   opt.LR/2/2/2/2/2, 0 },
     { 61,     70,   opt.LR/2/2/2/2/2/2, 0},
-    { 71,     1e-8, opt.LR/2/2/2/2/2/2/2, 0},
+    { 71,    200,   opt.LR/2/2/2/2/2/2/2, 0},
+    {201,   1e-8,   opt.LR/2/2/2/2/2/2/2/2, 0},
   }
   for _, row in ipairs(regimes) do
     if epoch >= row[1] and epoch <= row[2] then

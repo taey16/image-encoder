@@ -8,6 +8,8 @@ function M.parse(arg)
   local batchsize = 20
   local total_train_samples = 1281167 - 1
   local network = 'inception6' --'vgg16caffe'
+  local loadSize  = {3, 256, 256}
+  local sampleSize= {3, 224, 224}
   
   local backend = 'cudnn'
   local donkey_filename = 'donkey_ilsvrc12.lua'
@@ -58,6 +60,8 @@ function M.parse(arg)
   cmd:text()
 
   local opt = cmd:parse(arg or {})
+  opt.loadSize  = loadSize
+  opt.sampleSize= sampleSize
   -- add commandline specified options
   opt.save = paths.concat(opt.cache, cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
   opt.save = paths.concat(opt.save, 'stn_' .. os.date():gsub(' ',''))
