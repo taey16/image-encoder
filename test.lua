@@ -1,4 +1,6 @@
 
+paths.dofile('../utils/util.lua')
+
 testLogger = optim.Logger(paths.concat(opt.save, 'test.log'))
 
 local testDataIterator = function()
@@ -26,7 +28,7 @@ function test()
     donkeys:addjob(
       function()
         local  inputs, labels = testLoader:get(indexStart, indexEnd)
-        return inputs, labels
+        return sendTensor(inputs), sendTensor(labels)
       end,
       testBatch
     )
@@ -52,12 +54,16 @@ function test()
 
 end -- of test()
 
+local inputsCPU = torch.FloatTensor()
+local labelsCPU = torch.LongTensor()
 local inputs = torch.CudaTensor()
 local labels = torch.CudaTensor()
 
-function testBatch(inputsCPU, labelsCPU)
+function testBatch(inputsThread, lablesThread)
   batchNumber = batchNumber + opt.test_batchSize
 
+  receieveTensor(inputsThread, inputsCPU)
+  receieveTensor(labelsThread, labelsCPU)
   inputs:resize(inputsCPU:size()):copy(inputsCPU)
   labels:resize(labelsCPU:size()):copy(labelsCPU)
 
