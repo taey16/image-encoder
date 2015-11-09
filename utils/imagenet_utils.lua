@@ -11,6 +11,7 @@ function load_synset()
   return list
 end
 
+
 function get_val()
   local file = io.open '/storage/ImageNet/ILSVRC2012/val_synset.txt'
   local image_list ={}

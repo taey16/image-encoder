@@ -1,4 +1,3 @@
---local ffi=require 'ffi'
 require 'cutorch'
 require 'cunn'
 

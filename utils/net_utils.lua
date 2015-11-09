@@ -1,5 +1,4 @@
 
-
 -- clear the intermediate states in the model before saving to disk
 -- this saves lots of disk space
 function sanitize(net)

@@ -3,7 +3,6 @@ require 'torch'
 require 'image'
 require 'nn'
 
-
 function local_contrast_norm( rgb, kernel_size )
   local rgb = rgb:double()
   local kernel_size = kernel_size or 7
