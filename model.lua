@@ -47,7 +47,7 @@ criterion = nn.ClassNLLCriterion()
 print(model)
 print(criterion)
 print('===> Converting model to CUDA')
-model = model:cuda()
+model:cuda()
 criterion:cuda()
 print('===> Loading model complete')
 
