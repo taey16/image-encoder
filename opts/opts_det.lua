@@ -12,7 +12,6 @@ function M.parse(arg)
   local loadSize  = {3, 256, 256}
   
   local backend = 'cudnn'
-  local donkey_filename = 'donkey_det.lua'
   --[[
   local retrain_path = '/storage/ImageNet/ILSVRC2012/torch_cache/inception6/stn_TueOct2023:01:282015/'
   if retrain_path then
@@ -39,7 +38,7 @@ function M.parse(arg)
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
   cmd:option('-nDonkeys', 4, 'number of donkeys to initialize (data loading threads)')
-  cmd:option('-donkey_filename', ('donkey/%s'):format(donkey_filename), 'donkey file to use')
+  cmd:option('-donkey_filename', 'donkey/donkey.lua', 'donkey file to use')
 
   cmd:option('-manualSeed', 1234, 'Manually set RNG seed')
 

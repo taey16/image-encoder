@@ -14,7 +14,6 @@ function M.parse(arg)
   local test_initialization = false
   
   local backend = 'cudnn'
-  local donkey_filename = 'donkey_ilsvrc12.lua'
   local retrain_path = nil
   if retrain_path then
     initial_model = paths.concat(retrain_path, 'model_?.t7') 
@@ -31,7 +30,7 @@ function M.parse(arg)
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
   cmd:option('-nDonkeys', 8, 'number of donkeys to initialize (data loading threads)')
-  cmd:option('-donkey_filename', ('donkey/%s'):format(donkey_filename), '')
+  cmd:option('-donkey_filename', 'donkey/donkey.lua', 'donkey file')
 
   cmd:option('-manualSeed', 1, 'Manually set RNG seed')
 
