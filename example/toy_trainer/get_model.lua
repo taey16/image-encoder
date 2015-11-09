@@ -5,6 +5,7 @@
 -- criterion
 paths.dofile('models/init_model_weight.lua')
 paths.dofile(opt.model_script)
+paths.dofile('../../utils/parallel_utils.lua')
 
 print('===> Creating model from script: ' .. opt.model_script)
 model = createModel()
@@ -30,6 +31,12 @@ if opt.use_cuda then
   model:cuda()
   criterion:cuda()
   print('===> model:cuda()')
+end
+
+if opt.nGPU > 1 then
+  model = makeDataParallel(model, opt.nGPU, opt.gpu_id)
+else
+  cutorch.setDevice(opt.gpu_id)
 end
 
 print(model)

@@ -7,11 +7,9 @@ require 'cunn'
 require 'cudnn'
 paths.dofile('../utils/imagenet_utils.lua')
 paths.dofile('../utils/image_utils.lua')
-paths.dofile('../dataset.lua')
 
 torch.setnumthreads(4)
 
---[[
 print '===> Loading model'
 local model_filename = '/storage/ImageNet/ILSVRC2012/torch_cache/inception6/image_remove_ThuOct1501:02:042015/model_22.t7'
 local model = torch.load(model_filename)
@@ -20,19 +18,14 @@ model:add(cudnn.SoftMax())
 print(model)
 model:cuda()
 model:evaluate()
---]]
 
 print '===> Loading mean, std' 
 local mean_std = torch.load('/storage/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7')
 
-print '===> Loading synsets'
 local dataset_root = '/storage/ImageNet/ILSVRC2012/val'
+print '===> Loading synsets'
 local synset_words = load_synset()
 local image_list, label_list = get_val()
-
-print '===> load testCache'
-local testCache = torch.load('/storage/ImageNet/ILSVRC2012/torch_cache/testCache.t7')
-print(testCache.classList[1])
 
 
 local sampleSize = {3, 224, 224}

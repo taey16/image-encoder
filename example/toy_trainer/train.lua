@@ -1,5 +1,4 @@
 
-
 local function paramsForEpoch(epoch, regimes)
   for _, row in ipairs(regimes) do
     if epoch >= row[1] and epoch <= row[2] then
@@ -9,13 +8,21 @@ local function paramsForEpoch(epoch, regimes)
 end -- end of parseForEpoch
 
 
+parameters, gradParameters = model:getParameters()
+
+
 function train(epoch)
   model:training()
 
   local params, newRegime = paramsForEpoch(epoch, opt.regimes)
-  optimizer:setParameters(params)
   if newRegime then
-    optimizer = nn.Optim(model, optimState)
+    optimState = {
+      learningRate = params.learningRate,
+      learningRateDecay = 0.0,
+      momentum = opt.momentum,
+      dampening = 0.0,
+      weightDecay = params.weightDecay
+    }
   end
 
   local start = os.clock()

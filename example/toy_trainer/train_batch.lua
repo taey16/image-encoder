@@ -1,4 +1,6 @@
 
+require 'optim'
+
 function train_batch(batchidx)
 
   local inputs, labels = datasetTrain:getBatch(batchidx)
@@ -6,8 +8,25 @@ function train_batch(batchidx)
     inputs = inputs:cuda()
     labels = labels:cuda()
   end
-  local loss, pred = optimizer:optimize(optim.sgd, inputs, labels, criterion)
-  local _, preds = pred:max(2)
+
+  local loss, outputs
+  feval = function(x)
+    model:zeroGradParameters()
+    outputs = model:forward(inputs)
+    loss = criterion:forward(outputs, labels)
+    local gradOutputs = criterion:backward(outputs, labels)
+    model:backward(inputs, gradOutputs)
+    return loss, gradParameters
+  end
+  optim.sgd(feval, parameters, optimState)
+
+  -- DataParallelTable's syncParameters
+  model:apply(
+    function(m) 
+      if m.syncParameters then m:syncParameters() end 
+    end)
+
+  local _, preds = outputs:max(2)
   local correct = preds:eq(labels):sum()
   local err = opt.batchsize - correct
 

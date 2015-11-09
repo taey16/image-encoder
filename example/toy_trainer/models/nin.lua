@@ -58,17 +58,34 @@ function createModel()
   model:add(ReLU(true))
   model:add(MaxPooling(2, 2, 2, 2, 0, 0))
   -- 8, 6, 4
-  local resolution = opt.sampling_grid_size/2/2
-
-  model:add(nn.View(resolution*resolution*64))
-  model:add(nn.Linear(resolution*resolution*64, 320))
-  model:add(nn.BatchNormalization(320))
+  model:add(SpatialConv(64, 96, 3, 3, 1, 1, 1, 1))
+  model:add(nn.SpatialBatchNormalization(96))
   model:add(ReLU(true))
-  model:add(nn.Dropout(0.5))
-  model:add(nn.Linear(320, 10))
+  model:add(nn.Dropout(0.4))
+  model:add(SpatialConv(96, 128, 3, 3, 1, 1, 1, 1))
+  model:add(nn.SpatialBatchNormalization(128))
+  model:add(ReLU(true))
+  model:add(nn.Dropout(0.4))
+  model:add(SpatialConv(128, 128, 1, 1, 1, 1, 0, 0))
+  model:add(nn.SpatialBatchNormalization(128))
+  model:add(ReLU(true))
+  model:add(SpatialConv(128, 128, 1, 1, 1, 1, 0, 0))
+  model:add(nn.SpatialBatchNormalization(128))
+  model:add(ReLU(true))
+  model:add(MaxPooling(2, 2, 2, 2, 0, 0))
+  -- 4, 3, 2 
+  local resolution = opt.sampling_grid_size/2/2/2
+
+  model:add(nn.View(resolution*resolution*128))
+  model:add(nn.Linear(resolution*resolution*128, 256))
+  model:add(nn.BatchNormalization(256))
+  model:add(ReLU(true))
+  model:add(nn.Dropout(0.4))
+  model:add(nn.Linear(256, 10))
   model:add(LogSoftMax())
 
   return model
 
 end
+
 

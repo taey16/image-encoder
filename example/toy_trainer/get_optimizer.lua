@@ -1,4 +1,6 @@
 
+require 'optim'
+
 -- global
 -- optim
 -- logger_train, logger_test
@@ -24,6 +26,4 @@ else
     weightDecay = opt.weight_decay
   }
 end
-
-optimizer = nn.Optim(model, optimState)
 

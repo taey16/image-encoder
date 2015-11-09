@@ -1,36 +1,34 @@
 
 require 'image'
-require 'optim'
 
 opt = {
   gpu_id = 1, 
-  use_cuda = false,
-  backend = 'nn',
+  nGPU = 2,
+  use_cuda = true,
+  backend = 'cudnn',
   do_distort = true,
   do_yuv_lcn = false,
   use_stn = false,
   sampling_grid_size = 32,
-  --model_script = 'models/nin_no_bn.lua',
   model_script = 'models/nin.lua',
-  model_filename = nil, --'/storage/mnist/model/nin/model/mnist_stn_true_distort_true_model_10.t7',
+  model_filename = nil,
   data_loader_file = 'data_provider/distort_mnist.lua',
-  batchsize = 48,
-  test_batchsize = 48,
+  batchsize = 256,
+  test_batchsize = 100,
   test_initialization = false,
   test_interval = 1,
   max_epoch = 4000,
   base_lr = 1.0,
   lr_decay= 0.0, --1e-7,
   momentum = 0.9,
-  optimState = nil, --'/storage/mnist/model/nin/model/mnist_stn_true_distort_true_optimState_10.t7',
+  optimState = nil,
   epoch_number = 1,
-  display = 1,
+  display = 40,
   rand_seed = 777,
   num_threads = 4,
   tensortype = 'torch.FloatTensor',
-  dataset_root = '/storage/mnist',
-  --save = '/storage/mnist/model/nin_bn_false/',
-  save = '/storage/mnist/model/nin_bn/',
+  dataset_root = '/home/taey16/storage/mnist/',
+  save = '/home/taey16/storage/mnist/model/nin_bn/',
   snapshot = 1,
   snapshot_prefix = 'nin_',
 }
@@ -50,7 +48,6 @@ if opt.use_cuda then
   require 'cunn'
   require 'cudnn'
   require 'cutorch'
-  cutorch.setDevice(opt.gpu_id)
 else
   require 'nn'
 end
@@ -61,13 +58,12 @@ torch.manualSeed(opt.rand_seed)
 torch.setdefaulttensortype(opt.tensortype)
 
 paths.dofile('get_data.lua')
-paths.dofile('../../fbcunn_files/Optim.lua')
-paths.dofile('train.lua')
-paths.dofile('test.lua')
-
 paths.dofile('get_model.lua')
 paths.dofile('get_optimizer.lua')
 paths.dofile('conditional_save.lua')
+paths.dofile('train.lua')
+paths.dofile('test.lua')
+
 
 print('===> use_stn: ' .. tostring(opt.use_stn))
 print('===> do_distort: ' .. tostring(opt.do_distort))
