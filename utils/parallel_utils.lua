@@ -2,15 +2,16 @@ require 'cutorch'
 require 'cunn'
 
 function makeDataParallel(model, nGPU, primary_gpu_id)
-  if nGPU > 1 then
+  if #nGPU > 1 then
     print('converting module to nn.DataParallelTable')
-    assert(nGPU <= cutorch.getDeviceCount(), 
+    assert(#nGPU <= cutorch.getDeviceCount(), 
       'number of GPUs less than nGPU specified')
     local model_single = model
     -- Split along first (batch) dimension
     -- in our case it is batch_size
     model = nn.DataParallelTable(1)
-    for i=1, nGPU do
+    --for i=1, nGPU do
+    for i in pairs(nGPU) do
       cutorch.setDevice(i)
       model:add(model_single:clone():cuda(), i)
     end

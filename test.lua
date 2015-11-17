@@ -1,5 +1,5 @@
 
-paths.dofile('../utils/util.lua')
+paths.dofile('utils/util.lua')
 
 testLogger = optim.Logger(paths.concat(opt.save, 'test.log'))
 
@@ -21,6 +21,9 @@ function test()
 
   top1_center = 0
   loss = 0
+  --local tmp = (nTest/opt.test_batchSize)*opt.test_ratio
+  --io.flush(print(tmp)) 
+  --for i=1,tmp do 
   for i=1,nTest/opt.test_batchSize do 
     -- nTest is set in data.lua
     local indexStart= (i-1) * opt.test_batchSize + 1
@@ -28,6 +31,7 @@ function test()
     donkeys:addjob(
       function()
         local  inputs, labels = testLoader:get(indexStart, indexEnd)
+        --local  inputs, labels = testLoader:sample(opt.test_batchSize)
         return sendTensor(inputs), sendTensor(labels)
       end,
       testBatch
@@ -37,13 +41,12 @@ function test()
   donkeys:synchronize()
   cutorch.synchronize()
 
-
   top1_center = top1_center * 100 / nTest
   loss = loss / (nTest/opt.test_batchSize)
   local elapsed = timer:time().real
   testLogger:add{
-    ['epoch'] = epoch,
     ['time'] = elapsed, 
+    ['epoch'] = epoch,
     ['loss'] = loss,
     ['err'] = top1_center,
   }
@@ -59,11 +62,11 @@ local labelsCPU = torch.LongTensor()
 local inputs = torch.CudaTensor()
 local labels = torch.CudaTensor()
 
-function testBatch(inputsThread, lablesThread)
+function testBatch(inputsThread, labelsThread)
   batchNumber = batchNumber + opt.test_batchSize
 
-  receieveTensor(inputsThread, inputsCPU)
-  receieveTensor(labelsThread, labelsCPU)
+  receiveTensor(inputsThread, inputsCPU)
+  receiveTensor(labelsThread, labelsCPU)
   inputs:resize(inputsCPU:size()):copy(inputsCPU)
   labels:resize(labelsCPU:size()):copy(labelsCPU)
 

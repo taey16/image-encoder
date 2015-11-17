@@ -2,11 +2,8 @@
 local ffi = require 'ffi'
 local Threads = require 'threads'
 
--- This script contains the logic to create K threads for parallel data-loading.
--- For the data-loading details, look at donkey.lua
--------------------------------------------------------------------------------
 do 
-  -- start K datathreads (donkeys)
+  -- start K datathreads
   if opt.nDonkeys > 0 then
     -- make an upvalue to serialize over to donkey threads
     local options = opt
@@ -21,7 +18,6 @@ do
         tid = idx
         local seed = opt.manualSeed + idx
         torch.manualSeed(seed)
-        -- print(('Starting donkey with id: %d seed: %d').format(tid, seed))
         print(('===> Starting donkey with id: %d seed: %d'):format(tid, seed))
         paths.dofile(opt.donkey_filename)
       end

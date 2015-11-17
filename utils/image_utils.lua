@@ -68,12 +68,12 @@ function augment_image(input, loadSize, sampleSize)
   local iW = loadSize[3]
   local w1 = math.ceil((iW-oW)/2)
   local h1 = math.ceil((iH-oH)/2)
-  local output = torch.FloatTensor(10, 3, sampleSize[3], sampleSize[2])
-  output[{1 ,{},{},{}}] = image.crop(input, 1, 1, sampleSize[3]+1, sampleSize[2]+1)
-  output[{2 ,{},{},{}}] = image.crop(input, iW-oW, 1, loadSize[3], sampleSize[2]+1)
-  output[{3 ,{},{},{}}] = image.crop(input, 1, iH-oH, sampleSize[3]+1, loadSize[2])
-  output[{4 ,{},{},{}}] = image.crop(input, iW-oW, iH-oH, loadSize[3], loadSize[2])
-  output[{5 ,{},{},{}}] = image.crop(input, w1, h1, w1+oW, h1+oW)
+  local output = torch.FloatTensor(10, 3, oW, oH)
+  output[{1 ,{},{},{}}] = image.crop(input, 1,    1,    oW+1, oH+1)
+  output[{2 ,{},{},{}}] = image.crop(input, iW-oW,1,    iH,   oH+1)
+  output[{3 ,{},{},{}}] = image.crop(input, 1,    iH-oH,oW+1, iH)
+  output[{4 ,{},{},{}}] = image.crop(input, iW-oW,iH-oH,iW,   iH)
+  output[{5 ,{},{},{}}] = image.crop(input, w1,   h1,   w1+oW,h1+oH)
   output[{6 ,{},{},{}}] = image.hflip(output[{1,{},{},{}}])
   output[{7 ,{},{},{}}] = image.hflip(output[{2,{},{},{}}])
   output[{8 ,{},{},{}}] = image.hflip(output[{3,{},{},{}}])
@@ -160,6 +160,7 @@ function random_flip(input, do_flip)
   end
   return input
 end
+
 
 function random_jitter(input, sampleSize)
   local iW = input:size(3)

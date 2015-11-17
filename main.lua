@@ -6,14 +6,14 @@ require 'xlua'
 require 'optim'
 require 'nn'
 
+--local opts = paths.dofile('opts/opts_mnist.lua')
 local opts = paths.dofile('opts/opts_ilsvrc.lua')
--- local opts = paths.dofile('opts/opts_det.lua')
 opt = opts.parse(arg)
 
-torch.setnumthreads(4)
+--torch.setnumthreads(4)
 torch.setdefaulttensortype('torch.FloatTensor')
 torch.manualSeed(opt.manualSeed)
-cutorch.setDevice(opt.GPU)
+--cutorch.setDevice(opt.GPU)
 
 paths.dofile('data.lua')
 paths.dofile('model.lua')

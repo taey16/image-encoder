@@ -45,7 +45,6 @@ function train()
   cutorch.synchronize()
 
   model:training()
-  model:cuda()
 
   local tm = torch.Timer()
   top1_epoch = 0
@@ -72,7 +71,7 @@ function train()
     ['time'] = elapsed,
     ['epoch']= epoch,
     ['loss'] = loss_epoch,
-    ['error']= top1_epoch,
+    ['err']= top1_epoch,
   }
   print(('epoch: %d trn loss: %.6f err: %.6f elapsed: %.4f'):format(
     epoch, loss_epoch, top1_epoch, elapsed))
@@ -114,6 +113,7 @@ function trainBatch(inputsThread, labelsThread)
     return loss, gradParameters
   end
   optim.sgd(feval, parameters, optimState)
+  --optim.adagrad(feval, parameters, optimState)
 
   -- DataParallelTable's syncParameters
   model:apply(
@@ -133,10 +133,14 @@ function trainBatch(inputsThread, labelsThread)
   top1_epoch= top1_epoch + err
 
   if batchNumber % opt.display == 0 then
+    local elapsed_batch = timer:time().real
+    local elapsed_whole = elapsed_batch + dataLoadingTime
+    local time_left = (opt.epochSize - batchNumber) * elapsed_whole
     io.flush(print(
-      ('%04d/%04d loss %.6f err: %03.4f lr: %.6f elapsed: %.4f(%.3f)'):format( 
+      ('%04d/%04d loss %.6f err: %03.4f lr: %.6f elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
       batchNumber, opt.epochSize, loss, top1, 
-      optimState.learningRate, timer:time().real, dataLoadingTime)))
+      optimState.learningRate, 
+      elapsed_batch, dataLoadingTime, time_left / 3600 )))
   end
   if batchNumber % opt.snapshot == 0 then
     conditional_save(model, optimState, epoch)

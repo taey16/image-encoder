@@ -1,10 +1,9 @@
 
-require 'cudnn'
 require 'cunn'
 paths.dofile('init_model_weight.lua')
 paths.dofile('../utils/parallel_utils.lua')
 
-function createModel()
+function createModel(nGPU)
   -- on a titan black, B/D/E run out of memory even for batch-size 32
   local modelType = 'D'
 
@@ -30,10 +29,10 @@ function createModel()
         features:add(cudnn.SpatialMaxPooling(2,2,2,2))
       else
         local oChannels = v;
-        local conv3 = cudnn.SpatialConvolution(iChannels,oChannels,3,3,1,1,1,1);
+        local conv3 = nn.SpatialConvolutionMM(iChannels,oChannels,3,3,1,1,1,1);
         features:add(conv3)
         features:add(nn.SpatialBatchNormalization(oChannels))
-        features:add(cudnn.ReLU(true))
+        features:add(nn.ReLU(true))
         iChannels = oChannels;
       end
     end
@@ -43,11 +42,11 @@ function createModel()
   classifier:add(nn.View(512*7*7))
   classifier:add(nn.Linear(512*7*7, 4096))
   classifier:add(nn.BatchNormalization(4096))
-  classifier:add(cudnn.ReLU(true))
+  classifier:add(nn.ReLU(true))
   classifier:add(nn.Dropout(0.5))
   classifier:add(nn.Linear(4096, 4096))
   classifier:add(nn.BatchNormalization(4096))
-  classifier:add(cudnn.ReLU(true))
+  classifier:add(nn.ReLU(true))
   classifier:add(nn.Dropout(0.5))
   --classifier:add(nn.Linear(4096, 1000))
   classifier:add(nn.Linear(4096, 10))
@@ -55,11 +54,11 @@ function createModel()
 
   --features = makeDataParallel(features, nGPU)
 
-  --local model = nn.Sequential()
-  --model:add(features):add(classifier)
+  local model = nn.Sequential()
+  model:add(features):add(classifier)
 
   --MSRinit( model )
 
-  return features, classifier
-  --return model
+  --return features, classifier
+  return model
 end
