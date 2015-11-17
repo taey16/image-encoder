@@ -18,6 +18,11 @@ do
         tid = idx
         local seed = opt.manualSeed + idx
         torch.manualSeed(seed)
+        if opt.data_shard == true and idx % 2 == 0 then
+          opt.defaultDir = paths.concat('/data2/ImageNet/ILSVRC2012/')
+          opt.cache = paths.concat(opt.defaultDir, 'torch_cache');
+          opt.data = paths.concat(opt.defaultDir, './')
+        end
         print(('===> Starting donkey with id: %d seed: %d'):format(tid, seed))
         paths.dofile(opt.donkey_filename)
       end

@@ -5,6 +5,7 @@ function M.parse(arg)
   local defaultDir= paths.concat('/storage/ImageNet/ILSVRC2012/')
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
+  local data_shard = true
   local batchsize = 96
   local test_batchsize = 96
   local total_train_samples = 1281167 - 1
@@ -32,6 +33,7 @@ function M.parse(arg)
 
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
+  cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 4, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-donkey_filename', 'donkey/donkey.lua', 'donkey file')
 
