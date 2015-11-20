@@ -16,7 +16,6 @@ function M.parse(arg)
   local current_epoch = 1
   local test_initialization = false
   local exp_name = 'gpu_3'
-  
   local backend = 'cudnn'
   local retrain_path = nil
   if retrain_path then
@@ -26,6 +25,16 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
+  local regimes = {
+    -- start, end,    LR,   WD,
+    {  1,      3,   opt.LR, 0.00002 },
+    {  4,      9,   opt.LR*0.1, 0.00002 },
+    { 10,     15,   opt.LR*0.1*0.1, 0.00002 },
+    { 16,     21,   opt.LR*0.1*0.1*0.1, 0.00002 },
+    { 22,     27,   opt.LR*0.1*0.1*0.1*0.1, 0 },
+    { 28,     33,   opt.LR*0.1*0.1*0.1*0.1*0.1, 0 },
+    { 34,   1e+8,   opt.LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
+  }
 
   local cmd = torch.CmdLine()
   cmd:text()
@@ -66,9 +75,11 @@ function M.parse(arg)
   cmd:text()
 
   local opt = cmd:parse(arg or {})
-  opt.loadSize  = loadSize
+  opt.loadSize = loadSize
   opt.sampleSize= sampleSize
   opt.nGPU = nGPU
+  opt.regime = regimes
+
   -- add commandline specified options
   opt.save = paths.concat(opt.cache, cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
   opt.save = paths.concat(opt.save, exp_name .. os.date():gsub(' ',''))

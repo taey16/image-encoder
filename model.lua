@@ -37,12 +37,11 @@ MSRinit(feature_encoder)
 --MSRinit(model)
 
 if #opt.nGPU > 1 then
-  feature_encoder = makeDataParallel(feature_encoder, opt.nGPU, opt.GPU)
+  feature_encoder = makeDataParallel(
+    feature_encoder, opt.nGPU, opt.GPU)
   classifier:cuda()
-  --model = makeDataParallel(model, opt.nGPU, opt.GPU)
 else
   cutorch.setDevice(opt.GPU) 
-  --model:cuda()
   feature_encoder:cuda()
   classifier:cuda()
 end

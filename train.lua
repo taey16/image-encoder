@@ -8,7 +8,7 @@ local optimState = {
   learningRateDecay = 0.0,
   momentum = opt.momentum,
   dampening = 0.0,
-  weightDecay = opt.weightDecay
+  weightDecay = opt.weightDecay,
 }
 if opt.optimState then
   assert(paths.filep(opt.optimState), 
@@ -17,16 +17,6 @@ if opt.optimState then
   optimState = torch.load(opt.optimState)
 end
 
-local regimes = {
-  -- start, end,    LR,   WD,
-  {  1,      6,   opt.LR, 0.00002 },
-  {  7,     12,   opt.LR*0.1, 0.00002 },
-  { 13,     18,   opt.LR*0.1*0.1, 0.00002 },
-  { 19,     24,   opt.LR*0.1*0.1*0.1, 0.00002 },
-  { 25,     30,   opt.LR*0.1*0.1*0.1*0.1, 0 },
-  { 31,     36,   opt.LR*0.1*0.1*0.1*0.1*0.1, 0 },
-  { 37,   1e+8,   opt.LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
-}
 
 trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
 local batchNumber
@@ -34,7 +24,7 @@ local top1_epoch, loss_epoch
 
 
 function train()
-  local params, newRegime = paramsForEpoch(regimes, epoch)
+  local params, newRegime = paramsForEpoch(opt.regimes, epoch)
   if newRegime then
     optimState = reset_optimState(params)
   end
@@ -78,6 +68,7 @@ function train()
 
 end -- of train()
 
+
 local inputsCPU = torch.FloatTensor()
 local labelsCPU = torch.LongTensor()
 local inputs = torch.CudaTensor()
@@ -97,7 +88,6 @@ function trainBatch(inputsThread, labelsThread)
 
   receiveTensor(inputsThread, inputsCPU)
   receiveTensor(labelsThread, labelsCPU)
-  -- transfer over to GPU
   inputs:resize(inputsCPU:size()):copy(inputsCPU)
   labels:resize(labelsCPU:size()):copy(labelsCPU)
 
@@ -110,7 +100,7 @@ function trainBatch(inputsThread, labelsThread)
     model:backward(inputs, gradOutputs)
     return loss, gradParameters
   end
-  optim.sgd(feval, parameters, optimState)
+  optim.sgd(feval, parameters, optimState, optimState.state)
   --optim.adagrad(feval, parameters, optimState)
 
   -- DataParallelTable's syncParameters

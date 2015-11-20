@@ -42,12 +42,24 @@ end
 
 
 function reset_optimState(params)
+  -- options for optim.std
   local optimState = {
+    -- laarning rate
     learningRate = params.learningRate,
+    -- vector of individual learning rates
+    --learningRates= params.learningRates,
+    -- learning rate decay
     learningRateDecay = 0.0,
-    momentum = opt.momentum,
-    dampening = 0.0,
+    -- weight decay
     weightDecay = params.weightDecay
+    -- vector of individual weight decays
+    --weightDecays= params.weightDecays
+    -- momentum
+    momentum = opt.momentum,
+    -- dampening for momentum
+    dampening = 0.0,
+    -- enables Nesterov momentum
+    nesterov = false,
   }
   return optimState
 end
