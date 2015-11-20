@@ -25,15 +25,16 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
+  local LR = 0.5
   local regimes = {
     -- start, end,    LR,   WD,
-    {  1,      3,   opt.LR, 0.00002 },
-    {  4,      9,   opt.LR*0.1, 0.00002 },
-    { 10,     15,   opt.LR*0.1*0.1, 0.00002 },
-    { 16,     21,   opt.LR*0.1*0.1*0.1, 0.00002 },
-    { 22,     27,   opt.LR*0.1*0.1*0.1*0.1, 0 },
-    { 28,     33,   opt.LR*0.1*0.1*0.1*0.1*0.1, 0 },
-    { 34,   1e+8,   opt.LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
+    {  1,      3,   LR, 0.00002 },
+    {  4,      9,   LR*0.1, 0.00002 },
+    { 10,     15,   LR*0.1*0.1, 0.00002 },
+    { 16,     21,   LR*0.1*0.1*0.1, 0.00002 },
+    { 22,     27,   LR*0.1*0.1*0.1*0.1, 0 },
+    { 28,     33,   LR*0.1*0.1*0.1*0.1*0.1, 0 },
+    { 34,   1e+8,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
   }
 
   local cmd = torch.CmdLine()
@@ -78,7 +79,7 @@ function M.parse(arg)
   opt.loadSize = loadSize
   opt.sampleSize= sampleSize
   opt.nGPU = nGPU
-  opt.regime = regimes
+  opt.regimes = regimes
 
   -- add commandline specified options
   opt.save = paths.concat(opt.cache, cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))

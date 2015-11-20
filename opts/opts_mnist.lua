@@ -5,17 +5,17 @@ function M.parse(arg)
   local defaultDir= '/storage/mnist/mnist_image'
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
+  local data_shard = false
   local batchsize = 64
   local test_batchsize = 50
   local total_train_samples = 55000
-  local network = 'inception6' --'vgg' --'inception6' --'vgg16caffe'
+  local network = 'inception6_eladhoffer' --'inception6' --'vgg' --'inception6' --'vgg16caffe'
   local sampleSize= {3, 224, 224}
   local loadSize  = {3, 256, 256}
-  local nGPU = {1, 2}
+  local nGPU = {1}
   local current_epoch = 1
   local test_initialization = true
   local exp_name = 'gpu_1'
-  
   local backend = 'cudnn'
   local retrain_path = nil
   if retrain_path then
@@ -25,6 +25,17 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
+  local LR = 0.1
+  local regimes = {
+    -- start, end,    LR,   WD,
+    {  1,      3,   LR, 0.00002 },
+    {  4,      9,   LR*0.1, 0.00002 },
+    { 10,     15,   LR*0.1*0.1, 0.00002 },
+    { 16,     21,   LR*0.1*0.1*0.1, 0.00002 },
+    { 22,     27,   LR*0.1*0.1*0.1*0.1, 0 },
+    { 28,     33,   LR*0.1*0.1*0.1*0.1*0.1, 0 },
+    { 34,   1e+8,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
+  }
 
   local cmd = torch.CmdLine()
   cmd:text()
@@ -32,13 +43,13 @@ function M.parse(arg)
 
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
+  cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 0, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-donkey_filename', 'donkey/donkey.lua', 'donkey file')
 
   cmd:option('-manualSeed', 1123, 'Manually set RNG seed')
 
   cmd:option('-GPU', 1, 'Default preferred GPU')
-  --cmd:option('-nGPU', 2, 'Number of GPUs to use by default')
   cmd:option('-backend', backend, 'Options: cudnn | fbcunn | cunn')
 
   cmd:option('-nEpochs', 1000, 'Number of total epochs to run')
@@ -67,6 +78,7 @@ function M.parse(arg)
   opt.sampleSize = sampleSize
   opt.loadSize = loadSize
   opt.nGPU = nGPU
+  opt.regimes = regimes
   -- add commandline specified options
   opt.save = paths.concat(opt.cache, 
     cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
