@@ -51,7 +51,7 @@ function reset_optimState(params)
     -- learning rate decay
     learningRateDecay = 0.0,
     -- weight decay
-    weightDecay = params.weightDecay
+    weightDecay = params.weightDecay,
     -- vector of individual weight decays
     --weightDecays= params.weightDecays
     -- momentum

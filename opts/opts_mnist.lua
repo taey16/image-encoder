@@ -6,15 +6,15 @@ function M.parse(arg)
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
-  local batchsize = 64
-  local test_batchsize = 50
+  local batchsize = 32
+  local test_batchsize = 20
   local total_train_samples = 55000
-  local network = 'inception6_eladhoffer' --'inception6' --'vgg' --'inception6' --'vgg16caffe'
+  local network = 'inception6' -- 'inception6_eladhoffer' --'inception6' --'vgg' --'inception6' --'vgg16caffe'
   local sampleSize= {3, 224, 224}
   local loadSize  = {3, 256, 256}
   local nGPU = {1}
   local current_epoch = 1
-  local test_initialization = true
+  local test_initialization = false
   local exp_name = 'gpu_1'
   local backend = 'cudnn'
   local retrain_path = nil
@@ -28,13 +28,13 @@ function M.parse(arg)
   local LR = 0.1
   local regimes = {
     -- start, end,    LR,   WD,
-    {  1,      3,   LR, 0.00002 },
-    {  4,      9,   LR*0.1, 0.00002 },
-    { 10,     15,   LR*0.1*0.1, 0.00002 },
-    { 16,     21,   LR*0.1*0.1*0.1, 0.00002 },
-    { 22,     27,   LR*0.1*0.1*0.1*0.1, 0 },
-    { 28,     33,   LR*0.1*0.1*0.1*0.1*0.1, 0 },
-    { 34,   1e+8,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
+    {  1,      1,   LR, 0.00002 },
+    {  2,      4,   LR*0.1, 0.00002 },
+    {  5,      6,   LR*0.1*0.1, 0.00002 },
+    {  7,      8,   LR*0.1*0.1*0.1, 0.00002 },
+    {  8,      9,   LR*0.1*0.1*0.1*0.1, 0 },
+    {  9,     10,   LR*0.1*0.1*0.1*0.1*0.1, 0 },
+    { 11,   1e+8,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0},
   }
 
   local cmd = torch.CmdLine()
@@ -44,7 +44,7 @@ function M.parse(arg)
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
   cmd:option('-data_shard', data_shard, 'data shard')
-  cmd:option('-nDonkeys', 0, 'number of donkeys to initialize (data loading threads)')
+  cmd:option('-nDonkeys', 2, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-donkey_filename', 'donkey/donkey.lua', 'donkey file')
 
   cmd:option('-manualSeed', 1123, 'Manually set RNG seed')
