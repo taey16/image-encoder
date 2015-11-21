@@ -6,7 +6,7 @@ function M.parse(arg)
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
-  local batchsize = 64
+  local batchsize = 32
   local test_batchsize = 50
   local total_train_samples = 1281167 - 1
   local network = 'inception6_no_bn' --'inception6' --'vgg16caffe'
@@ -15,7 +15,7 @@ function M.parse(arg)
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local exp_name = 'gpu_2_lr0.01'
+  local exp_name = 'gpu_2_lr0.045'
   local backend = 'cudnn'
   local retrain_path = nil
   if retrain_path then
@@ -25,13 +25,13 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
-  local LR = 0.1
+  local LR = 0.045
   local regimes = {
     -- start, end,    LR,   WD,
     {  1,      8,   LR, 0.00002 },
     {  9,     24,   LR*0.1, 0.00002 },
-    { 25,     32,   LR*0.1*0.1, 0.00002 },
-    { 33,     40,   LR*0.1*0.1*0.1, 0.00002 },
+    { 25,     32,   LR*0.1*0.1, 0.00001 },
+    { 33,     40,   LR*0.1*0.1*0.1, 0.00001 },
     { 41,   1e+8,   LR*0.1*0.1*0.1*0.1, 0 },
   }
 

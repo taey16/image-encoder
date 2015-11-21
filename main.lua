@@ -6,8 +6,8 @@ require 'xlua'
 require 'optim'
 require 'nn'
 
-local opts = paths.dofile('opts/opts_mnist.lua')
---local opts = paths.dofile('opts/opts_ilsvrc.lua')
+--local opts = paths.dofile('opts/opts_mnist.lua')
+local opts = paths.dofile('opts/opts_ilsvrc.lua')
 opt = opts.parse(arg)
 
 --torch.setnumthreads(4)
