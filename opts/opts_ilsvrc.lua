@@ -59,7 +59,7 @@ function M.parse(arg)
   cmd:option('-test_ratio', 0.5, 'test ratio from 0 to 1')
   cmd:option('-test_initialization', test_initialization, 'test_initialization')
 
-  cmd:option('-LR', 0.5, 'learning rate; if set, overrides default LR/WD recipe')
+  cmd:option('-LR', LR, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
   cmd:option('-weightDecay', 0.00000, 'weight decay')
 
