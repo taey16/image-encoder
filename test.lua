@@ -21,9 +21,6 @@ function test()
 
   top1_center = 0
   loss = 0
-  --local tmp = (nTest/opt.test_batchSize)*opt.test_ratio
-  --io.flush(print(tmp)) 
-  --for i=1,tmp do 
   for i=1,nTest/opt.test_batchSize do 
     -- nTest is set in data.lua
     local indexStart= (i-1) * opt.test_batchSize + 1
@@ -31,7 +28,6 @@ function test()
     donkeys:addjob(
       function()
         local  inputs, labels = testLoader:get(indexStart, indexEnd)
-        --local  inputs, labels = testLoader:sample(opt.test_batchSize)
         return sendTensor(inputs), sendTensor(labels)
       end,
       testBatch

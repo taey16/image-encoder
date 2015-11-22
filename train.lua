@@ -42,7 +42,6 @@ function train()
       function()
         local  inputs, labels = trainLoader:sample(opt.batchSize)
         return sendTensor(inputs), sendTensor(labels)
-        --return inputs, labels
       end,
       trainBatch
     )
@@ -79,7 +78,6 @@ local dataTimer = torch.Timer()
 
 
 local parameters, gradParameters = model:getParameters()
---function trainBatch(inputsCPU, labelsCPU)
 function trainBatch(inputsThread, labelsThread)
   cutorch.synchronize()
   collectgarbage()
