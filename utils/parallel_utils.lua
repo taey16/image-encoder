@@ -21,3 +21,12 @@ function makeDataParallel(model, nGPU, primary_gpu_id)
   return model
 end
 
+
+function splitDataParallelTable(model)
+  local feature = model:get(1):get(1)
+  local classifier = model:get(2)
+
+  return feature, classifier
+end
+
+

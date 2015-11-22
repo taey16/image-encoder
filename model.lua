@@ -19,11 +19,14 @@ if opt.retrain then
   print('===> Loading model from file: ' .. opt.retrain);
   if opt.use_stn then require 'stn' end
   model = torch.load(opt.retrain)
+  feature_encoder, classifier = splitDataParallelTable(model)
 else
   print('===> Creating model from file: ' .. model_filepath)
   --model = createModel()
   -- ccn2 data-parallel
   feature_encoder, classifier = createModel()
+  MSRinit(feature_encoder)
+  --MSRinit(model)
 end
 
 spanet = {}
@@ -32,9 +35,6 @@ if opt.use_stn and not opt.retrain then
   spanet = createModel(opt.nGPU)
   model:insert(spanet, 1)
 end
-
-MSRinit(feature_encoder)
---MSRinit(model)
 
 if #opt.nGPU > 1 then
   feature_encoder = makeDataParallel(
