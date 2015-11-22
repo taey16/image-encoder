@@ -63,6 +63,7 @@ function train()
   print(('epoch: %d trn loss: %.6f err: %.6f elapsed: %.4f'):format(
     epoch, loss_epoch, top1_epoch, elapsed))
 
+  conditional_save(model, optimState, epoch)
   collectgarbage()
 
 end -- of train()

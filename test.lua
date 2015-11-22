@@ -48,8 +48,7 @@ function test()
   }
   print(('epoch: %d tst loss: %.6f err: %.6f elapsed: %.4f\n'):format(
     epoch, loss, top1_center, timer:time().real))
-
-  conditional_save(model, optimState, epoch)
+  --conditional_save(model, optimState, epoch)
 
 end -- of test()
 

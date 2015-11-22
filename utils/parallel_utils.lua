@@ -11,9 +11,9 @@ function makeDataParallel(model, nGPU, primary_gpu_id)
     -- in our case it is batch_size
     model = nn.DataParallelTable(1)
     --for i=1, nGPU do
-    for i in pairs(nGPU) do
-      cutorch.setDevice(i)
-      model:add(model_single:clone():cuda(), i)
+    for gpu_id in pairs(nGPU) do
+      cutorch.setDevice(gpu_id)
+      model:add(model_single:clone():cuda(), gpu_id)
     end
     -- set 'primary' GPU
     cutorch.setDevice(primary_gpu_id)
