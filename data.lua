@@ -3,9 +3,7 @@ local ffi = require 'ffi'
 local Threads = require 'threads'
 
 do 
-  -- start K datathreads
   if opt.nDonkeys > 0 then
-    -- make an upvalue to serialize over to donkey threads
     local options = opt
     donkeys = Threads(
       opt.nDonkeys,
@@ -13,11 +11,11 @@ do
         require 'torch'
       end,
       function(idx)
-        -- pass to all donkeys via upvalue
         opt = options
         tid = idx
         local seed = opt.manualSeed + idx
         torch.manualSeed(seed)
+        -- data shard
         if opt.data_shard == true and idx % 2 == 0 then
           opt.defaultDir = paths.concat('/data2/ImageNet/ILSVRC2012/')
           opt.cache= paths.concat(opt.defaultDir, 'torch_cache');
