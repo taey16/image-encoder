@@ -70,9 +70,7 @@ function testBatch(inputsThread, labelsThread)
   cutorch.synchronize()
 
   loss = loss + loss_batch
-
   local outputsCPU = outputs:float()
-
   local _, preds = outputsCPU:max(2)
   local err = opt.test_batchSize - preds:eq(labelsCPU):sum()
   top1_center = top1_center + err

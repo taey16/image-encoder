@@ -22,8 +22,8 @@ end
 
 
 function splitDataParallelTable(model)
-  local feature = model:get(1):get(1)
-  local classifier = model:get(2)
+  local feature = model:get(1):get(1):clone()
+  local classifier = model:get(2):clone()
 
   return feature, classifier
 end

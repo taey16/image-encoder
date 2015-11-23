@@ -99,8 +99,8 @@ function trainBatch(inputsThread, labelsThread)
     model:backward(inputs, gradOutputs)
     return loss, gradParameters
   end
-  --optim.sgd(feval, parameters, optimState)
-  optim.nag(feval, parameters, optimState)
+  optim.sgd(feval, parameters, optimState)
+  --optim.nag(feval, parameters, optimState)
 
   -- DataParallelTable's syncParameters
   model:apply(
