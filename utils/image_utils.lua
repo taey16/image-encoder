@@ -22,6 +22,7 @@ function local_contrast_norm( rgb, kernel_size )
 end
 
 
+-- use in vgg16Caffe
 function preprocess(im)
   local input = image.scale(im,256,256,'bilinear')*255
   if input:dim() == 2 then
@@ -86,14 +87,17 @@ end
 
 function resize_crop(input, loadSize, preserve_aspect_ratio)
   local output = torch.FloatTensor()
-  local preserve_aspect_ratio = preserve_aspect_ratio or torch.uniform()
+  local preserve_aspect_ratio = 
+    preserve_aspect_ratio or torch.uniform()
   if preserve_aspect_ratio > 0.5 then
     local iW = input:size(3)
     local iH = input:size(2)
     if iW < iH then
-      output = image.scale(input, loadSize[2], loadSize[2] * iH / iW)
+      output = image.scale(input, 
+        loadSize[2], loadSize[2] * iH / iW)
     else
-      output = image.scale(input, loadSize[3] * iW / iH, loadSize[3])
+      output = image.scale(input, 
+        loadSize[3] * iW / iH, loadSize[3])
     end
   else
     output = image.scale(input, loadSize[2], loadSize[3])
@@ -197,4 +201,5 @@ function center_crop(input, sampleSize)
   local output = image.crop(input, w1, h1, w1+oW, h1+oW)
   return output
 end
+
 

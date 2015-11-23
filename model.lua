@@ -15,7 +15,8 @@ feature_encoder = {}
 classifier = {}
 
 if opt.retrain then
-  assert(paths.filep(opt.retrain), 'File not found: ' .. opt.retrain)
+  assert(paths.filep(opt.retrain), 
+    'File not found: ' .. opt.retrain)
   print('===> Loading model from file: ' .. opt.retrain);
   if opt.use_stn then require 'stn' end
   model = torch.load(opt.retrain)
