@@ -33,8 +33,9 @@ end
 spanet = {}
 if opt.use_stn and not opt.retrain then
   paths.dofile('models/stn_ilsvrc.lua')
-  spanet = createModel(opt.nGPU)
-  model:insert(spanet, 1)
+  spanet = createModel()
+  MSRinit(spanet)
+  feature_encoder:insert(spanet, 1)
 end
 
 if #opt.nGPU > 1 then
