@@ -1,7 +1,7 @@
 require 'stn'
-paths.dofile('init_model_weight.lua')
+--paths.dofile('init_model_weight.lua')
 
-function createModel(nGPU)
+function createModel()
   local spanet=nn.Sequential()
   local concat=nn.ConcatTable()
   -- first branch is there to transpose inputs to BHWD, 
@@ -45,7 +45,7 @@ function createModel(nGPU)
 
   locnet:add(cudnn.SpatialAveragePooling(13,13,1,1,0,0))
   locnet:add(nn.View(256))
-  locnet:add(nn.Linear(64,16))
+  locnet:add(nn.Linear(256,16))
   locnet:add(nn.BatchNormalization(16))
   locnet:add(cudnn.ReLU(true))
 
@@ -60,7 +60,9 @@ function createModel(nGPU)
 
   -- there we generate the grids
   locnet:add(nn.AffineTransformMatrixGenerator())
-  locnet:add(nn.AffineGridGeneratorBHWD(224,224))
+  locnet:add(nn.AffineGridGeneratorBHWD(
+    opt.sampling_grid_size,
+    opt.sampling_grid_size))
 
   -- we need a table input for the bilinear sampler, 
   -- so we use concattable
@@ -74,7 +76,7 @@ function createModel(nGPU)
   -- subsequent processing by nn modules
   spanet:add(nn.Transpose({3,4},{2,3}))
 
-  MSRinit( spanet )
+  --MSRinit( spanet )
 
   return spanet
 
