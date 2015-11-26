@@ -79,7 +79,7 @@ spanet:add(nn.BilinearSamplerBHWD())
 -- and we transpose back to standard BDHW format for subsequent processing by nn modules
 spanet:add(nn.Transpose({3,4},{2,3}))
 
-MSRinit( spanet )
+--MSRinit( spanet )
 
 return spanet
 
