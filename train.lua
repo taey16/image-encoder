@@ -5,7 +5,7 @@ paths.dofile('utils/util.lua')
 
 local optimState = {
   learningRate = opt.LR,
-  learningRateDecay = 0.0,
+  learningRateDecay = 0.0, 
   momentum = opt.momentum,
   dampening = 0.0,
   weightDecay = opt.weightDecay,
@@ -15,6 +15,9 @@ if opt.optimState then
     'File not found: ' .. opt.optimState)
   print('Loading optimState from file: ' .. opt.optimState)
   optimState = torch.load(opt.optimState)
+  print('optimState.learningRate: '..optimState.learningRate)
+  print('optimState.momentum: '..optimState.momentum)
+  print('optimState.weightDecay: '..optimState.weightDacay)
 end
 
 
@@ -24,9 +27,13 @@ local top1_epoch, loss_epoch
 
 
 function train()
+  print('epoch: '..epoch)
   local params, newRegime = paramsForEpoch(opt.regimes, epoch)
+  optimState.learningRate = params.learningRate
+  optimState.weightDecay = params.weightDecay
   if newRegime then
     optimState = reset_optimState(params)
+    print('reset optimState')
   end
   -- reset batchNumber
   batchNumber = 0
