@@ -63,7 +63,6 @@ function createModel()
   feature:add(cudnn.SpatialConvolution(3, 64, 7, 7, 2, 2, 3, 3))
   feature:add(nn.SpatialBatchNormalization(64))
   feature:add(cudnn.ReLU(true))
-  --feature:add(cudnn.SpatialMaxPooling(2, 2, 2, 2, 0, 0))
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 1, 1))
   -- 56
   feature:add(cudnn.SpatialConvolution(64,64, 3, 3, 1, 1, 1, 1))
