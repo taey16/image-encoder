@@ -126,6 +126,10 @@ function trainBatch(inputsThread, labelsThread)
   local top1= err / opt.batchSize * 100
   top1_epoch= top1_epoch + err
 
+  if batchNumber == 1 and opt.use_stn then
+    save_images(model:get(1):get(1):get(1).output:float(), 4, 'save_image_'..batchNumber..'.png')
+  end
+
   if batchNumber % opt.display == 0 then
     local elapsed_batch = timer:time().real
     local elapsed_whole = elapsed_batch + dataLoadingTime
@@ -135,6 +139,10 @@ function trainBatch(inputsThread, labelsThread)
       batchNumber, opt.epochSize, loss, top1, 
       optimState.learningRate, 
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
+    if opt.use_stn then
+      save_images(model:get(1):get(1):get(1).output:float(), 4, 'save_image_'..batchNumber..'.png')
+      print(model:get(1):get(1):get(1):get(1):get(2):get(28).output[{{1,4},{}}]:float())
+    end
   end
   if batchNumber % opt.snapshot == 0 then
     conditional_save(model, optimState, epoch)
