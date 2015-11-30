@@ -128,6 +128,27 @@ function loadImage(path, loadSize)
   return input
 end
 
+
+function loadImage(path, loadSize, aspect_ratio)
+  local loadSize = loadSize or nil
+  local input = image.load(path)
+  if input:dim() == 2 then
+    input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
+  elseif input:dim() == 3 and input:size(1) == 1 then
+    input = input:repeatTensor(3,1,1)
+  elseif input:dim() == 3 and input:size(1) == 3 then 
+  elseif input:dim() == 3 and input:size(1) == 4 then 
+    input = input[{{1,3},{},{}}]
+  else
+    print(#input)
+    error('loadImage: not 2-channel or 3-channel image')
+  end
+  input = resize_crop(input, loadSize, aspect_ratio)
+
+  return input
+end
+
+
 function random_RST(img_data, output_resolution)
   local resolution = img_data:size(2)
   local nChannels = img_data:size(1)

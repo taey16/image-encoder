@@ -2,6 +2,7 @@
 require 'optim'
 paths.dofile('utils/net_utils.lua')
 paths.dofile('utils/util.lua')
+paths.dofile('utils/image_utils.lua')
 
 local optimState = {
   learningRate = opt.LR,
@@ -127,7 +128,7 @@ function trainBatch(inputsThread, labelsThread)
   top1_epoch= top1_epoch + err
 
   if batchNumber == 1 and opt.use_stn then
-    save_images(model:get(1):get(1):get(1).output:float(), 4, 'save_image_'..batchNumber..'.png')
+    save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
   end
 
   if batchNumber % opt.display == 0 then
@@ -140,8 +141,8 @@ function trainBatch(inputsThread, labelsThread)
       optimState.learningRate, 
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
     if opt.use_stn then
-      save_images(model:get(1):get(1):get(1).output:float(), 4, 'save_image_'..batchNumber..'.png')
-      print(model:get(1):get(1):get(1):get(1):get(2):get(28).output[{{1,4},{}}]:float())
+      save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
+      print(model:get(1):get(1):get(1):get(1):get(2):get(28).output[{{1,opt.batchSize/2},{}}]:float())
     end
   end
   if batchNumber % opt.snapshot == 0 then
