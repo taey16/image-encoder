@@ -6,16 +6,16 @@ function M.parse(arg)
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
-  local batchsize = 32
-  local test_batchsize = 20
+  local batchsize = 8
+  local test_batchsize = 10
   local total_train_samples = 55000
   local network = 'inception6' -- 'inception6_eladhoffer' --'inception6' --'vgg' --'inception6' --'vgg16caffe'
-  local sampleSize= {3, 224, 224}
-  local loadSize  = {3, 256, 256}
-  local nGPU = {1}
+  local sampleSize= {3, 448, 448}
+  local loadSize  = {3, 496, 496}
+  local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local exp_name = 'gpu_1'
+  local exp_name = 'gpu_2'
   local backend = 'cudnn'
   local retrain_path = nil
   if retrain_path then
@@ -25,7 +25,7 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
-  local LR = 0.1
+  local LR = 0.001
   local regimes = {
     -- start, end,    LR,   WD,
     {  1,      1,   LR, 0.00002 },
@@ -59,12 +59,12 @@ function M.parse(arg)
   cmd:option('-test_batchSize', test_batchsize, 'test mini-batch size')
   cmd:option('-test_initialization', test_initialization, 'test_initalization')
 
-  cmd:option('-LR', 0.2, 'learning rate; if set, overrides default LR/WD recipe')
+  cmd:option('-LR', LR, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
   cmd:option('-weightDecay', 0.00000, 'weight decay')
 
-  cmd:option('-use_stn', false, '')
-  cmd:option('-sampling_grid_size', sampleSize[2], '')
+  cmd:option('-use_stn', true, '')
+  cmd:option('-sampling_grid_size', 224--[[sampleSize[2] --]], '')
   cmd:option('-netType', network, 'Options: alexnet | overfeat')
   cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
 
