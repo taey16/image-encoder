@@ -12,28 +12,28 @@ function createModel()
   -- second branch is the localization network
   local locnet = nn.Sequential()
 
-  -- 224,
+  -- 224, 448
   locnet:add(cudnn.SpatialMaxPooling(2,2,2,2,0,0))
-  -- 112,
+  -- 112, 224
   locnet:add(cudnn.SpatialConvolution(3,36,3,3,1,1,0,0))
   locnet:add(nn.SpatialBatchNormalization(36))
   locnet:add(cudnn.ReLU(true))
-  -- 110,
+  -- 110, 222
   locnet:add(cudnn.SpatialConvolution(36,64,3,3,1,1,0,0))
   locnet:add(nn.SpatialBatchNormalization(64))
   locnet:add(cudnn.ReLU(true))
-  -- 108,
+  -- 108, 220
   locnet:add(cudnn.SpatialMaxPooling(2,2,2,2,0,0))
-  -- 54,
+  -- 54,  110
   locnet:add(cudnn.SpatialConvolution(64,128,3,3,1,1,0,0))
   locnet:add(nn.SpatialBatchNormalization(128))
   locnet:add(cudnn.ReLU(true))
-  -- 52,
+  -- 52, 108
   locnet:add(cudnn.SpatialConvolution(128,256,3,3,1,1,1,1))
   locnet:add(nn.SpatialBatchNormalization(256))
   locnet:add(cudnn.ReLU(true))
   locnet:add(cudnn.SpatialMaxPooling(2,2,2,2,0,0))
-  -- 26,
+  -- 26, 54
   locnet:add(cudnn.SpatialConvolution(256,256,3,3,1,1,1,1))
   locnet:add(nn.SpatialBatchNormalization(256))
   locnet:add(cudnn.ReLU(true))
@@ -41,9 +41,9 @@ function createModel()
   locnet:add(nn.SpatialBatchNormalization(256))
   locnet:add(cudnn.ReLU(true))
   locnet:add(cudnn.SpatialMaxPooling(2,2,2,2,0,0))
-  -- 13
+  -- 13, 27
 
-  locnet:add(cudnn.SpatialAveragePooling(13,13,1,1,0,0))
+  locnet:add(cudnn.SpatialMaxPooling(27,27,1,1,0,0))
   locnet:add(nn.View(256))
   locnet:add(nn.Linear(256,16))
   locnet:add(nn.BatchNormalization(16))
@@ -53,8 +53,9 @@ function createModel()
   local regression_layer = nn.Linear(16,6)
   regression_layer.weight:fill(0)
   local bias = torch.FloatTensor(6):fill(0)
-  bias[1]=1
-  bias[5]=1
+  bias[1]=0.9
+  bias[5]=0.9
+  --bias[4]=0
   regression_layer.bias:copy(bias)
   locnet:add(regression_layer)
 
