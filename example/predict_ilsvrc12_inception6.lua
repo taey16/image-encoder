@@ -1,7 +1,6 @@
 
 require 'torch'
 require 'cutorch'
-require 'loadcaffe'
 require 'image'
 require 'nn'
 require 'cunn'
