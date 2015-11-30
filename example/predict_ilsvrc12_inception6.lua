@@ -99,8 +99,9 @@ for n, fname in ipairs(image_list) do
     end
   end
   io.flush(
-    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %f(%f)"):format(
-      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100, elapsed_process, elapsed_loading )
+    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %.4f(%.3f)"):format(
+      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100, 
+      elapsed_process, elapsed_loading )
     )
   )
 
