@@ -9,7 +9,6 @@ paths.dofile('../utils/imagenet_utils.lua')
 paths.dofile('../utils/image_utils.lua')
 
 torch.setnumthreads(4)
-cutorch.setDevice(3)
 
 print '===> Loading model'
 local model_filename = 
@@ -21,9 +20,16 @@ classifier.modules[#classifier.modules] = nil
 classifier:add(cudnn.SoftMax())
 local model = nn.Sequential()
 model:add(feature_encoder):add(classifier)
---model:add(cudnn.SoftMax())
+
+local replica = model
+model = nn.DataParallelTable(1)
+for gpu_id=1,2 do
+  cutorch.setDevice(gpu_id)
+  model:add(replica:clone():cuda(), gpu_id)
+end
+cutorch.setDevice(1)
+  
 print(model)
-model:cuda()
 model:evaluate()
 
 print '===> Load classes conf.'
@@ -50,9 +56,12 @@ local loadSize = {3, 256, 256}
 local top1 = 0
 local top5 = 0
 local trials = 0
+local timer = torch.Timer()
+local data_timer = torch.Timer()
 
 for n, fname in ipairs(image_list) do
   --print(fname .. ' ' .. label_list[n])
+  local loading_start = data_timer:time().real
   local filename = paths.concat(dataset_root, fname)
   local label = tonumber(label_list[n]) + 1
 
@@ -66,8 +75,12 @@ for n, fname in ipairs(image_list) do
   local data = torch.FloatTensor(20, sampleSize[1], sampleSize[2], sampleSize[3])
   data[{{1 ,10},{},{},{}}] = input
   data[{{11,20},{},{},{}}] = input1
+  local elapsed_loading = data_timer:time().real - loading_start
+  local process_start = timer:time().real
   local scores, classes
   scores = model:forward(input:cuda()):float()
+  cutorch.synchronize()
+  local elapsed_process = timer:time().real - process_start
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
   --print(class_conf[classes[1]])
   --print(synset_list[n])
@@ -86,8 +99,8 @@ for n, fname in ipairs(image_list) do
     end
   end
   io.flush(
-    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f"):format(
-      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100 )
+    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %f(%f)"):format(
+      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100, elapsed_process, elapsed_loading )
     )
   )
 
