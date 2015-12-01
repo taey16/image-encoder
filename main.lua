@@ -13,6 +13,7 @@ opt = opts.parse(arg)
 --torch.setnumthreads(4)
 torch.setdefaulttensortype('torch.FloatTensor')
 torch.manualSeed(opt.manualSeed)
+cutorch.manualSeed(opt.manualSeed+4322)
 --cutorch.setDevice(opt.GPU)
 
 paths.dofile('data.lua')
