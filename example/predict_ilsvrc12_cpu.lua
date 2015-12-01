@@ -3,9 +3,6 @@ require 'torch'
 require 'loadcaffe'
 require 'image'
 require 'nn'
-require 'cutorch'
-require 'cunn'
-require 'cudnn'
 paths.dofile('../utils/imagenet_utils.lua')
 paths.dofile('../utils/image_utils.lua')
 
@@ -17,12 +14,10 @@ local model_name = '/storage/models/vgg/vgg_layer16.caffemodel'
 local backend = 'nn'
 
 print '===> Loading model'
-cutorch.setDevice(3)
 local model = loadcaffe.load(proto_name, model_name, backend)
 model.modules[#model.modules] = nil
 model:add(nn.SoftMax())
 print(model)
-model:cuda()
 model:evaluate()
 
 print '===> Loading synsets'
@@ -36,21 +31,16 @@ local dataset_root = '/storage/ImageNet/ILSVRC2012/val'
 local top1 = 0
 local top5 = 0
 local trials = 0
-local timer = torch.Timer()
 for k, fname in ipairs(image_list) do
-  --print(fname .. ' ' .. label_list[k])
+  print(fname .. ' ' .. label_list[k])
   filename = paths.concat(dataset_root, fname)
-  local start_loading = timer:time().real
   im = image.load(filename)
   label = tonumber(label_list[k]) + 1
 
   -- Have to resize and convert from RGB to BGR and subtract mean
   input = preprocess(im)
   input = augment_image(input, loadSize, sampleSize)
-  local elapsed_loading = timer:time().real - start_loading
-  local start_process = timer:time().real
-  scores = model:forward(input:cuda()):float()
-  local elapsed_process = timer:time().real - start_process
+  scores = model:forward(input):float()
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
 
   --[[
@@ -62,9 +52,8 @@ for k, fname in ipairs(image_list) do
   top1 = top1 + classes[{{1,1}}]:eq(label):sum()
   top5 = top5 + classes[{{1,5}}]:eq(label):sum()
   io.flush(
-    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %.4f(%.3f)"):format(
-      k, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100,
-      elapsed_process, elapsed_loading )
+    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f"):format(
+      k, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100 )
     )
   )
   
