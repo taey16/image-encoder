@@ -38,7 +38,7 @@ local function BN_absorber(x)
            x.modules[i-1].__typename == 'nn.SpatialConvolutionMM') then
            -- force weight to be in 2-dim
           local weight = x.modules[i-1].weight
-          jweight = weight:view(weight:size(1), weight:nElement()/weight:size(1))
+          weight = weight:view(weight:size(1), weight:nElement()/weight:size(1))
 
           -- remove BN
           absorb_bn(weight,
