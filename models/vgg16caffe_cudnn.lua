@@ -1,9 +1,8 @@
 
 require 'loadcaffe'
 require 'nn'
-paths.dofile('../utils/parallel_utils.lua')
 
-function createModel(nGPU, backend)
+function createModel(backend)
   local deploy_file = '/storage/models/vgg/vgg_layer16_deploy.prototxt'
   local weight_file = '/storage/models/vgg/vgg_layer16.caffemodel'
   local backend = backend or 'cudnn'

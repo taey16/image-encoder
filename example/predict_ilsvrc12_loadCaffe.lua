@@ -16,7 +16,7 @@ else
   backend = 'nn'
 end
 
-local model = createModel(1, backend)
+local model = createModel(backend)
 model:remove(#model)
 model:add(nn.SoftMax())
 print(model)
