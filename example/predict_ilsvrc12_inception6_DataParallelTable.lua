@@ -57,11 +57,14 @@ local top1 = 0
 local top5 = 0
 local trials = 0
 
+local timer = torch.Timer()
+
 for n, fname in ipairs(image_list) do
   --print(fname .. ' ' .. label_list[n])
   local filename = paths.concat(dataset_root, fname)
   local label = tonumber(label_list[n]) + 1
 
+  local start_loading = timer:time().real
   -- Have to resize and convert from RGB to BGR and subtract mean
   local input = loadImage(filename, loadSize, 0)
   local input1= loadImage(filename, loadSize, 1)
@@ -73,8 +76,11 @@ for n, fname in ipairs(image_list) do
   data[{{1 ,10},{},{},{}}] = input
   data[{{11,20},{},{},{}}] = input1
   local scores, classes
+  local elapsed_loading = timer:time().real - start_loading
+  local start_process = timer:time().real
   scores = model:forward(input:cuda()):float()
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
+  local elapsed_process = timer:time().real - start_process
   --print(class_conf[classes[1]])
   --print(synset_list[n])
 
@@ -92,8 +98,9 @@ for n, fname in ipairs(image_list) do
     end
   end
   io.flush(
-    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f"):format(
-      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100 )
+    print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %.4f(%.3f)"):format(
+      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100,
+      elapsed_process, elapsed_loading )
     )
   )
 
