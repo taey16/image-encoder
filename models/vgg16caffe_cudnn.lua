@@ -21,10 +21,6 @@ function createModel(nGPU, backend)
   model:remove(40)
   model:add(LogSoftMax)
 
-  if backend == 'cudnn' then 
-    model = makeDataParallel( model, nGPU )
-  end
-
   return model
 end
 
