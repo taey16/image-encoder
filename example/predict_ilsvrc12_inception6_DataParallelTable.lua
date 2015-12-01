@@ -21,15 +21,20 @@ classifier:add(cudnn.SoftMax())
 local model = nn.Sequential()
 model:add(feature_encoder):add(classifier)
 
+model_bn = paths.dofile('../utils/BN-absorber.lua')(model:clone())
+print(model_bn)
+--[[
 local replica = model
 model = nn.DataParallelTable(1)
 for gpu_id=1,2 do
   cutorch.setDevice(gpu_id)
   model:add(replica:clone():cuda(), gpu_id)
 end
+--]]
 cutorch.setDevice(1)
   
-print(model)
+--print(model)
+model:cuda()
 model:evaluate()
 
 print '===> Load classes conf.'

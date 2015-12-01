@@ -21,11 +21,11 @@ model:remove(#model)
 model:add(cudnn.SoftMax())
 local replica = model
 model = nn.DataParallelTable(1)
-for gpu_id=1,2 do
+for gpu_id=3,4 do
   cutorch.setDevice(gpu_id)
   model:add(replica:clone():cuda(), gpu_id)
 end
-cutorch.setDevice(1)
+cutorch.setDevice(3)
 print(model)
 model:evaluate()
 
