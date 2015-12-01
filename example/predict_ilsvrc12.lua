@@ -14,7 +14,7 @@ torch.setnumthreads(4)
 -- Setting up modelworks and downloading stuff if needed
 local proto_name = '/storage/models/vgg/vgg_layer16_deploy.prototxt'
 local model_name = '/storage/models/vgg/vgg_layer16.caffemodel'
-local backend = 'nn'
+local backend = 'cudnn'
 
 print '===> Loading model'
 cutorch.setDevice(3)
