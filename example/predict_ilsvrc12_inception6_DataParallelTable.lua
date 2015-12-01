@@ -23,18 +23,16 @@ model:add(feature_encoder):add(classifier)
 
 model_bn = paths.dofile('../utils/BN-absorber.lua')(model:clone())
 print(model_bn)
---[[
-local replica = model
+local replica = model_bn
 model = nn.DataParallelTable(1)
 for gpu_id=1,2 do
   cutorch.setDevice(gpu_id)
   model:add(replica:clone():cuda(), gpu_id)
 end
---]]
 cutorch.setDevice(1)
   
---print(model)
-model:cuda()
+print(model)
+--model:cuda()
 model:evaluate()
 
 print '===> Load classes conf.'
@@ -83,7 +81,8 @@ for n, fname in ipairs(image_list) do
   local scores, classes
   local elapsed_loading = timer:time().real - start_loading
   local start_process = timer:time().real
-  scores = model:forward(input:cuda()):float()
+  scores = model:forward(data:cuda()):float()
+  --scores = model_bn:forward(input:cuda()):float()
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
   local elapsed_process = timer:time().real - start_process
   --print(class_conf[classes[1]])
