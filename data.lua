@@ -19,13 +19,13 @@ do
         local cu_seed = opt.manualSeed + 321 + idx
         cutorch.manualSeed(seed)
         -- data shard
-        if opt.data_shard and idx % 2 == 0 then
+        if opt.data_shard and (tid-1) % 2 == 0 then
           opt.defaultDir = paths.concat('/data2/ImageNet/ILSVRC2012/')
           opt.cache= paths.concat(opt.defaultDir, 'torch_cache');
           opt.data = paths.concat(opt.defaultDir, './')
         end
         print((
-          '===> Starting donkey with id: %d seed: %d, cu_seed: %d'):format(tid, seed, cu_seed))
+          '===> Starting donkey with id: %d seed: %d, cu_seed: %d'):format(tid-1, seed, cu_seed))
         paths.dofile(opt.donkey_filename)
       end
     )
