@@ -37,8 +37,8 @@ function createModel()
   -- 1
   local classifier = nn.Sequential()
   classifier:add(nn.View(1*1*1024))
-  --classifier:add(nn.Linear(1*1*1024, 1000))
-  classifier:add(nn.Linear(1*1*1024, 10))
+  classifier:add(nn.Linear(1*1*1024, 1000))
+  --classifier:add(nn.Linear(1*1*1024, 10))
   classifier:add(cudnn.LogSoftMax())
 
   --[[

@@ -9,15 +9,15 @@ function M.parse(arg)
   local batchsize = 32
   local test_batchsize = 50
   local total_train_samples = 1281167 - 1
-  local network = 'inception6' --'inception6' --'vgg16caffe'
-  local loadSize  = {3, 256, 256}
-  local sampleSize= {3, 224, 224}
+  local network = 'inception7' --'inception6' --'vgg16caffe'
+  local loadSize  = {3, 292, 292}
+  local sampleSize= {3, 256, 256}
   local nGPU = {1, 2}
-  local current_epoch = 16
-  local test_initialization = true
+  local current_epoch = 1
+  local test_initialization = false
   local exp_name = 'gpu_2_lr0.045'
   local backend = 'cudnn'
-  local retrain_path = '/storage/ImageNet/ILSVRC2012/torch_cache/inception6_no_bn/gpu_2_lr0.045SatNov2115:38:502015'
+  local retrain_path = false
   if retrain_path then
     initial_model = paths.concat(retrain_path, 'model_15.t7') 
     --initial_optimState = paths.concat(retrain_path, 'optimState_15.t7')
@@ -29,10 +29,10 @@ function M.parse(arg)
   local LR = 0.045
   local regimes = {
     -- start, end,    LR,   WD,
-    {  1,      8,   LR, 0.00002 },
-    {  9,     16,   LR*0.1, 0.00002 },
-    { 17,     24,   LR*0.1*0.1, 0.00001 },
-    { 25,     32,   LR*0.1*0.1*0.1, 0.00001 },
+    {  1,     12,   LR, 0.00002 },
+    { 13,     24,   LR*0.1, 0.00002 },
+    { 25,     35,   LR*0.1*0.1, 0.00001 },
+    { 36,     45,   LR*0.1*0.1*0.1, 0.00001 },
     { 33,     40,   LR*0.1*0.1*0.1*0.1, 0 },
     { 41,     48,   LR*0.1*0.1*0.1*0.1*0.1, 0 },
     { 49,     56,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
