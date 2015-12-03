@@ -43,7 +43,6 @@ if #opt.nGPU > 1 then
     feature_encoder, opt.nGPU, opt.GPU)
   classifier:cuda()
 else
-  cutorch.setDevice(opt.GPU) 
   feature_encoder:cuda()
   classifier:cuda()
 end
