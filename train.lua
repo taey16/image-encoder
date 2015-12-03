@@ -136,7 +136,7 @@ function trainBatch(inputsThread, labelsThread)
     local elapsed_whole = elapsed_batch + dataLoadingTime
     local time_left = (opt.epochSize - batchNumber) * elapsed_whole
     io.flush(print(
-      ('%04d/%04d loss %.6f err: %03.4f lr: %.6f elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
+      ('%04d/%04d loss %.6f err: %03.4f lr: %.8f elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
       batchNumber, opt.epochSize, loss, top1, 
       optimState.learningRate, 
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
