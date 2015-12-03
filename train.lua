@@ -142,7 +142,7 @@ function trainBatch(inputsThread, labelsThread)
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
     if opt.use_stn then
       save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
-      print(model:get(1):get(1):get(1):get(1):get(2):get(28).output[{{1,opt.batchSize/2},{}}]:float())
+      print(model:get(1):get(1):get(1):get(1):get(2):get(25).output[{{1,opt.batchSize/2},{}}]:float())
     end
   end
   if batchNumber % opt.snapshot == 0 then

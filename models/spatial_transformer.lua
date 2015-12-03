@@ -1,5 +1,4 @@
 require 'stn'
-paths.dofile('init_model_weight.lua')
 
 function createModel(nGPU)
 local spanet=nn.Sequential()
@@ -12,7 +11,7 @@ tranet:add(nn.Transpose({2,3},{3,4}))
 local locnet = nn.Sequential()
 
 -- 224, 336, 336
-locnet:add(cudnn.SpatialMaxPooling(4,4,4,4,0,0))
+locnet:add(cudnn.SpatialMaxPooling(2,2,2,2,0,0))
 -- 112, 168, 84
 locnet:add(cudnn.SpatialConvolution(3,36,3,3,1,1,0,0))
 locnet:add(nn.SpatialBatchNormalization(36))
@@ -41,33 +40,22 @@ locnet:add(nn.SpatialBatchNormalization(256))
 locnet:add(cudnn.ReLU(true))
 locnet:add(cudnn.SpatialMaxPooling(2,2,2,2,0,0))
 -- 13, 20, 10
-
-locnet:add(cudnn.SpatialAveragePooling(10,10,1,1,0,0))
---locnet:add(cudnn.SpatialAveragePooling(13,13,1,1,0,0))
+locnet:add(cudnn.SpatialAveragePooling(13,13,1,1,0,0))
 locnet:add(nn.View(256))
---locnet:add(nn.Linear(64,16))
---locnet:add(nn.BatchNormalization(16))
---locnet:add(cudnn.ReLU(true))
---[[
-locnet:add(cudnn.SpatialConvolution(20,20,resolution,resolution,1,1,0,0))
-locnet:add(nn.SpatialBatchNormalization(20))
-locnet:add(cudnn.ReLU(true))
-locnet:add(nn.View(20))
---]]
 
 -- we initialize the output layer so it gives the identity transform
--- local outLayer = nn.Linear(16,6)
-local outLayer = nn.Linear(256,6)
+local outLayer = nn.Linear(256,1)
 outLayer.weight:fill(0)
-local bias = torch.FloatTensor(6):fill(0)
-bias[1]=1
-bias[5]=1
+local bias = torch.FloatTensor(1):fill(0)
+bias[1]=0.9
 outLayer.bias:copy(bias)
 locnet:add(outLayer)
 
 -- there we generate the grids
-locnet:add(nn.AffineTransformMatrixGenerator())
-locnet:add(nn.AffineGridGeneratorBHWD(224,224))
+locnet:add(nn.AffineTransformMatrixGenerator(false, true, false))
+locnet:add(nn.AffineGridGeneratorBHWD(
+  opt.sampling_grid_size,
+  opt.sampling_grid_size))
 
 -- we need a table input for the bilinear sampler, so we use concattable
 concat:add(tranet)
@@ -78,8 +66,6 @@ spanet:add(nn.BilinearSamplerBHWD())
 
 -- and we transpose back to standard BDHW format for subsequent processing by nn modules
 spanet:add(nn.Transpose({3,4},{2,3}))
-
---MSRinit( spanet )
 
 return spanet
 
