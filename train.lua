@@ -18,7 +18,7 @@ if opt.optimState then
   optimState = torch.load(opt.optimState)
   print('optimState.learningRate: '..optimState.learningRate)
   print('optimState.momentum: '..optimState.momentum)
-  print('optimState.weightDecay: '..optimState.weightDacay)
+  print('optimState.weightDecay: '..optimState.weightDecay)
 end
 
 
