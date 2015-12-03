@@ -58,8 +58,6 @@ function reset_optimState(params)
     momentum = opt.momentum,
     -- dampening for momentum
     dampening = 0.0,
-    -- enables Nesterov momentum
-    nesterov = false,
   }
   return optimState
 end
