@@ -19,6 +19,23 @@ function sanitize(net)
 end
 
 
+function print_net(net)
+  local list = net:listModules()
+  for _,val in ipairs(list) do
+    for name,field in pairs(val) do
+      print('name: '.. name .. ' field: '.. torch.type(field))
+    end
+  end
+end
+
+
+function save_net(net, filename)
+  sanitize(net)
+  torch.save(filename, net)
+  print('Save done in: ' .. filename)
+end
+
+
 function conditional_save(model, optimState, epoch)
   sanitize(model)
   local dump_model_path = 
@@ -58,6 +75,8 @@ function reset_optimState(params)
     momentum = opt.momentum,
     -- dampening for momentum
     dampening = 0.0,
+    -- enables Nesterov momentum
+    nesterov = false,
   }
   return optimState
 end
