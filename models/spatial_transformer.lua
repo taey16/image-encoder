@@ -44,16 +44,17 @@ locnet:add(cudnn.SpatialAveragePooling(13,13,1,1,0,0))
 locnet:add(nn.View(256))
 
 -- we initialize the output layer so it gives the identity transform
-local outLayer = nn.Linear(256,6)
+local outLayer = nn.Linear(256,3)
 outLayer.weight:fill(0)
-local bias = torch.FloatTensor(6):fill(0)
+local bias = torch.FloatTensor(3):fill(0)
 bias[1]=0.5
-bias[5]=0.5
+bias[2]=0.0
+bias[2]=0.0
 outLayer.bias:copy(bias)
 locnet:add(outLayer)
 
 -- there we generate the grids
-locnet:add(nn.AffineTransformMatrixGenerator())
+locnet:add(nn.AffineTransformMatrixGenerator(false, true, true))
 locnet:add(nn.AffineGridGeneratorBHWD(
   opt.sampling_grid_size,
   opt.sampling_grid_size))

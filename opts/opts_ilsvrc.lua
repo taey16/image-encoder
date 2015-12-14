@@ -7,20 +7,20 @@ function M.parse(arg)
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
   local batchsize = 32
-  local test_batchsize = 50
+  local test_batchsize = 100
   local total_train_samples = 1281167 - 1
   local network = 'inception7' --'inception6' --'vgg16caffe'
   local loadSize  = {3, 292, 292}
   local sampleSize= {3, 256, 256}
   local nGPU = {1, 2}
-  local current_epoch = 1
-  local test_initialization = false
-  local exp_name = 'gpu_2_lr0.045'
+  local current_epoch = 9
+  local test_initialization = true
+  local exp_name = 'digits_gpu_2_lr0.045'
   local backend = 'cudnn'
-  local retrain_path = false
+  local retrain_path = '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045WedDec214:15:312015'
   if retrain_path then
-    initial_model = paths.concat(retrain_path, 'model_15.t7') 
-    --initial_optimState = paths.concat(retrain_path, 'optimState_15.t7')
+    initial_model = paths.concat(retrain_path, 'model_8.t7') 
+    initial_optimState = paths.concat(retrain_path, 'optimState_8.t7')
     initial_optimState = false
   else
     initial_model = false
