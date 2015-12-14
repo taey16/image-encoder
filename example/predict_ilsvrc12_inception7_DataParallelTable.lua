@@ -36,7 +36,6 @@ model:evaluate()
 print '===> Load classes conf.'
 local class_filename = 
   '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/classes.t7'
-  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception6/gpu_2_lr0.045ThuNov2612:23:162015/classes.t7'
 class_conf = torch.load(class_filename)
 --for i=1, #class_conf do
 --  print(class_conf[i])
@@ -60,6 +59,8 @@ local top5 = 0
 local trials = 0
 
 local timer = torch.Timer()
+
+
 
 for n, fname in ipairs(image_list) do
   --print(fname .. ' ' .. label_list[n])

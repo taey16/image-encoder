@@ -22,8 +22,9 @@ end
 function print_net(net)
   local list = net:listModules()
   for _,val in ipairs(list) do
+    print(val.__typename)
     for name,field in pairs(val) do
-      print('name: '.. name .. ' field: '.. torch.type(field))
+      print('--name: '.. name .. ' field: '.. torch.type(field))
     end
   end
 end
@@ -75,9 +76,102 @@ function reset_optimState(params)
     momentum = opt.momentum,
     -- dampening for momentum
     dampening = 0.0,
-    -- enables Nesterov momentum
-    nesterov = false,
   }
   return optimState
 end
 
+function conv2prototxt(idx, module_obj, layer_name, bottom, top)
+  local str_ = 
+    ("layer{\n  name: \"%s\"\n  type: \"Convolution\"\n  bottom: \"%s\"\n  top: \"%s\"\n  convolution_param {\n    num_output: %d pad_h: %d pad_w: %d kernel_h: %d kernel_w: %d stride_h: %d stride_w: %d engin: CUDNN\n  }\n}"):format(
+      layer_name, bottom, top,
+      module_obj.nOutputPlane,
+      module_obj.padH,
+      module_obj.padW,
+      module_obj.kH,
+      module_obj.kW,
+      module_obj.dH,
+      module_obj.dW)
+  print(str_)
+end
+
+
+function relu2prototxt(idx, module_obj, layer_name, bottom, top)
+  local str_ = 
+    ("layer{ name: \"%s\" type: \"ReLU\" bottom: \"%s\" top: \"%s\" engin: CUDNN}"):format(
+      layer_name, bottom, top)
+  print(str_)
+end
+
+function pool2prototxt(idx, module_obj, layer_name, bottom, top, pool_type)
+  local str_ = 
+    ("layer{\n  name: \"%s\"\n  type: \"Pooling\"\n  bottom: \"%s\"\n  top: \"%s\"\n  pooling_param {\n    pool: %s  pad_h: %d pad_w: %d kernel_h: %d kernel_w: %d stride_h: %d stride_w: %d engin: CUDNN\n  }\n}"):format(
+      layer_name, bottom, top, pool_type,
+      module_obj.padH,
+      module_obj.padW,
+      module_obj.kH,
+      module_obj.kW,
+      module_obj.dH,
+      module_obj.dW)
+  print(str_)
+end
+
+
+function linear2prototxt(idx, module_obj, layer_name, bottom, top)
+  local str_ = 
+    ("layer{\n  name: \"%s\"\n  type: \"InnerProduct\"\n  bottom: \"%s\"\n  top: \"%s\"\n  inner_product_param {\n    num_output: %d\n  }\n}"):format(
+      layer_name, bottom, top,
+      module_obj.weight:size(2))
+  print(str_)
+end
+
+
+function softmax2prototxt(idx, module_obj, layer_name, bottom, top)
+  local str_ = 
+    ("layer{\n  name: \"%s\"\n  type: \"Softmax\"\n  bottom: \"%s\"\n  top: \"%s\"\n  engin: CUDNN\n}"):format(
+      layer_name, bottom, top)
+  print(str_)
+end
+
+
+function generate_Caffe_prototxt(net)
+  local node_id = 1
+  while (node_id <= #net.modules) do 
+    --if node_id > 11 then break end
+    if net.modules[node_id].__typename == 'nn.Sequential' then
+      generate_Caffe_prototxt(net.modules[node_id])
+    elseif net.modules[node_id].__typename == 'nn.DepthConcat' then
+      print('nn.DepthConcat')
+      generate_Caffe_prototxt(net.modules[node_id])
+    elseif net.modules[node_id].__typename == 'cudnn.SpatialConvolution' then
+      local module_name = ("conv%d"):format(node_id)
+      conv2prototxt(node_id, net.modules[node_id], module_name, prev_name, module_name)
+      prev_name = module_name
+    elseif net.modules[node_id].__typename == 'cudnn.ReLU' then
+      local module_name = ("relu%d"):format(node_id)
+      if net.modules[node_id].inplace then
+        relu2prototxt(node_id, net.modules[node_id], module_name, prev_name, module_name)
+      else
+        relu2prototxt(node_id, net.modules[node_id],  module_name, prev_name, module_name)
+      end
+      prev_name = module_name
+    elseif net.modules[node_id].__typename == 'cudnn.SpatialMaxPooling' then
+      local module_name = ("maxpool%d"):format(node_id)
+      pool2prototxt(node_id, net.modules[node_id], module_name, prev_name, module_name, "MAX")
+      prev_name = module_name
+    elseif net.modules[node_id].__typename == 'cudnn.SpatialAveragePooling' then
+      local module_name = ("maxpool%d"):format(node_id)
+      pool2prototxt(node_id, net.modules[node_id], module_name, prev_name, module_name, "AVE")
+      prev_name = module_name
+    elseif net.modules[node_id].__typename == 'nn.Linear' then
+      local module_name = ("linear%d"):format(node_id)
+      linear2prototxt(node_id, net.modules[node_id], module_name, prev_name, module_name)
+      prev_name = module_name
+    elseif net.modules[node_id].__typename == 'cudnn.LogSoftMax' or 
+           net.modules[node_id].__typename == 'cudnn.SoftMax' then
+      local module_name = ("softmax%d"):format(node_id)
+      softmax2prototxt(node_id, net.modules[node_id], module_name, prev_name, module_name)
+      prev_name = module_name
+    end
+    node_id = node_id + 1
+  end
+end

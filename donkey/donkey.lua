@@ -39,7 +39,7 @@ else
     split = 100,
     verbose = true
   }
-  print(trainLoader)
+  --print(trainLoader)
   torch.save(trainCache, trainLoader)
   print('===> save done ' .. trainCache)
   trainLoader.sampleHookTrain = trainHook
@@ -83,7 +83,7 @@ else
     -- force consistent class indices between trainLoader and testLoader
     forceClasses = trainLoader.classes
   }
-  print(testLoader)
+  --print(testLoader)
   torch.save(testCache, testLoader)
   print('===> Save done ' .. testCache)
   testLoader.sampleHookTest = testHook
