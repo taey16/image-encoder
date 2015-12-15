@@ -5,7 +5,7 @@ function M.parse(arg)
   local defaultDir= paths.concat('/storage/ImageNet/ILSVRC2012/')
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
-  local data_shard = false
+  local data_shard = true
   local batchsize = 32
   local test_batchsize = 100
   local total_train_samples = 1281167 - 1
