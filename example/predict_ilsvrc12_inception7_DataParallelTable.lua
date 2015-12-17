@@ -12,7 +12,8 @@ torch.setnumthreads(4)
 
 print '===> Loading model'
 local model_filename = 
-  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_30.bn_removed.t7'
+  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_40.bn_removed.t7'
+  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_30.bn_removed.t7'
 local original_model = torch.load(model_filename)
 local feature_encoder = original_model:get(1)
 local classifier = original_model:get(2)
