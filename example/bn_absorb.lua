@@ -5,7 +5,7 @@ require 'cunn'
 require 'cudnn'
 paths.dofile('../utils/net_utils.lua')
 
-cutorch.setDevice(4)
+cutorch.setDevice(1)
 print '===> Loading model'
 local model_filename =
   '/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.t7'
