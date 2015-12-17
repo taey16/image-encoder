@@ -16,16 +16,16 @@ else
   backend = 'nn'
 end
 
-local model = createModel(1, backend)
+local model = createModel(backend)
 model:remove(#model)
 model:add(cudnn.SoftMax())
 local replica = model
 model = nn.DataParallelTable(1)
-for gpu_id=3,4 do
+for gpu_id=1,2 do
   cutorch.setDevice(gpu_id)
   model:add(replica:clone():cuda(), gpu_id)
 end
-cutorch.setDevice(3)
+cutorch.setDevice(1)
 print(model)
 model:evaluate()
 
@@ -49,7 +49,7 @@ for k, fname in ipairs(image_list) do
   -- Have to resize and convert from RGB to BGR and subtract mean
   local input = preprocess(im)
   input = augment_image(input, loadSize, sampleSize)
-  local scores= model:forward(input):float()
+  local scores= model:forward(input:cuda()):float()
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
   local elapsed = timer:time().real
 
