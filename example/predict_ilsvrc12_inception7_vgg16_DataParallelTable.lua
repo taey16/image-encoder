@@ -71,16 +71,6 @@ local top1 = 0
 local top5 = 0
 local trials = 0
 
-classid_match = torch.LongTensor(1000)
-for i=1,1000 do
-  for k=1,1000 do
-    if class_conf[k] == synset_list[i] then
-      classid_match[i] = k
-      print(i..' '..k)
-    end
-  end
-end
-
 local timer = torch.Timer()
 
 for n, fname in ipairs(image_list) do
@@ -102,22 +92,19 @@ for n, fname in ipairs(image_list) do
   local scores, classes
   local elapsed_loading = timer:time().real - start_loading
   local start_process = timer:time().real
-  scores = torch.FloatTensor(10, 1000)
-  --scores[{{1, 20},{}}] = model:forward(data:cuda()):float()
-  --scores, classes = torch.mean(scores,1):view(-1):sort(true)
+  scores = torch.FloatTensor(10, 1000):fill(0)
+  scores = model:forward(data:cuda()):float()
+  scores, classes = torch.mean(scores,1):view(-1):sort(true)
 
   input = preprocess(image.load(filename))
   input = augment_image(input, loadSize_vgg, sampleSize_vgg)
   scores_vgg = model_vgg:forward(input:cuda()):float()
-  for i=1,1000 do
-    scores[{{},{classid_match[i]}}] = scores_vgg[{{},{i}}]
-    --scores[{{21,30},{i}}] = scores_vgg[{{},{classid_match[i]}}]
-    --scores[{{1,10},{i}}] = scores_vgg[{{},{classid_match[i]}}]
-  end
-  scores, classes = torch.mean(scores,1):view(-1):sort(true)
+  scores_vgg, classes_vgg = torch.mean(scores_vgg,1):view(-1):sort(true)
   local elapsed_process = timer:time().real - start_process
 
   trials = trials + 1
+  top1 = top1 + classes_vgg[{{1,1}}]:eq(label):sum()
+  top5 = top5 + classes_vgg[{{1,5}}]:eq(label):sum()
   for k=1,5 do
     if k == 1 and class_conf[classes[k]] == synset_list[n] then 
       top1 = top1 + 1
@@ -128,7 +115,7 @@ for n, fname in ipairs(image_list) do
   end
   io.flush(
     print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %.4f(%.3f)"):format(
-      n, top1 , trials, top1 / trials * 100, top5, trials, top5 / trials * 100,
+      n, top1/2.0 , trials, top1/2.0 / trials * 100, top5/2.0, trials, top5/2.0 / trials * 100,
       elapsed_process, elapsed_loading )
     )
   )
