@@ -73,7 +73,7 @@ function M.parse(arg)
   cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
 
   cmd:option('-display', 5, 'interval for printing train loss per minibatch')
-  cmd:option('-snapshot', 8000, 'interval for conditional_save')
+  cmd:option('-snapshot', 20000, 'interval for conditional_save')
   cmd:text()
 
   local opt = cmd:parse(arg or {})
