@@ -17,17 +17,17 @@ torch.manualSeed(opt.manualSeed)
 cutorch.manualSeed(opt.manualSeed+4322)
 cutorch.setDevice(opt.GPU)
 
-paths.dofile('model_stn.lua')
+paths.dofile('model.lua')
 paths.dofile('data.lua')
 paths.dofile('train.lua')
 paths.dofile('test.lua')
 
--- manually set epoch (useful for retrain)
 epoch = opt.epochNumber
 if opt.test_initialization then test() end
 for i=1,opt.nEpochs do
   train()
   test()
+  collectgarbage()
   epoch = epoch + 1
 end
 

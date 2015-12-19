@@ -26,12 +26,12 @@ do
         end
         print((
           '===> Starting donkey with id: %d seed: %d, cu_seed: %d'):format(tid-1, seed, cu_seed))
-        paths.dofile(opt.donkey_filename)
+        paths.dofile('donkey/donkey.lua')
       end
     )
   else 
     -- single threaded data loading. useful for debugging
-    paths.dofile(opt.donkey_filename)
+    paths.dofile('donkey/donkey.lua')
     donkeys = {}
     -- f1: main callback ,f2: ending callback
     function donkeys:addjob(f1, f2) f2(f1()) end

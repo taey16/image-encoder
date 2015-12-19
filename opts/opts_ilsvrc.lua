@@ -7,22 +7,24 @@ function M.parse(arg)
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
   local batchsize = 32
-  local test_batchsize = 100
-  local total_train_samples = 1281167 - 1
-  local network = 'inception7_residual' --'inception6' --'vgg16caffe'
+  local test_batchsize = 16
+  local total_train_samples = 128 --1281167 - 1
+  local network = 'inception7_residual'
   local loadSize  = {3, 292, 292}
   local sampleSize= {3, 256, 256}
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local exp_name = 'gpu_2_residual_lr0.045'
+  local exp_name = 'gpu2_residual_feature_lr0.045'
   local backend = 'cudnn'
   local retrain_path = 
     false
-    --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045WedDec214:15:312015'
+    --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu_2_residual_lr0.045FriDec1821:20:402015/'
   if retrain_path then
-    initial_model = paths.concat(retrain_path, 'model_8.t7') 
-    initial_optimState = paths.concat(retrain_path, 'optimState_8.t7')
+    initial_model = 
+      paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
+    initial_optimState = 
+      paths.concat(retrain_path, ('optimState_%d.t7'):format(current_epoch-1))
   else
     initial_model = false
     initial_optimState = false
@@ -48,8 +50,6 @@ function M.parse(arg)
   cmd:option('-data', data_dir, 'root of dataset')
   cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
-  cmd:option('-donkey_filename', 'donkey/donkey.lua', 'donkey file')
-
   cmd:option('-manualSeed', 222, 'Manually set RNG seed')
 
   cmd:option('-GPU', nGPU[1], 'Default preferred GPU')
@@ -60,18 +60,19 @@ function M.parse(arg)
   cmd:option('-epochNumber', current_epoch,'Manual epoch number (useful on restarts)')
   cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
   cmd:option('-test_batchSize', test_batchsize, 'test mini-batch size')
-  cmd:option('-test_initialization', test_initialization, 'test_initialization')
 
   cmd:option('-LR', LR, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
-  cmd:option('-weightDecay', 0.00000, 'weight decay')
+  cmd:option('-weightDecay', 0.0002, 'weight decay')
 
+  cmd:option('-netType', network, 'Options: alexnet | overfeat')
   cmd:option('-use_stn', false, '')
   cmd:option('-sampling_grid_size', sampleSize[2], '')
-  cmd:option('-netType', network, 'Options: alexnet | overfeat')
+
   cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
   cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
 
+  cmd:option('-test_initialization', test_initialization, 'test_initialization')
   cmd:option('-display', 5, 'interval for printing train loss per minibatch')
   cmd:option('-snapshot', 20000, 'interval for conditional_save')
   cmd:text()
