@@ -67,6 +67,15 @@ local sampleSize={3, 256, 256}
 local loadSize_vgg = {3, 256, 256}
 local sampleSize_vgg={3, 224, 224}
 
+class_matching = {}
+for k = 1,1000 do
+  for n = 1,1000 do
+    if class_conf[k] == synset_list[n] then
+      table.insert(class_matching, k) 
+    end
+  end
+end
+
 local top1 = 0
 local top5 = 0
 local trials = 0
@@ -92,30 +101,36 @@ for n, fname in ipairs(image_list) do
   local scores, classes
   local elapsed_loading = timer:time().real - start_loading
   local start_process = timer:time().real
-  scores = torch.FloatTensor(10, 1000):fill(0)
   scores = model:forward(data:cuda()):float()
-  scores, classes = torch.mean(scores,1):view(-1):sort(true)
+  --scores, classes = torch.mean(scores,1):view(-1):sort(true)
+  scores_ = scores:clone():fill(0)
+  for n=1,1000 do
+    scores_[{{},{class_matching[n]}}] = scores[{{},{n}}]
+  end
+  scores = torch.FloatTensor(30, 1000):fill(0)
+  scores[{{1,20},{}}] = scores_
 
   input = preprocess(image.load(filename))
   input = augment_image(input, loadSize_vgg, sampleSize_vgg)
   scores_vgg = model_vgg:forward(input:cuda()):float()
-  scores_vgg, classes_vgg = torch.mean(scores_vgg,1):view(-1):sort(true)
+  scores[{{21,30},{}}] = scores_vgg
+  scores_vgg, classes = torch.mean(scores,1):view(-1):sort(true)
   local elapsed_process = timer:time().real - start_process
 
   trials = trials + 1
-  top1 = top1 + classes_vgg[{{1,1}}]:eq(label):sum()
-  top5 = top5 + classes_vgg[{{1,5}}]:eq(label):sum()
-  for k=1,5 do
-    if k == 1 and class_conf[classes[k]] == synset_list[n] then 
-      top1 = top1 + 1
-      top5 = top5 + 1
-    elseif k > 1  and class_conf[classes[k]] == synset_list[n] then
-      top5 = top5 + 1
-    end
-  end
+  top1 = top1 + classes[{{1,1}}]:eq(label):sum()
+  top5 = top5 + classes[{{1,5}}]:eq(label):sum()
+  --for k=1,5 do
+  --  if k == 1 and class_conf[classes[k]] == synset_list[n] then 
+  --    top1 = top1 + 1
+  --    top5 = top5 + 1
+  --  elseif k > 1  and class_conf[classes[k]] == synset_list[n] then
+  --    top5 = top5 + 1
+  --  end
+  --end
   io.flush(
     print(("%d top1: %d/%d = %.5f, top5: %d/%d = %.5f %.4f(%.3f)"):format(
-      n, top1/2.0 , trials, top1/2.0 / trials * 100, top5/2.0, trials, top5/2.0 / trials * 100,
+      n, top1, trials, top1 / trials * 100, top5, trials, top5 / trials * 100,
       elapsed_process, elapsed_loading )
     )
   )
