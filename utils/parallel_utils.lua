@@ -13,7 +13,11 @@ function makeDataParallel(model, nGPU, primary_gpu_id)
     for _,gpu_id in pairs(nGPU) do
       cutorch.setDevice(gpu_id)
       print('===> DataParallelTable setDevice: '..gpu_id)
-      model:add(model_single:clone():cuda(), gpu_id)
+      if gpu_id == primary_gpu_id then
+        model:add(model_single:cuda(), gpu_id)
+      else
+        model:add(model_single:clone():cuda(), gpu_id)
+      end
     end
     -- set 'primary' GPU
     cutorch.setDevice(primary_gpu_id)
