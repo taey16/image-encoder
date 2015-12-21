@@ -3,7 +3,7 @@ require 'cunn'
 
 function makeDataParallel(model, nGPU, primary_gpu_id)
   if #nGPU > 1 then
-    print('converting module to nn.DataParallelTable')
+    print('===> Converting module to nn.DataParallelTable')
     assert(#nGPU <= cutorch.getDeviceCount(), 
       'number of GPUs less than nGPU specified')
     local model_single = model
@@ -12,7 +12,7 @@ function makeDataParallel(model, nGPU, primary_gpu_id)
     model = nn.DataParallelTable(1)
     for _,gpu_id in pairs(nGPU) do
       cutorch.setDevice(gpu_id)
-      print('DataParallelTable setDevice: '..gpu_id)
+      print('===> DataParallelTable setDevice: '..gpu_id)
       model:add(model_single:clone():cuda(), gpu_id)
     end
     -- set 'primary' GPU
