@@ -17,6 +17,7 @@ function M.parse(arg)
   local test_initialization = false
   local exp_name = 'clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015'
   local backend = 'cudnn'
+  local nClasses = 1400
   local retrain_path = 
     '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/'
   if retrain_path then
@@ -50,6 +51,7 @@ function M.parse(arg)
 
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
+  cmd:option('-nClasses', nClasses, '# of classes')
   cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-manualSeed', 222, 'Manually set RNG seed')

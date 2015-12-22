@@ -17,6 +17,7 @@ function M.parse(arg)
   local test_initialization = false
   local exp_name = 'gpu2_residual_feature_lr0.045'
   local backend = 'cudnn'
+  local nClasses = 1000
   local retrain_path = 
     false
     --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu_2_residual_lr0.045FriDec1821:20:402015/'
@@ -48,6 +49,7 @@ function M.parse(arg)
 
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
+  cmd:option('=nClasses', nClasses, '# of classes')
   cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-manualSeed', 222, 'Manually set RNG seed')
