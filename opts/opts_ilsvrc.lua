@@ -6,9 +6,9 @@ function M.parse(arg)
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
-  local batchsize = 32
+  local batchsize = 16
   local test_batchsize = 16
-  local total_train_samples = 128 --1281167 - 1
+  local total_train_samples = 1281167 - 1
   local network = 'inception7_residual'
   local loadSize  = {3, 292, 292}
   local sampleSize= {3, 256, 256}

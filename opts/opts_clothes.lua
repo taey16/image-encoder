@@ -6,7 +6,7 @@ function M.parse(arg)
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
-  local batchsize = 16
+  local batchsize = 32
   local test_batchsize = 16
   local total_train_samples =169998
   local network = 'inception7'
@@ -15,7 +15,7 @@ function M.parse(arg)
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local exp_name = 'gpu2_residual_feature_lr0.045'
+  local exp_name = 'clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015'
   local backend = 'cudnn'
   local retrain_path = 
     '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/'

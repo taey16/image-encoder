@@ -19,6 +19,10 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   model = torch.load(opt.retrain)
   feature_encoder, classifier = splitDataParallelTable(model)
+  classifier.modules[#classifier] = nil
+  classifier.modules[#classifier] = nil
+  classifier:add(nn.Linear(1024,1400))
+  classifier:add(cudnn.LogSoftMax())
 else
   print('===> Creating model from file: '..model_filepath)
   feature_encoder, classifier = createModel()
