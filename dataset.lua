@@ -228,7 +228,7 @@ function dataset:__init(...)
     self.testIndicesSize = 0
   else
     print('Splitting training and test sets to a ratio of '
-             .. self.split .. '/' .. (100-self.split))
+      .. self.split .. '/' .. (100-self.split))
     self.classListTrain = {}
     self.classListTest  = {}
     self.classListSample = self.classListTrain
@@ -322,20 +322,6 @@ function dataset:sample(quantity)
   return data, scalarLabels
 end
 
-function dataset:get(i1, i2)
-  local indices = torch.range(i1, i2);
-  local quantity = i2 - i1 + 1;
-  assert(quantity > 0)
-  -- now that indices has been initialized, get the samples
-  local dataTable = {}
-  local scalarTable = {}
-  for i=1,quantity do
-    -- load the sample
-    local imgpath = ffi.string(torch.data(self.imagePath[indices[i]]))
-  end
-  local data, scalarLabels = tableToOutput(self, dataTable, scalarTable)
-  return data, scalarLabels
-end
 
 function dataset:get(i1, i2)
   local indices = torch.range(i1, i2);
