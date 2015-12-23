@@ -10,7 +10,8 @@ paths.dofile('../utils/util.lua')
 paths.dofile('../utils/imagenet_utils.lua')
 paths.dofile('../utils/image_utils.lua')
 
-torch.setnumthreads(4)
+--torch.setnumthreads(4)
+--cutorch.setDevice(1)
 
 print '===> Loading model'
 local model_filename = 
@@ -39,9 +40,6 @@ print '===> Load classes conf.'
 local class_filename = 
   '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/classes.t7'
 class_conf = torch.load(class_filename)
---for i=1, #class_conf do
---  print(class_conf[i])
---end
 
 print '===> Loading mean, std' 
 local mean_std = torch.load(
@@ -56,79 +54,39 @@ local image_list, label_list, synset_list = get_val()
 local loadSize = {3, 292, 292}
 local sampleSize={3, 256, 256}
 
-local top1 = 0
-local top5 = 0
-local trials = 0
 
+local nThreads = 16
 local donkeys = Threads( 
-  4, 
-  function() require 'torch' end,
+  nThreads, 
+  function() 
+    require 'torch' 
+  end,
   function(thread_index)
     local tid = thread_index
     local seed= 123 + tid
     torch.manualSeed(seed)
     print(('===> Starting donkey with id: %d seed: %d'):format(tid, seed))
+    loader = paths.dofile('../donkey/test_donkey.lua')
   end
 )
 
-local timer = torch.Timer()
+local top1 = 0
+local top5 = 0
+local trials = 0
 
-print('Start')
-for n, fname in ipairs(image_list) do
-  donkeys:addjob(
-    function()
-      print('In')
-      local filename = paths.concat(dataset_root, fname)
-      local label = tonumber(label_list[n]) + 1
-      print(filename)
+local batch_timer= torch.Timer()
+local data_timer = torch.Timer()
+local testBatch = function(n, inputs, labels)
 
-      local start_loading = timer:time().real
-      -- Have to resize and convert from RGB to BGR and subtract mean
-      local input = loadImage(filename, loadSize, 0)
-      local input1= loadImage(filename, loadSize, 1)
-      input = mean_std_norm(input, mean_std.mean, mean_std.std)
-      input1= mean_std_norm(input1,mean_std.mean, mean_std.std)
-      input = augment_image(input, loadSize, sampleSize )
-      input1= augment_image(input1,loadSize, sampleSize )
-      local data = torch.FloatTensor(20, sampleSize[1], sampleSize[2], sampleSize[3])
-      data[{{1 ,10},{},{},{}}] = input
-      data[{{11,20},{},{},{}}] = input1
-      return n, sendTensor(data)
-    end,
-    testBatch
-  )
-
-  donkeys:synchronize()
-  cutorch.synchronize()
-end
-
-
-
-local inputsCPU = torch.FloatTensor()
-local inputs = torch.CudaTensor()
-
-
-function testBatch(n, inputsThread)
-  cutorch.synchronize()
-  collectgarbage()
+  local elapsed_loading = data_timer:time().real
+  batch_timer:reset()
 
   local scores, classes
-  local elapsed_loading = timer:time().real - start_loading
-  local start_process = timer:time().real
-
-  receiveTensor(inputsThread, inputsCPU)
-  inputs:resize(inputsCPU:size()):copy(inputsCPU)
-
   scores = model:forward(inputs:cuda()):float()
-  --scores = model_bn:forward(input:cuda()):float()
+  cutorch.synchronize()
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
-  local elapsed_process = timer:time().real - start_process
-  --print(class_conf[classes[1]])
-  --print(synset_list[n])
 
-  -- Propagate through the modelwork and 
-  -- sort outputs in decreasing order and show 5 best classes
-  -- _,classes = model:forward(I):view(-1):float():sort(true)
+  local elapsed_process = batch_timer:time().real
 
   trials = trials + 1
   for k=1,5 do
@@ -145,6 +103,28 @@ function testBatch(n, inputsThread)
       elapsed_process, elapsed_loading )
     )
   )
+  data_timer:reset()
 end
+
+
+local global_timer = torch.Timer()
+for n, fname in ipairs(image_list) do
+  donkeys:addjob(
+    function()
+      local filename = paths.concat(dataset_root, fname)
+      local label = tonumber(label_list[n]) + 1
+      --print(filename)
+      img = loader.inception7_aug20(filename, loadSize, sampleSize, mean_std.mean, mean_std.std)
+      return n, img, label
+    end,
+    testBatch
+  )
+end
+
+donkeys:synchronize()
+cutorch.synchronize()
+
+local elapsed_global = global_timer:time().real
+print(('elasped: %.4f'):format(elapsed_global))
 
 

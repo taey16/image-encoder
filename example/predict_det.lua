@@ -14,7 +14,8 @@ torch.setnumthreads(4)
 cutorch.setDevice(2)
 
 print '===> Loading model'
-local model_filename = '/home/taey16/storage/product/det/torch_cache/inception6/stn_epoch28/model_69.t7'
+local model_filename = 
+  '/home/taey16/storage/product/det/torch_cache/inception6/stn_epoch28/model_69.t7'
 local model = torch.load(model_filename)
 model.modules[#model.modules] = nil
 model:add(cudnn.SoftMax())
@@ -24,14 +25,9 @@ model:evaluate()
 --]]
 
 print '===> Loading mean, std' 
-local mean_std = torch.load('/home/taey16/storage/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7')
-
---[[
-print '===> Loading synsets'
-local dataset_root = '/storage/ImageNet/ILSVRC2012/val'
-local synset_words = load_synset()
-local image_list, label_list = get_val()
---]]
+local mean_std_filename = 
+  '/home/taey16/storage/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7'
+local mean_std = torch.load(mean_std_filename)
 
 local loadSize  = {3, 256, 256}
 local sampleSize= {3, 224, 224}
