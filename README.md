@@ -10,5 +10,6 @@ This is a train / evaluating(inference) system for vision-networks which is orig
 - includes training with Batch-normalizaation(BN; around 5.5 days reaching 69% on ILSVRC2012 val. set(single-crop)) [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](http://arxiv.org/abs/1502.03167)
 - includes absorbing BN parameters into convolutional parameter(in inference(prediction) step, all of the nn.(Spatial)BatchNormalization layers is to be removed so that elapsed time is impressively reduced)
 -- [How does it works?](https://github.com/taey16/image-encoder/blob/master/example/logs/BN-absorb_derivation.png)
+- In our result, best accuracy was reached at top1: 72.6%(around 9~10 days) on ILSVRC2012 val. set with multi-crops, single-scale, BN-inception7 net
 
 Feel free to e-mail taey1600@gmail.com if you have a question.
