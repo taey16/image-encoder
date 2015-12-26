@@ -1,5 +1,5 @@
 # image-encoder
-This is a train / evaluating(inference) system for vision-networks which is originally posted on [imagenet-multiGPU.torch](https://github.com/soumith/imagenet-multiGPU.torch)
+This is a train / inference(prediction) system for vision-networks which is originally posted on [imagenet-multiGPU.torch](https://github.com/soumith/imagenet-multiGPU.torch)
 
 # Features
 - includes inference code fragments with threading

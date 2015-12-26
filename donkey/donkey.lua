@@ -78,7 +78,7 @@ else
     paths = {paths.concat(opt.data, 'val')},
     loadSize  = opt.loadSize,
     sampleSize= opt.sampleSize,
-    split = 0,
+    split = 100,
     verbose = true,
     -- force consistent class indices between trainLoader and testLoader
     forceClasses = trainLoader.classes
