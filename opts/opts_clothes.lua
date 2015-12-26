@@ -2,22 +2,21 @@
 local M = {}
 
 function M.parse(arg)
-  local defaultDir= paths.concat('/storage/product/clothes/')
+  local defaultDir= paths.concat('/data2/product/clothes/')
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
   local batchsize = 32
   local test_batchsize = 16
-  local total_train_samples =169998
+  local total_train_samples = 200000--10000
   local network = 'inception7'
   local loadSize  = {3, 292, 292}
   local sampleSize= {3, 256, 256}
-  local nGPU = {1, 2}
+  local nGPU = {3, 4}
   local current_epoch = 1
   local test_initialization = false
   local exp_name = 'clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015'
   local backend = 'cudnn'
-  local nClasses = 1400
   local retrain_path = 
     '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/'
   if retrain_path then
@@ -33,16 +32,17 @@ function M.parse(arg)
     initial_optimState = false
   end
   local LR = 0.045
+  local step_size = 8
   local regimes = {
     -- start, end,    LR,   WD,
-    {  1,     14*1,   LR, 0.00002 },
-    { 14*1+1, 14*2,   LR*0.1, 0.00002 },
-    { 14*2+1, 14*3,   LR*0.1*0.1, 0.00001 },
-    { 14*3+1, 14*4,   LR*0.1*0.1*0.1, 0.00001 },
-    { 14*4+1, 14*5,   LR*0.1*0.1*0.1*0.1, 0.00001 },
-    { 14*5+1, 14*6,   LR*0.1*0.1*0.1*0.1*0.1, 0.00001 },
-    { 14*6+1, 14*7,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
-    { 14*7+1,  200,   LR*0.1*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
+    {  1,            step_size*1,   LR, 0.00002 },
+    { step_size*1+1, step_size*2,   LR*0.1, 0.00002 },
+    { step_size*2+1, step_size*3,   LR*0.1*0.1, 0.00001 },
+    { step_size*3+1, step_size*4,   LR*0.1*0.1*0.1, 0.00001 },
+    { step_size*4+1, step_size*5,   LR*0.1*0.1*0.1*0.1, 0.00001 },
+    { step_size*5+1, step_size*6,   LR*0.1*0.1*0.1*0.1*0.1, 0.00001 },
+    { step_size*6+1, step_size*7,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
+    { step_size*7+1, 1e8,           LR*0.1*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
   }
 
   local cmd = torch.CmdLine()
@@ -51,7 +51,6 @@ function M.parse(arg)
 
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
-  cmd:option('-nClasses', nClasses, '# of classes')
   cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-manualSeed', 222, 'Manually set RNG seed')
