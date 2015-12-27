@@ -2,7 +2,6 @@
 require 'cudnn'
 require 'cunn'
 paths.dofile('init_model_weight.lua')
-paths.dofile('../utils/parallel_utils.lua')
 
 function createModel()
   -- on a titan black, B/D/E run out of memory even for batch-size 32
