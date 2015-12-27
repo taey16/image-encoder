@@ -9,7 +9,7 @@ This is a train / inference(prediction) system for vision-networks which is orig
 - includes residual learning idea in our inception7 [Deep Residual Learning for Image Recognition](http://arxiv.org/abs/1512.03385)
 - includes training with Batch-normalizaation(BN; around 5.5 days reaching 69% on ILSVRC2012 val. set(BN-inception5, single-crop)) [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](http://arxiv.org/abs/1502.03167)
 - includes absorbing BN parameters into convolutional parameter(in inference(prediction) step, all of the nn.(Spatial)BatchNormalization layers is to be removed so that elapsed time is impressively reduced)
--- [How does it works?](https://github.com/taey16/image-encoder/blob/master/example/logs/BN-absorb_derivation.png)
+  [How does it works?](https://github.com/taey16/image-encoder/blob/master/example/logs/BN-absorb_derivation.png)
 - In our result, best accuracy was reached at top1: 72.6%(around 9~10 days) on ILSVRC2012 val. set with multi-crops, single-scale, BN-inception7 net
 
 # Acknowledgements
