@@ -1,56 +1,10 @@
 
 require 'cudnn'
 require 'cunn'
+paths.dofile('inception_module.lua')
 
-function inception_module(depth_dim, input_size, config)
-  local conv1 = nil   
-  local conv3 = nil
-  local conv5 = nil
-  local pool = nil
-   
-  local depth_concat = nn.DepthConcat(depth_dim)
-  conv1 = nn.Sequential()
-  conv1:add(cudnn.SpatialConvolution(input_size, config[1][1], 1, 1, 1, 1, 0, 0))
-  conv1:add(nn.SpatialBatchNormalization(config[1][1]))
-  conv1:add(cudnn.ReLU(true))
 
-  depth_concat:add(conv1)
-
-  conv3 = nn.Sequential()
-  conv3:add(cudnn.SpatialConvolution(input_size, config[2][1], 1, 1, 1, 1, 0, 0))
-  conv3:add(nn.SpatialBatchNormalization(config[2][1]))
-  conv3:add(cudnn.ReLU(true))
-  conv3:add(cudnn.SpatialConvolution(config[2][1], config[2][2], 3, 3, 1, 1, 1, 1))
-  conv3:add(nn.SpatialBatchNormalization(config[2][2]))
-  conv3:add(cudnn.ReLU(true))
-
-  depth_concat:add(conv3)
-
-  conv5 = nn.Sequential()
-  conv5:add(cudnn.SpatialConvolution(input_size, config[3][1], 1, 1, 1, 1, 0, 0))
-  conv5:add(nn.SpatialBatchNormalization(config[3][1]))
-  conv5:add(cudnn.ReLU(true))
-  conv5:add(cudnn.SpatialConvolution(config[3][1], config[3][2], 3, 3, 1, 1, 1, 1))
-  conv5:add(nn.SpatialBatchNormalization(config[3][2]))
-  conv5:add(cudnn.ReLU(true))
-  conv5:add(cudnn.SpatialConvolution(config[3][2], config[3][2], 3, 3, 1, 1, 1, 1))
-  conv5:add(nn.SpatialBatchNormalization(config[3][2]))
-  conv5:add(cudnn.ReLU(true))
-
-  depth_concat:add(conv5)
-
-  pool = nn.Sequential()
-  pool:add(nn.SpatialMaxPooling(3, 3, 1, 1, 1, 1))
-  pool:add(cudnn.SpatialConvolution(input_size, config[4][1], 1, 1, 1, 1, 0, 0))
-  pool:add(nn.SpatialBatchNormalization(config[4][1]))
-  pool:add(cudnn.ReLU(true))
-
-  depth_concat:add(pool)
-  
-  return depth_concat
-end
-
-function createModel() -- validate.lua Acc:
+function createModel()
   local feature = nn.Sequential() 
    
   -- 224
