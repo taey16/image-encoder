@@ -49,7 +49,7 @@ function M.parse(arg)
 
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
-  cmd:option('=nClasses', nClasses, '# of classes')
+  cmd:option('-nClasses', nClasses, '# of classes')
   cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
   cmd:option('-manualSeed', 222, 'Manually set RNG seed')
