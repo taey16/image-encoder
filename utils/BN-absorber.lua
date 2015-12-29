@@ -29,8 +29,9 @@ local function BN_absorber(x)
       BN_absorber(x.modules[i])
     elseif x.modules[i].__typename == 'nn.DepthConcat' then
       BN_absorber(x.modules[i])
+    elseif x.modules[i].__typename == 'nn.ConcatTable' then
+      BN_absorber(x.modules[i])
     else
-      -- check BN
       if x.modules[i].__typename == 'nn.SpatialBatchNormalization' or
          x.modules[i].__typename == 'nn.BatchNormalization' then
         if x.modules[i-1] and
@@ -63,7 +64,6 @@ local function BN_absorber(x)
   collectgarbage()
   return x
 end
-
 
 return BN_absorber
 
