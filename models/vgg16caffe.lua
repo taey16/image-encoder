@@ -1,21 +1,15 @@
 
 require 'loadcaffe'
 require 'nn'
+require 'cunn'
+require 'cudnn'
 
-function createModel(backend)
+
+function createModel()
   local deploy_file = '/storage/models/vgg/vgg_layer16_deploy.prototxt'
   local weight_file = '/storage/models/vgg/vgg_layer16.caffemodel'
-  local backend = backend or 'cudnn'
-  local model = loadcaffe.load(deploy_file, weight_file, backend) 
-  local LogSoftMax = {}
-  if backend == 'nn' then 
-    LogSoftMax = nn.LogSoftMax
-  else
-    require 'cunn'
-    require 'cudnn'
-    LogSoftMax = cudnn.LogSoftMax
-  end
-
+  local model = loadcaffe.load(deploy_file, weight_file, 'cudnn') 
+  local LogSoftMax = cudnn.LogSoftMax
   -- remove nn.SoftMax()
   model:remove(40)
   model:add(LogSoftMax)
