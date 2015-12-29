@@ -21,6 +21,7 @@ function MSRinit(net)
     end
   end
   init'nn.SpatialConvolution'
+  init'nn.SpatialConvolutionMM'
   init'cudnn.SpatialConvolution'
 end
 

@@ -13,23 +13,22 @@ function createModel()
   feature:add(cudnn.ReLU(true))
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 1, 1))
   -- 56, 64
-  feature_ = nn.Sequential()
-  feature_:add(cudnn.SpatialConvolution(64,64, 3, 3, 1, 1, 1, 1))
-  feature_:add(nn.SpatialBatchNormalization(64))
-  feature_:add(cudnn.ReLU(true))
-  feature_:add(cudnn.SpatialConvolution(64,192, 3, 3, 1, 1, 1, 1))
-  feature_:add(nn.SpatialBatchNormalization(192))
-
+  feature_main_flow = nn.Sequential()
+  feature_main_flow:add(cudnn.SpatialConvolution(64,64, 3, 3, 1, 1, 1, 1))
+  feature_main_flow:add(nn.SpatialBatchNormalization(64))
+  feature_main_flow:add(cudnn.ReLU(true))
+  feature_main_flow:add(cudnn.SpatialConvolution(64,192, 3, 3, 1, 1, 1, 1))
+  feature_main_flow:add(nn.SpatialBatchNormalization(192))
+  -- projection mapping
   feature_concat = nn.ConcatTable()
   feature_shortcut = nn.Sequential()
   feature_shortcut:add(cudnn.SpatialConvolution(64,192,1,1,1,1,0,0))
   feature_shortcut:add(nn.SpatialBatchNormalization(192))
-  feature_concat:add(feature_)
+  feature_concat:add(feature_main_flow)
   feature_concat:add(feature_shortcut)
   feature:add(feature_concat)
   feature:add(nn.CAddTable())
   feature:add(cudnn.ReLU(true))
-
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 1, 1))
   -- 28, 32
   feature:add(inception7_residual_module(2, 192, 1, {{ 64}, {64,  64}, {64,  96}, {'avg', 32}}))
@@ -52,7 +51,7 @@ function createModel()
   -- 1
   local classifier = nn.Sequential()
   classifier:add(nn.View(2048))
-  classifier:add(nn.Linear(2048, 1000))
+  classifier:add(nn.Linear(2048, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
 
   return feature, classifier

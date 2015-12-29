@@ -38,20 +38,11 @@ function createModel()
   feature:add(cudnn.SpatialAveragePooling(7, 7, 1, 1, 0, 0))
 
   local classifier = nn.Sequential()
-  classifier:add(nn.View(1*1*1024))
-  classifier:add(nn.Linear(1*1*1024, 1000))
-  --classifier:add(nn.Linear(1*1*1024, 10))
+  classifier:add(nn.View(1024))
+  classifier:add(nn.Linear(1024, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
 
-  --[[
-  feature:add(nn.View(1*1*1024))
-  --classifier:add(nn.Linear(1*1*1024, 1000))
-  feature:add(nn.Linear(1*1*1024, 10))
-  feature:add(cudnn.LogSoftMax())
-  --]]
-
   return feature, classifier
-  --return feature
 end
 
 --[[
@@ -62,3 +53,4 @@ z = feature:forward(x)
 print(z:size())
 print(feature:backward(x, z):size())
 --]]
+

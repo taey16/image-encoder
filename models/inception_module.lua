@@ -222,7 +222,7 @@ end
 function inception_module(depth_dim, input_size, stride, config)
   local conv1 = nil
   local conv3 = nil
-  local double_conv3 = nil
+  local conv5 = nil
   local pool = nil
    
   local depth_concat = nn.DepthConcat(depth_dim)
@@ -244,17 +244,14 @@ function inception_module(depth_dim, input_size, stride, config)
   conv3:add(cudnn.ReLU(true))
   depth_concat:add(conv3)
 
-  double_conv3 = nn.Sequential()
-  double_conv3:add(cudnn.SpatialConvolution(input_size, config[3][1], 1, 1, stride, stride, 0, 0))
-  double_conv3:add(nn.SpatialBatchNormalization(config[3][1]))
-  double_conv3:add(cudnn.ReLU(true))
-  double_conv3:add(cudnn.SpatialConvolution(config[3][1], config[3][2], 3, 3, stride, stride, 1, 1))
-  double_conv3:add(nn.SpatialBatchNormalization(config[3][2]))
-  double_conv3:add(cudnn.ReLU(true))
-  double_conv3:add(cudnn.SpatialConvolution(config[3][2], config[3][2], 3, 3, stride, stride, 1, 1))
-  double_conv3:add(nn.SpatialBatchNormalization(config[3][2]))
-  double_conv3:add(cudnn.ReLU(true))
-  depth_concat:add(double_conv3)
+  conv5 = nn.Sequential()
+  conv5:add(cudnn.SpatialConvolution(input_size, config[3][1], 1, 1, stride, stride, 0, 0))
+  conv5:add(nn.SpatialBatchNormalization(config[3][1]))
+  conv5:add(cudnn.ReLU(true))
+  conv5:add(cudnn.SpatialConvolution(config[3][1], config[3][2], 5, 5, stride, stride, 1, 1))
+  conv5:add(nn.SpatialBatchNormalization(config[3][2]))
+  conv5:add(cudnn.ReLU(true))
+  depth_concat:add(conv5)
 
   pool = nn.Sequential()
   if config[4][1] == 'avg' then

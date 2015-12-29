@@ -36,13 +36,11 @@ function createModel()
   feature:add(cudnn.SpatialAveragePooling(8, 8, 1, 1, 0, 0))
   -- 1
   local classifier = nn.Sequential()
-  classifier:add(nn.View(1*1*1024))
-  --classifier:add(nn.Linear(1*1*1024, 1000))
-  classifier:add(nn.Linear(1*1*1024, 1400))
+  classifier:add(nn.View(1024))
+  classifier:add(nn.Linear(1024, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
 
   return feature, classifier
-  --return feature
 end
 
 --[[
