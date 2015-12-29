@@ -19,7 +19,7 @@ function sanitize(net)
     end
   end
   --]]
-  _sanitize(net)
+  _sanitize.sanitize(net)
 end
 
 
