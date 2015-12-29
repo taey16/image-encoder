@@ -15,7 +15,7 @@ local t = {
   -- convolution
   ['nn.SpatialConvolution'] = {'finput', 'fgradInput'},
   ['nn.SpatialConvolutionMM'] = {'finput', 'fgradInput'},
-  ['cudnn.SpatialConvolutionMM'] = {'finput', 'fgradInput'},
+  ['cudnn.SpatialConvolution'] = {'finput', 'fgradInput'},
 
   -- pooling
   ['nn.SpatialMaxPooling'] = {'indices'},
