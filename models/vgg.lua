@@ -3,6 +3,7 @@ require 'cudnn'
 require 'cunn'
 paths.dofile('init_model_weight.lua')
 
+
 function createModel()
   -- on a titan black, B/D/E run out of memory even for batch-size 32
   local modelType = 'D'
@@ -48,17 +49,9 @@ function createModel()
   classifier:add(nn.BatchNormalization(4096))
   classifier:add(cudnn.ReLU(true))
   classifier:add(nn.Dropout(0.5))
-  --classifier:add(nn.Linear(4096, 1000))
-  classifier:add(nn.Linear(4096, 10))
+  classifier:add(nn.Linear(4096, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
 
-  --features = makeDataParallel(features, nGPU)
-
-  --local model = nn.Sequential()
-  --model:add(features):add(classifier)
-
-  --MSRinit( model )
-
   return features, classifier
-  --return model
 end
+

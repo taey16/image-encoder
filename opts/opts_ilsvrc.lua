@@ -15,8 +15,7 @@ function M.parse(arg)
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local exp_name = 'gpu2_residual_feature_lr0.045'
-  local backend = 'cudnn'
+  local experiment_id = 'gpu2_residual_feature_lr0.045'
   local nClasses = 1000
   local retrain_path = 
     false
@@ -55,7 +54,6 @@ function M.parse(arg)
   cmd:option('-manualSeed', 222, 'Manually set RNG seed')
 
   cmd:option('-GPU', nGPU[1], 'Default preferred GPU')
-  cmd:option('-backend', backend, 'Options: cudnn | fbcunn | cunn')
 
   cmd:option('-nEpochs', 100, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
@@ -69,7 +67,7 @@ function M.parse(arg)
 
   cmd:option('-netType', network, 'Options: alexnet | overfeat')
   cmd:option('-use_stn', false, '')
-  cmd:option('-sampling_grid_size', sampleSize[2], '')
+  cmd:option('-sampling_grid_size', sampleSize[2], 'sampling grid size')
 
   cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
   cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
@@ -85,10 +83,9 @@ function M.parse(arg)
   opt.nGPU = nGPU
   opt.regimes = regimes
 
-  -- add commandline specified options
   opt.save = paths.concat(opt.cache, 
     cmd:string(network, opt, {retrain=true, optimState=true, cache=true, data=true}))
-  opt.save = paths.concat(opt.save, exp_name .. os.date():gsub(' ',''))
+  opt.save = paths.concat(opt.save, experiment_id..'_'..os.date():gsub(' ','_'):gsub(':','_'))
 
   print('===> Saving everything to: ' .. opt.save)
   os.execute('mkdir -p ' .. opt.save)
@@ -96,6 +93,5 @@ function M.parse(arg)
   return opt
 end
 
--- return nil initially
 return M
 
