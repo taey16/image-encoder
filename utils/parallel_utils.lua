@@ -1,5 +1,5 @@
 require 'cutorch'
-require 'cunn'
+
 
 function makeDataParallel(model, nGPU, primary_gpu_id)
   if #nGPU > 1 then

@@ -3,6 +3,7 @@ require 'torch'
 require 'image'
 require 'nn'
 
+
 function local_contrast_norm( rgb, kernel_size )
   local rgb = rgb:double()
   local kernel_size = kernel_size or 7
@@ -22,7 +23,7 @@ function local_contrast_norm( rgb, kernel_size )
 end
 
 
--- use in vgg16Caffe
+-- used in vgg16Caffe
 function preprocess(im)
   local input = image.scale(im,256,256,'bilinear')*255
   if input:dim() == 2 then
