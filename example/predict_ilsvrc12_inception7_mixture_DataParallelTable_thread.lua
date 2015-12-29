@@ -16,7 +16,6 @@ paths.dofile('../utils/image_utils.lua')
 print '===> Loading model'
 local model_filename = 
   '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu2_residual_feature_lr0.045SatDec1912:29:402015/model_19.bn_removed.t7'
-  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_30.bn_removed.t7'
 local original_model = torch.load(model_filename)
 --local feature_encoder = original_model:get(1):get(1)
 local feature_encoder = original_model:get(1)
@@ -39,7 +38,6 @@ end
 cutorch.setDevice(1)
 
 local model_filename = 
-  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu2_residual_feature_lr0.045SatDec1912:29:402015/model_19.bn_removed.t7'
   '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_30.bn_removed.t7'
 local original_model_1 = torch.load(model_filename)
 --local feature_encoder = original_model:get(1):get(1)
@@ -85,7 +83,6 @@ local image_list, label_list, synset_list = get_val()
 
 local loadSize = {3, 292, 292}
 local sampleSize={3, 256, 256}
-
 
 local nThreads = 8
 local donkeys = Threads( 

@@ -1,7 +1,9 @@
 
+local _sanitize = paths.dofile('sanitize.lua')
 -- clear the intermediate states in the model before saving to disk
 -- this saves lots of disk space
 function sanitize(net)
+  --[[
   local list = net:listModules()
   for _,val in ipairs(list) do
     for name,field in pairs(val) do
@@ -16,6 +18,8 @@ function sanitize(net)
       end
     end
   end
+  --]]
+  _sanitize(net)
 end
 
 
