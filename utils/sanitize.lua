@@ -72,7 +72,7 @@ end
 
 -- Taken and modified from Soumith's imagenet-multiGPU.torch code
 -- https://github.com/soumith/imagenet-multiGPU.torch/blob/master/train.lua
-local function sanitize.sanitize(model)
+function sanitize.sanitize(model)
    local list = model:listModules()
    for _,val in ipairs(list) do
     for name,field in pairs(val) do
