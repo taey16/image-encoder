@@ -15,7 +15,8 @@ paths.dofile('../utils/image_utils.lua')
 
 print '===> Loading model'
 local model_filename = 
-  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu2_residual_feature_lr0.045SatDec1912:29:402015/model_19.bn_removed.t7'
+  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu2_residual_feature_lr0.045_epoch19_Wed_Dec_30_20_40_18_2015/model_31.bn_removed.t7'
+  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu2_residual_feature_lr0.045SatDec1912:29:402015/model_19.bn_removed.t7'
 local original_model = torch.load(model_filename)
 --local feature_encoder = original_model:get(1):get(1)
 local feature_encoder = original_model:get(1)
