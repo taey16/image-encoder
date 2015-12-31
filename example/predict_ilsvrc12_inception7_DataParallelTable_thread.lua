@@ -15,7 +15,8 @@ paths.dofile('../utils/image_utils.lua')
 
 print '===> Loading model'
 local model_filename = 
-  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_30.bn_removed.t7'
+  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu2_residual_feature_lr0.045_epoch19_Wed_Dec_30_20_40_18_2015/model_31.bn_removed.t7'
+  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_30.bn_removed.t7'
 local original_model = torch.load(model_filename)
 local feature_encoder = original_model:get(1)
 local classifier = original_model:get(2)
@@ -23,7 +24,7 @@ classifier.modules[#classifier.modules] = nil
 classifier:add(cudnn.SoftMax())
 local model = nn.Sequential()
 model:add(feature_encoder):add(classifier)
-
+--[[
 local replica = model
 model = nn.DataParallelTable(1)
 for gpu_id=1,2 do
@@ -31,10 +32,12 @@ for gpu_id=1,2 do
   model:add(replica:clone():cuda(), gpu_id)
 end
 cutorch.setDevice(1)
+--]]
   
 print(model)
---model:cuda()
+model:cuda()
 model:evaluate()
+collectgarbage()
 
 print '===> Load classes conf.'
 local class_filename = 
@@ -55,7 +58,7 @@ local loadSize = {3, 292, 292}
 local sampleSize={3, 256, 256}
 
 
-local nThreads = 16
+local nThreads = 4
 local donkeys = Threads( 
   nThreads, 
   function() 
