@@ -15,7 +15,8 @@ paths.dofile('../utils/image_utils.lua')
 
 print '===> Loading model'
 local model_filename = 
-  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu2_residual_feature_lr0.045_epoch19_Wed_Dec_30_20_40_18_2015/model_31.bn_removed.t7'
+  '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu2_residual_feature_lr0.045_epoch19_Wed_Dec_30_20_40_18_2015/model_35.bn_removed.t7'
+  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu2_residual_feature_lr0.045_epoch19_Wed_Dec_30_20_40_18_2015/model_31.bn_removed.t7'
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu2_residual_feature_lr0.045SatDec1912:29:402015/model_19.bn_removed.t7'
 local original_model = torch.load(model_filename)
 --local feature_encoder = original_model:get(1):get(1)
@@ -25,7 +26,9 @@ classifier.modules[#classifier.modules] = nil
 classifier:add(cudnn.SoftMax())
 local model = nn.Sequential()
 model:add(feature_encoder):add(classifier)
+model:cuda()
 
+--[[
 local replica = model
 model = nn.DataParallelTable(1)
 for gpu_id=1,2 do
@@ -37,6 +40,7 @@ for gpu_id=1,2 do
   end
 end
 cutorch.setDevice(1)
+--]]
 
 local model_filename = 
   '/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_40.bn_removed.t7'
@@ -48,7 +52,8 @@ classifier_1.modules[#classifier_1.modules] = nil
 classifier_1:add(cudnn.SoftMax())
 local model_1 = nn.Sequential()
 model_1:add(feature_encoder_1):add(classifier_1)
-
+model_1:cuda()
+--[[
 local replica_1 = model_1
 model_1 = nn.DataParallelTable(1)
 for gpu_id=1,2 do
@@ -60,6 +65,7 @@ for gpu_id=1,2 do
   end
 end
 cutorch.setDevice(1)
+--]]
   
 print(model)
 print(model_1)
