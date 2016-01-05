@@ -10,11 +10,11 @@ This is a train / inference(prediction) system for vision-networks which is orig
 - includes training with Batch-normalizaation(BN; around 5.5 days reaching 69% on ILSVRC2012 val. set(BN-inception5, single-crop)) [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](http://arxiv.org/abs/1502.03167)
 - includes absorbing BN parameters into convolutional parameter(in inference(prediction) step, all of the nn.(Spatial)BatchNormalization layers is to be removed so that elapsed time is impressively reduced)
   [How does it works?](https://github.com/taey16/image-encoder/blob/master/example/logs/BN-absorb_derivation.png)
-- In our result, best accuracy was reached at top1: 72.6%(around 9~10 days) on ILSVRC2012 val. set with multi-crops, single-scale, BN-inception7 net
+- In our result, best accuracy was reached at top1: 73.46%(around 9~10 days) on ILSVRC2012 val. set with multi-crops, single-scale, BN-inception7-Resdual net
 
 # Acknowledgements
 - Soumith's great works [imagenet-multiGPU.torch](https://github.com/soumith/imagenet-multiGPU.torch)
 - Elad Hoffer's great works [ImageNet-Training](https://github.com/eladhoffer/ImageNet-Training)
 - e-lab@Purde Univ. [torch-toolbox](https://github.com/e-lab/torch-toolbox)  
 
-Feel free to e-mail taey1600@gmail.com if you have a question.
+Feel free to e-mail taey1600@gmail.com
