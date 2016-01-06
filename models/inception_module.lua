@@ -36,7 +36,7 @@ function inception7_residual_module(depth_dim, input_size, stride, config)
   conv3:add(cudnn.SpatialConvolution(config[2][2], config[2][2], 3, 1, stride, 1, 1, 0))
   conv3:add(nn.SpatialBatchNormalization(config[2][2]))
   --conv3:add(cudnn.ReLU(true))
-  if stride == 1 then
+  --if stride == 1 then
     conv3_add = nn.Sequential()
     conv3_concat = nn.ConcatTable()
     conv3_shortcut = nn.Sequential()
@@ -48,10 +48,10 @@ function inception7_residual_module(depth_dim, input_size, stride, config)
     conv3_add:add(nn.CAddTable())
     conv3_add:add(cudnn.ReLU(true))
     depth_concat:add(conv3_add)
-  else
-    conv3:add(cudnn.ReLU(true))
-    depth_concat:add(conv3)
-  end
+  --else
+  --  conv3:add(cudnn.ReLU(true))
+  --  depth_concat:add(conv3)
+  --end
 
   double_conv3 = nn.Sequential()
   double_conv3:add(cudnn.SpatialConvolution(input_size, config[3][1], 1, 1, 1, 1, 0, 0))
@@ -69,7 +69,7 @@ function inception7_residual_module(depth_dim, input_size, stride, config)
   double_conv3:add(cudnn.SpatialConvolution(config[3][2], config[3][2], 3, 1, stride, 1, 1, 0))
   double_conv3:add(nn.SpatialBatchNormalization(config[3][2]))
   --double_conv3:add(cudnn.ReLU(true))
-  if stride == 1 then
+  --if stride == 1 then
     double_conv3_add = nn.Sequential()
     double_conv3_concat = nn.ConcatTable()
     double_conv3_shortcut = nn.Sequential()
@@ -81,10 +81,10 @@ function inception7_residual_module(depth_dim, input_size, stride, config)
     double_conv3_add:add(nn.CAddTable())
     double_conv3_add:add(cudnn.ReLU(true))
     depth_concat:add(double_conv3_add)
-  else
-    double_conv3:add(cudnn.ReLU(true))
-    depth_concat:add(double_conv3)
-  end
+  --else
+  --  double_conv3:add(cudnn.ReLU(true))
+  --  depth_concat:add(double_conv3)
+  --end
 
   pool = nn.Sequential()
   if config[4][1] == 'avg' then

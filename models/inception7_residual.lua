@@ -9,6 +9,7 @@ function createModel()
   local feature = nn.Sequential() 
   -- 224, 256
   feature:add(cudnn.SpatialConvolution(3, 64, 7, 7, 2, 2, 3, 3))
+  --    , 128
   feature:add(nn.SpatialBatchNormalization(64))
   feature:add(cudnn.ReLU(true))
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 1, 1))

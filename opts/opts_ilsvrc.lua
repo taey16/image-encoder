@@ -15,11 +15,10 @@ function M.parse(arg)
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'gpu2_residual_feature_lr0.045'
+  local experiment_id = 'gpu2_ResCeption_lr0.045'
   local nClasses = 1000
   local retrain_path = 
     false
-    --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/gpu_2_residual_lr0.045FriDec1821:20:402015/'
   if retrain_path then
     initial_model = 
       paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 

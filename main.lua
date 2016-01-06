@@ -7,8 +7,8 @@ require 'optim'
 require 'nn'
 
 --local opts = paths.dofile('opts/opts_mnist.lua')
---local opts = paths.dofile('opts/opts_ilsvrc.lua')
-local opts = paths.dofile('opts/opts_clothes.lua')
+local opts = paths.dofile('opts/opts_ilsvrc.lua')
+--local opts = paths.dofile('opts/opts_clothes.lua')
 --local opts = paths.dofile('opts/opts_det.lua')
 opt = opts.parse(arg)
 
