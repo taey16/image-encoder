@@ -138,8 +138,10 @@ local testBatch = function(n, inputs, labels)
     if k == 1 and class_conf[classes[k]] == synset_list[n] then 
       top1 = top1 + 1
       top5 = top5 + 1
+      break
     elseif k > 1  and class_conf[classes[k]] == synset_list[n] then
       top5 = top5 + 1
+      break
     end
   end
   io.flush(
