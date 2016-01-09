@@ -4,6 +4,8 @@ require 'cunn'
 paths.dofile('inception_module.lua')
 
 
+-- Batch Normalization - Accelerating Deep Network Training by Reducing Internal Covariate Shift, arXiv, 2015
+-- refer to Appendix (Figure 5: Inception architecture)
 function createModel()
   local feature = nn.Sequential() 
   -- 224
