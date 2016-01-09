@@ -20,7 +20,7 @@ function createModel()
   feature_main_flow:add(cudnn.ReLU(true))
   feature_main_flow:add(cudnn.SpatialConvolution(64,192, 3, 3, 1, 1, 1, 1))
   feature_main_flow:add(nn.SpatialBatchNormalization(192))
-  -- projection mapping
+  -- start to projection shortcuts
   feature_concat = nn.ConcatTable()
   feature_shortcut = nn.Sequential()
   feature_shortcut:add(cudnn.SpatialConvolution(64,192,1,1,1,1,0,0))
@@ -40,13 +40,13 @@ function createModel()
   feature:add(inception7_residual_module(2, 576, 1, {{192}, {96 ,128}, {96, 128}, {'avg',128}}))
   feature:add(inception7_residual_module(2, 576, 1, {{160}, {128,160}, {128,128}, {'avg',128}}))
   feature:add(inception7_residual_module(2, 576, 1, {{ 96}, {128,192}, {160,160}, {'avg',128}}))
+  feature:add(inception7_residual_module(2, 576, 1, {{ 96}, {128,192}, {160,160}, {'avg',128}}))
   feature:add(inception7_residual_module(2, 576, 2, {{  0}, {128,192}, {192,256}, {'max',  0}}))
   -- 7, 8
   feature:add(inception7_residual_module(2,1024, 1, {{352}, {192,320}, {160,224}, {'avg',128}}))
   feature:add(inception7_residual_module(2,1024, 1, {{352}, {192,320}, {192,224}, {'avg',128}}))
   feature:add(inception7_residual_module(2,1024, 2, {{  0}, {192,608}, {192,416}, {'max',  0}}))
   --    4
-  feature:add(inception7_residual_module(2,2048, 1, {{704}, {256,640}, {256,448}, {'avg',256}}))
   feature:add(inception7_residual_module(2,2048, 1, {{704}, {256,640}, {256,448}, {'avg',256}}))
   feature:add(cudnn.SpatialAveragePooling(4, 4, 1, 1, 0, 0))
   -- 1

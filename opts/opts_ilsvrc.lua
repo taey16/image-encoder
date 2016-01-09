@@ -6,16 +6,16 @@ function M.parse(arg)
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
-  local batchsize = 16
-  local test_batchsize = 16
+  local batchsize = 32
+  local test_batchsize = 32
   local total_train_samples = 1281167 - 1
   local network = 'inception7_residual'
   local loadSize  = {3, 292, 292}
   local sampleSize= {3, 256, 256}
-  local nGPU = {1, 2}
+  local nGPU = {1} --{1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'gpu2_ResCeption_lr0.045'
+  local experiment_id = 'digits_gpu2_ResCeption_expend_mid_lr0.045'
   local nClasses = 1000
   local retrain_path = 
     false
@@ -32,11 +32,11 @@ function M.parse(arg)
   local regimes = {
     -- start, end,    LR,   WD,
     {  1,     14*1,   LR, 0.00002 },
-    { 14*1+1, 14*2,   LR*0.1, 0.00002 },
-    { 14*2+1, 14*3,   LR*0.1*0.1, 0.00001 },
-    { 14*3+1, 14*4,   LR*0.1*0.1*0.1, 0.00001 },
-    { 14*4+1, 14*5,   LR*0.1*0.1*0.1*0.1, 0.00001 },
-    { 14*5+1, 14*6,   LR*0.1*0.1*0.1*0.1*0.1, 0.00001 },
+    { 14*1+1, 14*2,   LR*0.1, 0.00004 },
+    { 14*2+1, 14*3,   LR*0.1*0.1, 0.00005 },
+    { 14*3+1, 14*4,   LR*0.1*0.1*0.1, 0.00005 },
+    { 14*4+1, 14*5,   LR*0.1*0.1*0.1*0.1, 0.00005 },
+    { 14*5+1, 14*6,   LR*0.1*0.1*0.1*0.1*0.1, 0.00005 },
     { 14*6+1, 14*7,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
     { 14*7+1,  200,   LR*0.1*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
   }
@@ -50,11 +50,11 @@ function M.parse(arg)
   cmd:option('-nClasses', nClasses, '# of classes')
   cmd:option('-data_shard', data_shard, 'data shard')
   cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
-  cmd:option('-manualSeed', 222, 'Manually set RNG seed')
+  cmd:option('-manualSeed', 3729, 'Manually set RNG seed')
 
   cmd:option('-GPU', nGPU[1], 'Default preferred GPU')
 
-  cmd:option('-nEpochs', 100, 'Number of total epochs to run')
+  cmd:option('-nEpochs', 200, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
   cmd:option('-epochNumber', current_epoch,'Manual epoch number (useful on restarts)')
   cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
