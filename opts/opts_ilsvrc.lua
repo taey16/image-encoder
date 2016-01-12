@@ -7,7 +7,8 @@ function M.parse(arg)
   local data_dir  = paths.concat(defaultDir, './')
   local data_shard = false
   local batchsize = 32
-  local test_batchsize = 32
+  local test_batchsize = 20
+  -- Try deleting this image train/n02105855/n02105855_2933.JPEG
   local total_train_samples = 1281167 - 1
   local network = 'inception7_residual'
   local loadSize  = {3, 292, 292}
