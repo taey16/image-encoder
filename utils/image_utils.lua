@@ -130,6 +130,23 @@ function loadImage(path, loadSize)
 end
 
 
+--local load_image_inception-v3 = function(path, _input_dim, _input_sub, _input_scale)
+local load_image_inception-v3 = function(path)
+  --local input_dim = _input_dim or 299
+  --local input_sub = _input_sub or 128
+  --local input_scale = _input_scale or 0.0078125
+  local img   = image.load(path, 3)
+  local w, h  = img:size(3), img:size(2)
+  local min   = math.min(w, h)
+  img         = image.crop(img, 'c', min, min)
+  img         = image.scale(img, 299)
+  -- normalize image
+  img:mul(255):add(-128):mul(0.0078125)
+  -- due to batch normalization we must use minibatches
+  return img:float():view(1, img:size(1), img:size(2), img:size(3))
+end
+
+
 function loadImage(path, loadSize, aspect_ratio)
   local loadSize = loadSize or nil
   local input = image.load(path)

@@ -301,4 +301,5 @@ end
 net:evaluate()
 torch.save(args.o, net, "binary")
 
+print(net)
 print("Done, network saved in ".. args.o)
