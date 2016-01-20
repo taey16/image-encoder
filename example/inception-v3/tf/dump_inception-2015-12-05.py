@@ -18,10 +18,12 @@ class NodeLookup(object):
                uid_lookup_path=None):
     if not label_lookup_path:
       label_lookup_path = os.path.join(
-          'imagenet', 'imagenet_2012_challenge_label_map_proto.pbtxt')
+        '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/imagenet', 
+        'imagenet_2012_challenge_label_map_proto.pbtxt')
     if not uid_lookup_path:
       uid_lookup_path = os.path.join(
-          'imagenet', 'imagenet_synset_to_human_label_map.txt')
+        '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/imagenet', 
+        'imagenet_synset_to_human_label_map.txt')
     self.node_lookup, self.node_id_lookup = self.load(label_lookup_path, uid_lookup_path)
 
   def load(self, label_lookup_path, uid_lookup_path):
@@ -80,7 +82,8 @@ class NodeLookup(object):
     return self.node_id_lookup[node_id]
 
 
-def create_graph(graph_def_pb='classify_image_graph_def.pb'):
+def create_graph(graph_def_pb= \
+  '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/imagenet/classify_image_graph_def.pb'):
   with gfile.FastGFile(graph_def_pb, 'rb') as f:
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(f.read())
@@ -102,7 +105,7 @@ for id, synset in enumerate(synset_label_map):
 path_prefix = '/storage/ImageNet/ILSVRC2012/val/%s'
 num_top_predictions = 5
 
-graph_def_pb = 'imagenet/classify_image_graph_def.pb'
+graph_def_pb = '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/imagenet/classify_image_graph_def.pb'
 create_graph(graph_def_pb)
 node_lookup = NodeLookup()
 
@@ -117,7 +120,7 @@ import pdb; pdb.set_trace()
 #
 # start for 1 sample
 #
-filepath = 'imagenet/cropped_panda.jpg'
+filepath = '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/imagenet/cropped_panda.jpg'
 image_data = gfile.FastGFile(filepath, 'rb').read()
 predictions = sess.run(softmax_tensor, 
   {'DecodeJpeg/contents:0': image_data})
