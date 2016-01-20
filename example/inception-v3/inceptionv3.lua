@@ -90,16 +90,17 @@ local function Pool(gname, net)
   else
     print(string.format("%s(Avg): (%dx%d), strides (%d, %d), padding (%d, %d)",
       gname, ksize[3], ksize[2], strides[3], strides[2], padding[2], padding[1]))
-    --[[
-    net:add(nn.SpatialAveragePooling(
-      ksize[3], ksize[2],
-      strides[3], strides[2],
-      padding[2], padding[1]):setCountExcludePad())
-    --]]
-    net:add(cudnn.SpatialAveragePooling(
-      ksize[3], ksize[2],
-      strides[3], strides[2],
-      padding[2], padding[1]))
+    if args.b == 'cunn' then
+      net:add(nn.SpatialAveragePooling(
+        ksize[3], ksize[2],
+        strides[3], strides[2],
+        padding[2], padding[1]):setCountExcludePad())
+    else
+      net:add(cudnn.SpatialAveragePooling(
+        ksize[3], ksize[2],
+        strides[3], strides[2],
+        padding[2], padding[1]))
+    end
   end
 end
 
@@ -300,6 +301,18 @@ if args.b == "cunn" or args.b == 'cudnn' then
 end
 net:evaluate()
 torch.save(args.o, net, "binary")
-
 print(net)
+
+-- dummy forward
+net.modules[#net] = nil
+net.modules[#net] = nil
+net.modules[#net] = nil
+net:add(nn.View(2048))
+net:add(nn.Linear(2048,1000))
+net:add(cudnn.LogSoftMax())
+print(net)
+net:cuda()
+input = torch.FloatTensor(16, 3, 299, 299):normal(0, 0.01):cuda()
+output= net:forward(input)
+print(output:float():size())
 print("Done, network saved in ".. args.o)

@@ -131,7 +131,7 @@ end
 
 
 --local load_image_inception-v3 = function(path, _input_dim, _input_sub, _input_scale)
-local load_image_inception-v3 = function(path)
+local load_image_inception_v3 = function(path)
   --local input_dim = _input_dim or 299
   --local input_sub = _input_sub or 128
   --local input_scale = _input_scale or 0.0078125
