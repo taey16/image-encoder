@@ -2,11 +2,6 @@
 paths.dofile('models/init_model_weight.lua')
 paths.dofile('utils/parallel_utils.lua')
 
-local model_filename = opt.netType..'.lua'
-local model_filepath = paths.concat('models', model_filename)
-assert(paths.filep(model_filepath), 
-  'File not found: '..model_filepath)
-paths.dofile(model_filepath)
 
 model = {}
 feature_encoder = {}
@@ -18,12 +13,14 @@ if opt.retrain then
     'File not found: ' .. opt.retrain)
   print('===> Loading model from file: '..opt.retrain);
   model = torch.load(opt.retrain)
-  feature_encoder, classifier = splitDataParallelTable(model)
-  classifier.modules[#classifier] = nil
-  classifier.modules[#classifier] = nil
-  classifier:add(nn.Linear(1024,1400))
-  classifier:add(cudnn.LogSoftMax())
+  feature_encoder = model:get(1)
+  classifier = model:get(2)
 else
+  local model_filename = opt.netType..'.lua'
+  local model_filepath = paths.concat('models', model_filename)
+  assert(paths.filep(model_filepath), 
+    'File not found: '..model_filepath)
+  paths.dofile(model_filepath)
   print('===> Creating model from file: '..model_filepath)
   feature_encoder, classifier = createModel()
   MSRinit(feature_encoder)

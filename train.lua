@@ -14,7 +14,7 @@ local optimState = {
 if opt.optimState then
   assert(paths.filep(opt.optimState), 
     'File not found: ' .. opt.optimState)
-  print('Loading optimState from file: ' .. opt.optimState)
+  print('===> Loading optimState from file: ' .. opt.optimState)
   optimState = torch.load(opt.optimState)
   print('optimState.learningRate: '..optimState.learningRate)
   print('optimState.momentum: '..optimState.momentum)
@@ -28,13 +28,13 @@ local top1_epoch, loss_epoch
 
 
 function train()
-  print('epoch: '..epoch)
+  print('===> Epoch: '..epoch)
   local params, newRegime = paramsForEpoch(opt.regimes, epoch)
   optimState.learningRate = params.learningRate
   optimState.weightDecay = params.weightDecay
   if newRegime then
     optimState = reset_optimState(params)
-    print('reset optimState')
+    print('===> Reset optimState')
   end
   -- reset batchNumber
   batchNumber = 0
