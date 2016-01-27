@@ -10,6 +10,15 @@ local optimState = {
   momentum = opt.momentum,
   dampening = 0.0,
   weightDecay = opt.weightDecay,
+  -- ADAM: A Method for Stochastic Optimization, ICLR, 2015
+  -- ADAM i.e. ADAptive Moment estimate
+  -- Good default settings for the tested machine learning problems
+  -- recommended setting: learningRate: 0.001, beta_1: 0.9, beta_2: 0.999, epsilon: 10e-8 where
+  -- learningRate: stepsize
+  -- \beta_1, \beta_2 \in [0, 1): exponential decay rates for the moment estimates
+  beta1 = 0.9,
+  beta2 = 0.999,
+  epsilon = 1e-8
 }
 if opt.optimState then
   assert(paths.filep(opt.optimState), 
