@@ -15,7 +15,8 @@ paths.dofile('../utils/image_utils.lua')
 
 print '===> Loading model'
 local model_filename = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_6.bn_removed.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_8.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_6.bn_removed.t7'
 local original_model = torch.load(model_filename)
 local feature_encoder = original_model:get(1)
 local classifier = original_model:get(2)
@@ -55,7 +56,7 @@ local image_list, label_list, synset_list = get_val()
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
 
-local nThreads = 4
+local nThreads = 6
 local donkeys = Threads( 
   nThreads, 
   function() 
