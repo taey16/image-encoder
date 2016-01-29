@@ -13,10 +13,12 @@ paths.dofile('../utils/image_utils.lua')
 --torch.setnumthreads(4)
 --cutorch.setDevice(1)
 
-print '===> Loading model'
 local model_filename = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_8.bn_removed.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Wed_Jan_27_22_47_34_2016/model_10.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Wed_Jan_27_22_47_34_2016/model_9.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_8.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_6.bn_removed.t7'
+print(string.format('===> Loading model: %s', model_filename))
 local original_model = torch.load(model_filename)
 local feature_encoder = original_model:get(1)
 local classifier = original_model:get(2)
@@ -56,7 +58,7 @@ local image_list, label_list, synset_list = get_val()
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
 
-local nThreads = 6
+local nThreads = 8
 local donkeys = Threads( 
   nThreads, 
   function() 
