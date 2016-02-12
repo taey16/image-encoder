@@ -15,7 +15,7 @@ function M.parse(arg)
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'digits_gpu2_inception-v3-2015-12-05_adam'
+  local experiment_id = 'digits_gpu2_inception-v3-2015-12-05_nag'
   local nClasses = 1000
   local retrain_path = 
     '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/'
@@ -30,8 +30,8 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
-  local solver = 'adam'
-  local LR = 0.45--0.045
+  local solver = 'nag'
+  local LR = 0.045--0.045
   local regimes = {
     -- start, end,    LR,   WD,
     {  1,      4*1,   LR, 0.00002 },
