@@ -38,12 +38,14 @@ local top1_epoch, loss_epoch
 
 function train()
   print('===> Epoch: '..epoch)
-  local params, newRegime = paramsForEpoch(opt.regimes, epoch)
-  optimState.learningRate = params.learningRate
-  optimState.weightDecay = params.weightDecay
-  if newRegime then
-    optimState = reset_optimState(params)
-    print('===> Reset optimState')
+  if opt.solver ~= 'adam' then
+    local params, newRegime = paramsForEpoch(opt.regimes, epoch)
+    optimState.learningRate = params.learningRate
+    optimState.weightDecay = params.weightDecay
+    if newRegime then
+      optimState = reset_optimState(params)
+      print('===> Reset optimState')
+    end
   end
   -- reset batchNumber
   batchNumber = 0
@@ -77,8 +79,8 @@ function train()
     ['loss'] = loss_epoch,
     ['err']= top1_epoch,
   }
-  print(('epoch: %d trn loss: %.6f err: %.6f elapsed: %.4f'):format(
-    epoch, loss_epoch, top1_epoch, elapsed))
+  print(('epoch: %d trn loss: %.6f err: %.6f solver: %s, elapsed: %.4f'):format(
+    epoch, loss_epoch, top1_epoch, opt.solver, elapsed))
 
   conditional_save(model, optimState, epoch)
   collectgarbage()
@@ -116,8 +118,19 @@ function trainBatch(inputsThread, labelsThread)
     model:backward(inputs, gradOutputs)
     return loss, gradParameters
   end
-  --optim.sgd(feval, parameters, optimState)
-  optim.nag(feval, parameters, optimState)
+
+  if opt.solver == 'sgd' then
+    optim.sgd(feval, parameters, optimState)
+  elseif opt.solver == 'nag' then
+    optim.nag(feval, parameters, optimState)
+  elseif opt.solver == 'adam' then
+    optim.adam(feval, parameters, optimState)
+  else
+    io.flush(print(string.format('Unknown solver: %s', opt.solver)))
+    opt.solver = 'nag'
+    io.flush(print(string.format('default solver: %s', opt.solver)))
+    optim.nag(feval, parameters, optimState)
+  end
 
   -- DataParallelTable's syncParameters
   model:apply(
@@ -147,9 +160,9 @@ function trainBatch(inputsThread, labelsThread)
     local elapsed_whole = elapsed_batch + dataLoadingTime
     local time_left = (opt.epochSize - batchNumber) * elapsed_whole
     io.flush(print(
-      ('%04d/%04d loss %.6f err: %03.4f lr: %.8f wc: %.8f elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
+      ('%04d/%04d loss %.6f err: %03.4f lr: %.8f wc: %.8f solver: %s, elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
       batchNumber, opt.epochSize, loss, top1, 
-      optimState.learningRate, optimState.weightDecay,
+      optimState.learningRate, optimState.weightDecay, opt.solver,
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
     if opt.use_stn and batchNumber > 6000 then
     --if opt.use_stn then

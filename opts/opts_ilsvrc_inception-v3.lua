@@ -13,22 +13,25 @@ function M.parse(arg)
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
   local nGPU = {1, 2}
-  local current_epoch = 5
-  local test_initialization = true
-  local experiment_id = 'digits_gpu2_inception-v3-2015-12-05'
+  local current_epoch = 1
+  local test_initialization = false
+  local experiment_id = 'digits_gpu2_inception-v3-2015-12-05_adam'
   local nClasses = 1000
   local retrain_path = 
-    '/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
+    '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/'
   if retrain_path then
     initial_model = 
-      paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
+      paths.concat(retrain_path, 'inception-v3-2015-12-05.cudnn.t7')
+      --paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
     initial_optimState = 
-      paths.concat(retrain_path, ('optimState_%d.t7'):format(current_epoch-1))
+      false
+      --paths.concat(retrain_path, ('optimState_%d.t7'):format(current_epoch-1))
   else
     initial_model = false
     initial_optimState = false
   end
-  local LR = 0.045
+  local solver = 'adam'
+  local LR = 0.45--0.045
   local regimes = {
     -- start, end,    LR,   WD,
     {  1,      4*1,   LR, 0.00002 },
@@ -60,6 +63,7 @@ function M.parse(arg)
   cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
   cmd:option('-test_batchSize', test_batchsize, 'test mini-batch size')
 
+  cmd:option('-solver', solver, 'nag | adam | sgd')
   cmd:option('-LR', LR, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
   cmd:option('-weightDecay', 0.0002, 'weight decay')

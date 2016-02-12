@@ -12,9 +12,21 @@ if opt.retrain then
   assert(paths.filep(opt.retrain), 
     'File not found: ' .. opt.retrain)
   print('===> Loading model from file: '..opt.retrain);
+  --[[
   model = torch.load(opt.retrain)
   feature_encoder = model:get(1)
   classifier = model:get(2)
+  --]]
+  feature_encoder = torch.load(opt.retrain)
+  feature_encoder.modules[#feature_encoder] = nil
+  feature_encoder.modules[#feature_encoder] = nil
+  feature_encoder.modules[#feature_encoder] = nil
+  classifier = nn.Sequential()
+  classifier:add(nn.View(2048))
+  classifier:add(nn.Linear(2048, 1000))
+  classifier:add(cudnn.LogSoftMax())
+  feature_encoder:cuda()
+  classifier:cuda()
 else
   local model_filename = opt.netType..'.lua'
   local model_filepath = paths.concat('models', model_filename)
