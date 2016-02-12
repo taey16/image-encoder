@@ -43,7 +43,8 @@ collectgarbage()
 
 print '===> Load classes conf.'
 local class_filename = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/classes.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/classes.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/classes.t7'
 class_conf = torch.load(class_filename)
 
 print '===> Loading mean, std' 
@@ -60,7 +61,7 @@ local image_list, label_list, synset_list = get_val()
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
 
-local nThreads = 4
+local nThreads = 8
 local donkeys = Threads( 
   nThreads, 
   function() 
