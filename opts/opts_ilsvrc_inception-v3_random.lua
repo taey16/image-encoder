@@ -11,7 +11,7 @@ function M.parse(arg)
   local network = 'inception_v3'
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
-  local nGPU = {1}
+  local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
   local experiment_id = 'gpu1_inception-v3_nag'
