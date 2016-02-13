@@ -4,6 +4,7 @@ require 'cunn'
 paths.dofile('inception_module.lua')
 
 
+--  Rethinking the Inception Architecture for Computer Vision, arXiv, 2015
 function createModel()
   -- 342
   local feature = nn.Sequential() 
@@ -21,9 +22,11 @@ function createModel()
   feature:add(cudnn.ReLU(true))
   -- 147
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 0, 0))
+  -- 73
   feature:add(cudnn.SpatialConvolution(64, 80, 1, 1, 1, 1, 0, 0))
   feature:add(nn.SpatialBatchNormalization(80, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
+  -- 35
   feature:add(cudnn.SpatialConvolution(80, 192, 3, 3, 1, 1, 0, 0))
   feature:add(nn.SpatialBatchNormalization(192, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
@@ -31,19 +34,21 @@ function createModel()
 
 
   mixed_1 = inception_v3_module( 1, 192, {{64 }, { 48,  64},{64, 96, 96}, {32}})
-  -- 192 + 64 + 64 + 96 + 32 = 256
+  -- 192 + 64 + 64 + 96 + 32 = 256 (similar to fig.4,5)
   mixed_2 = inception_v3_module( 2, 256, {{64 }, { 48,  64},{64, 96, 96}, {64}})
   mixed_3 = inception_v3_module( 3, 288, {{64 }, { 48,  64},{64, 96, 96}, {64}})
+  -- similar to fig.10
   mixed_4 = inception_v3_module( 4, 288, {{384}, { 64,  96,  96}})
-  -- 288 + 384 + 96 = 768
+  -- 288 + 384 + 96 = 768 (fig.6)
   mixed_5 = inception_v3_module( 5, 768, {{192}, {128, 128, 192}, {128, 128, 128, 128, 192}, {192}})
   mixed_6 = inception_v3_module( 6, 768, {{192}, {160, 160, 192}, {160, 160, 160, 160, 192}, {192}})
   mixed_7 = inception_v3_module( 7, 768, {{192}, {160, 160, 192}, {160, 160, 160, 160, 192}, {192}})
   mixed_8 = inception_v3_module( 8, 768, {{192}, {192, 192, 192}, {192, 192, 192, 192, 192}, {192}})
+  -- similar to fig.10
   mixed_9 = inception_v3_module( 9, 768, {{192, 320}, {192, 192, 192, 192}})
-  -- 768 + 320 + 192 = 1280
+  -- 768 + 320 + 192 = 1280 (fig.7)
   mixed_10= inception_v3_module(10,1280, {{320}, {384, 384, 384}, {448, 384, 384, 384}, {192}})
-  -- 320 + (384 + 384) + (384 + 384) + 192 = 2048 
+  -- 320 + (384 + 384) + (384 + 384) + 192 = 2048  (fig.7)
   mixed_11= inception_v3_module(11,2048, {{320}, {384, 384, 384}, {448, 384, 384, 384}, {192}})
 
   feature:add(mixed_1)

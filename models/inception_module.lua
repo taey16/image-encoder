@@ -3,13 +3,18 @@ require 'cudnn'
 require 'cunn'
 
 
+--  Rethinking the Inception Architecture for Computer Vision, arXiv, 2015
 function inception_v3_module(mixed_id, input_size, config)
   local std_epsilon = 0.0010000000475
   local layer_id = mixed_id
   local mixed = nn.DepthConcat(2)
 
   if layer_id == 1 or layer_id == 2 or layer_id == 3 then
-    -- inception 1
+    -- similar to fig.4,5
+    -- 1x1
+    -- 1x1 -> 5x5
+    -- 1x1 -> 3x3 -> 3x3
+    -- 3x3(1,same,avg-pool) -> 1x1
     local mixed_conv = nn.Sequential()
     -- valid
     mixed_conv:add(cudnn.SpatialConvolution(input_size, config[1][1], 1, 1, 1, 1, 0, 0))
@@ -42,6 +47,10 @@ function inception_v3_module(mixed_id, input_size, config)
     mixed:add(mixed_tower_1_conv)
     mixed:add(mixed_tower_2_conv_pool)
   elseif layer_id == 4 then
+    -- similar to fig.10
+    -- 3x3(2,valid)
+    -- 1x1 -> 3x3(1,same) -> 3x3(2,valid)
+    -- 3x3(2,valid,max-pool)
     local mixed_conv = nn.Sequential()
     mixed_conv:add(cudnn.SpatialConvolution(input_size, config[1][1], 3, 3, 2, 2, 0, 0))
     mixed_conv:add(nn.SpatialBatchNormalization(config[1][1], std_epsilon, nil, true))
@@ -62,6 +71,11 @@ function inception_v3_module(mixed_id, input_size, config)
     mixed:add(mixed_tower_1_conv)
     mixed:add(mixed_pool)
   elseif layer_id == 5 or layer_id == 6 or layer_id == 7 or layer_id == 8 then
+    -- figure 6
+    -- 1x1
+    -- 1x1 -> 7x1 -> 1x7
+    -- 1x1 -> 1x7 -> 7x1 -> 1x7 -> 7x1
+    -- 3x3(1,same,avg=pool) -> 1x1
     local mixed_conv = nn.Sequential()
     mixed_conv:add(cudnn.SpatialConvolution(input_size, config[1][1], 1, 1, 1, 1, 0, 0))
     mixed_conv:add(nn.SpatialBatchNormalization(config[1][1], std_epsilon, nil, true))
@@ -102,6 +116,10 @@ function inception_v3_module(mixed_id, input_size, config)
     mixed:add(mixed_tower_1_conv)
     mixed:add(mixed_tower_2_conv_pool)
   elseif layer_id == 9 then
+    -- similar to fig.10
+    -- 1x1 -> 3x3(2,valid)
+    -- 1x1 -> 7x1 -> 1x7 -> 3x3(2,valid)
+    -- 3x3(2,valid,max-pool)
     local mixed_conv = nn.Sequential()
     mixed_conv:add(cudnn.SpatialConvolution(input_size, config[1][1], 1, 1, 1, 1, 0, 0))
     mixed_conv:add(nn.SpatialBatchNormalization(config[1][1], std_epsilon, nil, true))
@@ -128,6 +146,13 @@ function inception_v3_module(mixed_id, input_size, config)
     mixed:add(mixed_tower_conv)
     mixed:add(mixed_pool)
   elseif layer_id == 10 or layer_id == 11 then
+    -- fig. 7
+    -- 1x1
+    -- 1x1 -> 3x1
+    --     -> 1x3 
+    -- 1x1 -> 3x3(1,same) -> 3x1
+    --                    -> 1x3
+    -- 3x3(1,same,avg-pool) -> 1x1
     local mixed_conv = nn.Sequential()
     mixed_conv:add(cudnn.SpatialConvolution(input_size, config[1][1], 1, 1, 1, 1, 0, 0))
     mixed_conv:add(nn.SpatialBatchNormalization(config[1][1], std_epsilon, nil, true))
