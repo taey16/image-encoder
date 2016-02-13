@@ -17,11 +17,29 @@ function MSRinit(net)
       local n = v.kW * v.kH * v.nOutputPlane
       -- \sqrt{2/n}
       v.weight:normal(0,math.sqrt(2/n))
+      if cudnn.version >= 4000 then
+        v.bias = nil
+        v.gradBias = nil
+      else
+        v.bias:zero()
+      end
+    end
+  end
+  local function BNinit(module_type)
+    for k,v in pairs(net:findModules(module_type)) do
+      v.weight:fill(1)
+      v.bias:zero()
+    end
+  end
+  local function Linearinit(module_type)
+    for k,v in paris(net:findModules(module_type)) do
       v.bias:zero()
     end
   end
   init'nn.SpatialConvolution'
   init'nn.SpatialConvolutionMM'
   init'cudnn.SpatialConvolution'
+  BNinit'nn.SpatialBatchNormalization'
+  Linearinit'nn.Linear'
 end
 

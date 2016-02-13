@@ -14,11 +14,9 @@ local opts = paths.dofile('opts/opts_ilsvrc_inception-v3_random.lua')
 --local opts = paths.dofile('opts/opts_det.lua')
 opt = opts.parse(arg)
 
---torch.setnumthreads(4)
 torch.setdefaulttensortype('torch.FloatTensor')
 torch.manualSeed(opt.manualSeed)
-cutorch.manualSeed(opt.manualSeed+4322)
---cutorch.setDevice(opt.GPU)
+cutorch.manualSeedAll(opt.manualSeed)
 
 paths.dofile('model.lua')
 paths.dofile('data.lua')
