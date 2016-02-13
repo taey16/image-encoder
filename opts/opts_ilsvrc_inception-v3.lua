@@ -30,18 +30,19 @@ function M.parse(arg)
     initial_model = false
     initial_optimState = false
   end
+
   local solver = 'nag'
   local LR = 0.045--0.045
   local regimes = {
     -- start, end,    LR,   WD,
-    {  1,      4*1,   LR, 0.00002 },
-    {  4*1+1, 14*2,   LR*0.1, 0.00002 },
+    {  1,     14*1,   LR, 0.00002 },
+    { 14*1+1, 14*2,   LR*0.1, 0.00004 },
     { 14*2+1, 14*3,   LR*0.1*0.1, 0.00005 },
     { 14*3+1, 14*4,   LR*0.1*0.1*0.1, 0.00005 },
     { 14*4+1, 14*5,   LR*0.1*0.1*0.1*0.1, 0.00005 },
     { 14*5+1, 14*6,   LR*0.1*0.1*0.1*0.1*0.1, 0.00005 },
-    { 14*6+1, 14*7,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
-    { 14*7+1,  200,   LR*0.1*0.1*0.1*0.1*0.1*0.1*0.1, 0 },
+    { 14*6+1, 14*7,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0.00005 },
+    { 14*7+1,  200,   LR*0.1*0.1*0.1*0.1*0.1*0.1*0.1, 0.00005 },
   }
 
   local cmd = torch.CmdLine()
@@ -52,12 +53,13 @@ function M.parse(arg)
   cmd:option('-data', data_dir, 'root of dataset')
   cmd:option('-nClasses', nClasses, '# of classes')
   cmd:option('-data_shard', data_shard, 'data shard')
-  cmd:option('-nDonkeys', 3, 'number of donkeys to initialize (data loading threads)')
-  cmd:option('-manualSeed', 3729, 'Manually set RNG seed')
+  cmd:option('-nDonkeys', 4, 'number of donkeys to initialize (data loading threads)')
+  --cmd:option('-manualSeed', 3729, 'Manually set RNG seed')
+  cmd:option('-manualSeed', 111, 'Manually set RNG seed')
 
   cmd:option('-GPU', nGPU[1], 'Default preferred GPU')
 
-  cmd:option('-nEpochs', 200, 'Number of total epochs to run')
+  cmd:option('-nEpochs', 500, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
   cmd:option('-epochNumber', current_epoch,'Manual epoch number (useful on restarts)')
   cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
@@ -66,7 +68,7 @@ function M.parse(arg)
   cmd:option('-solver', solver, 'nag | adam | sgd')
   cmd:option('-LR', LR, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
-  cmd:option('-weightDecay', 0.0002, 'weight decay')
+  cmd:option('-weightDecay', 0.00002, 'weight decay')
 
   cmd:option('-netType', network, 'Options: alexnet | overfeat')
   cmd:option('-use_stn', false, '')
@@ -77,7 +79,7 @@ function M.parse(arg)
 
   cmd:option('-test_initialization', test_initialization, 'test_initialization')
   cmd:option('-display', 5, 'interval for printing train loss per minibatch')
-  cmd:option('-snapshot', 20000, 'interval for conditional_save')
+  cmd:option('-snapshot', 25000, 'interval for conditional_save')
   cmd:text()
 
   local opt = cmd:parse(arg or {})
