@@ -239,16 +239,18 @@ function createModel()
 
   local classifier = nn.Sequential()
   classifier:add(nn.View(2048))
-  classifier:add(nn.Linear(2048, 1000))
+  classifier:add(nn.Linear(2048, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
 
   return feature, classifier
 end
 
+--[[
 feature = createModel()
 feature:cuda()
 x = torch.CudaTensor(32, 3, 299, 299):normal()
 z = feature:forward(x)
 print(z:size())
 print(feature:backward(x, z):size())
+--]]
 
