@@ -60,12 +60,16 @@ local function ConvBN(gname, net)
   conv.bias:zero()
   net:add(conv)
 
-  local bn = nn.SpatialBatchNormalization(och, std_epsilon, nil, true)
+  -- cudnn-v3
+  --local bn = nn.SpatialBatchNormalization(och, std_epsilon, nil, true)
+  -- cudnn-v4
+  local bn = cudnn.SpatialBatchNormalization(och, std_epsilon, nil, true)
   local beta = h5f:read("beta"):all()
   local gamma = h5f:read("gamma"):all()
   local mean = h5f:read("mean"):all()
   local std = h5f:read("std"):all()
   bn.running_mean:copy(mean)
+  -- does'not works
   --bn.running_var:copy(std)
   bn.running_std:copy(std)
   bn.weight:copy(gamma)
