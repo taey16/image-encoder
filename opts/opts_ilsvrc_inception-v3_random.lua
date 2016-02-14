@@ -8,13 +8,13 @@ function M.parse(arg)
   local batchsize = 32
   local test_batchsize = 25
   local total_train_samples = 1281167 - 1
-  local network = 'inception_v3'
+  local network = 'inception_v3'--'resception'--'inception_v3'
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
   local nGPU = {1, 2}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'gpu1_inception-v3_nag'
+  local experiment_id = 'gpu2_inception_v3_nag_bninit_linearinit'
   local nClasses = 1000
   local retrain_path = 
     false

@@ -32,7 +32,7 @@ function MSRinit(net)
     end
   end
   local function Linearinit(module_type)
-    for k,v in paris(net:findModules(module_type)) do
+    for k,v in pairs(net:findModules(module_type)) do
       v.bias:zero()
     end
   end
