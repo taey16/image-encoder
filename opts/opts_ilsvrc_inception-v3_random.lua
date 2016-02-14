@@ -8,7 +8,9 @@ function M.parse(arg)
   local batchsize = 32
   local test_batchsize = 25
   local total_train_samples = 1281167 - 1
-  local network = 'inception_v3'--'resception'--'inception_v3'
+  local network = 
+    --'inception_v3'
+    'resception'
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
   local nGPU = {1}
