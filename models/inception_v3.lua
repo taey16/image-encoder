@@ -71,8 +71,7 @@ function createModel()
 
   local classifier = nn.Sequential()
   classifier:add(nn.View(2048))
-  --classifier:add(nn.Linear(2048, opt.nClasses))
-  classifier:add(nn.Linear(2048, 1000))
+  classifier:add(nn.Linear(2048, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
 
   return feature, classifier
