@@ -2,6 +2,9 @@
 require 'nn'
 require 'cunn'
 require 'cudnn'
+cudnn.benchmark = true
+--cudnn.fastest = true
+cudnn.verbose = true
 
 -- Delving Deep into Rectifiers: 
 -- Suupassing Human-Level Performance on ImageNet Classification, 2014

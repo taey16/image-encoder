@@ -25,6 +25,8 @@ if opt.retrain then
   classifier:add(nn.View(2048))
   classifier:add(nn.Linear(2048, 1000))
   classifier:add(cudnn.LogSoftMax())
+  cudnn.convert(feature_encoder, cudnn)
+  cudnn.convert(classifier, cudnn)
   feature_encoder:cuda()
   classifier:cuda()
 else

@@ -1,5 +1,8 @@
 
 require 'cudnn'
+cudnn.benchmark = true
+--cudnn.fastest = true
+cudnn.verbose = true
 require 'cunn'
 paths.dofile('inception_module.lua')
 
@@ -10,25 +13,25 @@ function createModel()
   local feature = nn.Sequential() 
   -- 299 valid
   feature:add(cudnn.SpatialConvolution(3, 32, 3, 3, 2, 2, 0, 0))
-  feature:add(nn.SpatialBatchNormalization(32, std_epsilon, nil, true))
+  feature:add(cudnn.SpatialBatchNormalization(32, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
   -- floor( 299 / 2 ) = 149
   feature:add(cudnn.SpatialConvolution(32,32, 3, 3, 1, 1, 0, 0))
-  feature:add(nn.SpatialBatchNormalization(32, std_epsilon, nil, true))
+  feature:add(cudnn.SpatialBatchNormalization(32, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
   -- 147
   feature:add(cudnn.SpatialConvolution(32,64, 3, 3, 1, 1, 1, 1))
-  feature:add(nn.SpatialBatchNormalization(64, std_epsilon, nil, true))
+  feature:add(cudnn.SpatialBatchNormalization(64, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
   -- 147
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 0, 0))
   -- floor( 147 / 2 ) = 73
   feature:add(cudnn.SpatialConvolution(64, 80, 1, 1, 1, 1, 0, 0))
-  feature:add(nn.SpatialBatchNormalization(80, std_epsilon, nil, true))
+  feature:add(cudnn.SpatialBatchNormalization(80, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
   -- 73
   feature:add(cudnn.SpatialConvolution(80, 192, 3, 3, 1, 1, 0, 0))
-  feature:add(nn.SpatialBatchNormalization(192, std_epsilon, nil, true))
+  feature:add(cudnn.SpatialBatchNormalization(192, std_epsilon, nil, true))
   feature:add(cudnn.ReLU(true))
   -- 71
   feature:add(cudnn.SpatialMaxPooling(3, 3, 2, 2, 0, 0)) -- (17)

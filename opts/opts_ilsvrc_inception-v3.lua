@@ -12,10 +12,10 @@ function M.parse(arg)
   local network = 'inception-v3-2015-12-05'
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
-  local nGPU = {1, 2}
+  local nGPU = {1}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'digits_gpu2_inception-v3-2015-12-05_nag'
+  local experiment_id = 'X_gpu1_cudnn_v4_inception-v3-2015-12-05_nag'
   local nClasses = 1000
   local retrain_path = 
     '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/'

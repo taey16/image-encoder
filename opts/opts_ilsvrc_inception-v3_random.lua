@@ -11,10 +11,10 @@ function M.parse(arg)
   local network = 'inception_v3'--'resception'--'inception_v3'
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
-  local nGPU = {1, 2}
+  local nGPU = {1}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'gpu2_inception_v3_nag_bninit_linearinit'
+  local experiment_id = 'X_gpu2_inception_v3_nag_bninit_linearinit'
   local nClasses = 1000
   local retrain_path = 
     false
