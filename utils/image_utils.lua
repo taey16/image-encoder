@@ -126,6 +126,9 @@ function loadImage(path, loadSize)
     input = resize_crop(input, loadSize)
   end
 
+  --if not input:iscontiguous() then
+  --  input = input:contiguous()
+  --end
   return input
 end
 

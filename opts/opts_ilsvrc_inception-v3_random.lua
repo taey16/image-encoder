@@ -5,9 +5,9 @@ function M.parse(arg)
   local defaultDir= paths.concat('/data2/ImageNet/ILSVRC2012/')
   local cache_dir = paths.concat(defaultDir, 'torch_cache');
   local data_dir  = paths.concat(defaultDir, './')
+  local total_train_samples = 1281167 - 1
   local batchsize = 32
   local test_batchsize = 25
-  local total_train_samples = 1281167 - 1
   local network = 
     --'inception_v3'
     'resception'
@@ -16,7 +16,6 @@ function M.parse(arg)
   local nGPU = {1}
   local current_epoch = 1
   local test_initialization = false
-  local experiment_id = 'X_gpu2_inception_v3_nag_bninit_linearinit'
   local nClasses = 1000
   local retrain_path = 
     false
@@ -43,39 +42,45 @@ function M.parse(arg)
     { 14*6+1, 14*7,   LR*0.1*0.1*0.1*0.1*0.1*0.1, 0.00005 },
     { 14*7+1,  500,   LR*0.1*0.1*0.1*0.1*0.1*0.1*0.1, 0.00005 },
   }
+  local experiment_id = string.format(
+    'X_gpu%d_%s_%s_%.5f_bninit_linearinit', #nGPU, network, solver, LR
+  )
 
   local cmd = torch.CmdLine()
   cmd:text()
   cmd:text('Options:')
 
+  -- dataset specific
   cmd:option('-cache', cache_dir, 'subdirectory in which to save/log experiments')
   cmd:option('-data', data_dir, 'root of dataset')
   cmd:option('-nClasses', nClasses, '# of classes')
-  cmd:option('-nDonkeys', 4, 'number of donkeys to initialize (data loading threads)')
-  --cmd:option('-manualSeed', 3729, 'Manually set RNG seed')
-  cmd:option('-manualSeed', 999, 'Manually set RNG seed')
 
-  cmd:option('-GPU', nGPU[1], 'Default preferred GPU')
 
+  -- training specific
   cmd:option('-nEpochs', 500, 'Number of total epochs to run')
   cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
   cmd:option('-epochNumber', current_epoch,'Manual epoch number (useful on restarts)')
   cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
   cmd:option('-test_batchSize', test_batchsize, 'test mini-batch size')
+  cmd:option('-test_initialization', test_initialization, 'test_initialization')
+  cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
+  cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
 
+  -- optimizer specific
   cmd:option('-solver', solver, 'nag | adam | sgd')
   cmd:option('-LR', LR, 'learning rate; if set, overrides default LR/WD recipe')
   cmd:option('-momentum', 0.9,  'momentum')
   cmd:option('-weightDecay', 0.00002, 'weight decay')
 
+  -- network specific
   cmd:option('-netType', network, 'Options: alexnet | overfeat')
   cmd:option('-use_stn', false, '')
   cmd:option('-sampling_grid_size', sampleSize[2], 'sampling grid size')
 
-  cmd:option('-retrain', initial_model, 'provide path to model to retrain with')
-  cmd:option('-optimState', initial_optimState, 'provide path to an optimState to reload from')
-
-  cmd:option('-test_initialization', test_initialization, 'test_initialization')
+  -- misc.
+  cmd:option('-nDonkeys', 4, 'number of donkeys to initialize (data loading threads)')
+  cmd:option('-manualSeed', 999, 'Manually set RNG seed')
+  cmd:option('-GPU', nGPU[1], 'Default preferred GPU')
   cmd:option('-display', 5, 'interval for printing train loss per minibatch')
   cmd:option('-snapshot', 25000, 'interval for conditional_save')
   cmd:text()

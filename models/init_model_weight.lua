@@ -2,9 +2,6 @@
 require 'nn'
 require 'cunn'
 require 'cudnn'
-cudnn.benchmark = true
---cudnn.fastest = true
-cudnn.verbose = true
 
 -- Delving Deep into Rectifiers: 
 -- Suupassing Human-Level Performance on ImageNet Classification, 2014
@@ -44,6 +41,7 @@ function MSRinit(net)
   init'cudnn.SpatialConvolution'
   BNinit'nn.SpatialBatchNormalization'
   BNinit'cudnn.SpatialBatchNormalization'
+  BNinit'nn.BatchNormalization'
   Linearinit'nn.Linear'
 end
 

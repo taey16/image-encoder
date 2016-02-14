@@ -234,11 +234,15 @@ function resception_module(mixed_id, input_size, config)
     local mixed_expand = nn.DepthConcat(2)
     local mixed_expand_1 = nn.Sequential()
     mixed_expand_1:add(cudnn.SpatialConvolution(config[2][1], config[2][2], 3, 1, 1, 1, 1, 0))
-    mixed_expand_1:add(cudnn.SpatialBatchNormalization(config[2][2], std_epsilon, nil, true))
+    -- in backward pass, gradInput for cudnn.Spatial-BN is not contiguous
+    -- so that we used nn.Spatial-BN.
+    mixed_expand_1:add(nn.SpatialBatchNormalization(config[2][2], std_epsilon, nil, true))
     --mixed_expand_1:add(cudnn.ReLU(true))
     local mixed_expand_2 = nn.Sequential()
     mixed_expand_2:add(cudnn.SpatialConvolution(config[2][1], config[2][3], 1, 3, 1, 1, 0, 1))
-    mixed_expand_2:add(cudnn.SpatialBatchNormalization(config[2][3], std_epsilon, nil, true))
+    -- in backward pass, gradInput for cudnn.Spatial-BN is not contiguous
+    -- so that we used nn.Spatial-BN.
+    mixed_expand_2:add(nn.SpatialBatchNormalization(config[2][3], std_epsilon, nil, true))
     --mixed_expand_2:add(cudnn.ReLU(true))
     mixed_expand:add(mixed_expand_1)
     mixed_expand:add(mixed_expand_2)
@@ -265,11 +269,15 @@ function resception_module(mixed_id, input_size, config)
     local mixed_1_expand = nn.DepthConcat(2)
     local mixed_1_expand_1 = nn.Sequential()
     mixed_1_expand_1:add(cudnn.SpatialConvolution(config[3][2], config[3][3], 3, 1, 1, 1, 1, 0))
-    mixed_1_expand_1:add(cudnn.SpatialBatchNormalization(config[3][3], std_epsilon, nil, true))
+    -- in backward pass, gradInput for cudnn.Spatial-BN is not contiguous
+    -- so that we used nn.Spatial-BN.
+    mixed_1_expand_1:add(nn.SpatialBatchNormalization(config[3][3], std_epsilon, nil, true))
     --mixed_1_expand_1:add(cudnn.ReLU(true))
     local mixed_1_expand_2 = nn.Sequential()
     mixed_1_expand_2:add(cudnn.SpatialConvolution(config[3][2], config[3][4], 1, 3, 1, 1, 0, 1))
-    mixed_1_expand_2:add(cudnn.SpatialBatchNormalization(config[3][4], std_epsilon, nil, true))
+    -- in backward pass, gradInput for cudnn.Spatial-BN is not contiguous
+    -- so that we used nn.Spatial-BN.
+    mixed_1_expand_2:add(nn.SpatialBatchNormalization(config[3][4], std_epsilon, nil, true))
     --mixed_1_expand_2:add(cudnn.ReLU(true))
     mixed_1_expand:add(mixed_1_expand_1)
     mixed_1_expand:add(mixed_1_expand_2)

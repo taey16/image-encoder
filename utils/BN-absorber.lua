@@ -32,8 +32,11 @@ local function BN_absorber(x)
     elseif x.modules[i].__typename == 'nn.ConcatTable' then
       BN_absorber(x.modules[i])
     else
+      assert(x.modules[i].__typename ~= 'cudnn.BatchNormalization', 
+        'cudnn.torch R4 doesnot support per-activation BN')
       if x.modules[i].__typename == 'nn.SpatialBatchNormalization' or
-         x.modules[i].__typename == 'nn.BatchNormalization' then
+         x.modules[i].__typename == 'nn.BatchNormalization' or 
+         x.modules[i].__typename == 'cudnn.SpatialBatchNormalization' then
         if x.modules[i-1] and
           (x.modules[i-1].__typename == 'nn.Linear' or
            x.modules[i-1].__typename == 'nn.SpatialConvolution' or
