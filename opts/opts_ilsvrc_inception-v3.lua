@@ -21,7 +21,8 @@ function M.parse(arg)
     '/storage/ImageNet/ILSVRC2012/model/inception-v3-2015-12-05/'
   if retrain_path then
     initial_model = 
-      paths.concat(retrain_path, 'inception-v3-2015-12-05.cudnn.t7')
+      paths.concat(retrain_path, 'inception-v3-2015-12-05.cudnn-v4.t7')
+      --paths.concat(retrain_path, 'inception-v3-2015-12-05.cudnn.t7')
       --paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
     initial_optimState = 
       false
