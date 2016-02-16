@@ -12,11 +12,12 @@ if opt.retrain then
   assert(paths.filep(opt.retrain), 
     'File not found: ' .. opt.retrain)
   print('===> Loading model from file: '..opt.retrain);
-  --[[
+  -- for single-gpu
   model = torch.load(opt.retrain)
   feature_encoder = model:get(1)
   classifier = model:get(2)
-  --]]
+  --[[
+  -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
   feature_encoder.modules[#feature_encoder] = nil
   feature_encoder.modules[#feature_encoder] = nil
@@ -29,6 +30,7 @@ if opt.retrain then
   cudnn.convert(classifier, cudnn)
   feature_encoder:cuda()
   classifier:cuda()
+  --]]
 else
   local model_filename = opt.netType..'.lua'
   local model_filepath = paths.concat('models', model_filename)
