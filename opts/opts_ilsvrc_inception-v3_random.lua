@@ -14,11 +14,13 @@ function M.parse(arg)
   local loadSize  = {3, 342, 342}
   local sampleSize= {3, 299, 299}
   local nGPU = {1}
-  local current_epoch = 1
+  local current_epoch = 4
   local test_initialization = false
   local nClasses = 1000
   local retrain_path = 
-    false
+    '/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Mon_Feb_15_22_41_32_2016'
+    --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Sun_Feb_14_20_58_06_2016'
+    --false
   if retrain_path then
     initial_model = 
       paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
