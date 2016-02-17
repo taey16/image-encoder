@@ -7,7 +7,7 @@ require 'cunn'
 paths.dofile('inception_module.lua')
 
 
---  Rethinking the Inception Architecture for Computer Vision, arXiv, 2015
+-- Rethinking the Inception Architecture for Computer Vision, arXiv, 2015
 function createModel()
   -- 342
   local feature = nn.Sequential() 
