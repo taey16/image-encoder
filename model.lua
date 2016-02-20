@@ -40,6 +40,7 @@ else
   print('===> Creating model from file: '..model_filepath)
   feature_encoder, classifier = createModel()
   MSRinit(feature_encoder)
+  MSRinit(classifier)
 end
 
 if #opt.nGPU > 1 then
