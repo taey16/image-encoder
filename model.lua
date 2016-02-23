@@ -16,6 +16,10 @@ if opt.retrain then
   model = torch.load(opt.retrain)
   feature_encoder = model:get(1)
   classifier = model:get(2)
+  feature_encoder:add(model:get(2):get(1))
+  feature_encoder:add(model:get(2):get(2))
+  feature_encoder:add(model:get(2):get(3))
+  model = feature_encoder
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
@@ -38,21 +42,19 @@ else
     'File not found: '..model_filepath)
   paths.dofile(model_filepath)
   print('===> Creating model from file: '..model_filepath)
-  feature_encoder, classifier = createModel()
-  MSRinit(feature_encoder)
-  MSRinit(classifier)
+  --feature_encoder, classifier = createModel()
+  --MSRinit(feature_encoder)
+  --MSRinit(classifier)
+  model = createModel()
+  MSRinit(model)
 end
+
 
 if #opt.nGPU > 1 then
-  feature_encoder = makeDataParallel(
-    feature_encoder, opt.nGPU, opt.GPU)
-  classifier:cuda()
-else
-  feature_encoder:cuda()
-  classifier:cuda()
+  model = makeDataParallel(model, opt.nGPU)
 end
 
-model = nn.Sequential():add(feature_encoder):add(classifier)
+model:cuda()
 criterion = nn.ClassNLLCriterion():cuda()
 
 print(model)

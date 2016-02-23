@@ -98,12 +98,21 @@ function createModel()
   feature:add(mixed_11)
   feature:add(cudnn.SpatialAveragePooling(8, 8, 1, 1, 0, 0))
 
+  feature:get(1).gradInput = nil
+
+  feature:add(nn.View(2048))
+  feature:add(nn.Linear(2048, opt.nClasses))
+  feature:add(cudnn.LogSoftMax())
+
+  --[[
   local classifier = nn.Sequential()
   classifier:add(nn.View(2048))
   classifier:add(nn.Linear(2048, opt.nClasses))
   classifier:add(cudnn.LogSoftMax())
+  --]]
 
-  return feature, classifier
+  --return feature, classifier
+  return feature
 end
 
 --[[

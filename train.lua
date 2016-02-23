@@ -132,6 +132,7 @@ function trainBatch(inputsThread, labelsThread)
     optim.nag(feval, parameters, optimState)
   end
 
+  --[[
   -- DataParallelTable's syncParameters
   model:apply(
     function(m) 
@@ -139,6 +140,7 @@ function trainBatch(inputsThread, labelsThread)
     end
   )
   cutorch.synchronize()
+  --]]
 
   batchNumber= batchNumber + 1
   loss_epoch = loss_epoch + loss 
