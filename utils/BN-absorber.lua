@@ -1,6 +1,7 @@
 require 'nn'
 require 'cunn'
 require 'cudnn'
+require 'torch'
 
 
 local function absorb_bn(w, b, mean, std, affine, gamma, beta)
@@ -18,7 +19,7 @@ local function BN_absorber(x)
   local i = 1
   while (i <= #x.modules) do
     if x.modules[i].__typename == 'nn.Sequential' then
-      print('nn.Sequential')
+      print(string.format('(%d) nn.Sequential', i))
       BN_absorber(x.modules[i])
     elseif x.modules[i].__typename == 'nn.Parallel' then
       BN_absorber(x.modules[i])
@@ -29,10 +30,10 @@ local function BN_absorber(x)
     elseif x.modules[i].__typename == 'nn.ModelParallel' then
       BN_absorber(x.modules[i])
     elseif x.modules[i].__typename == 'nn.DepthConcat' then
-      print('nn.DepthConcat')
+      print(string.format('(%d) nn.DepthConcat', i))
       BN_absorber(x.modules[i])
     elseif x.modules[i].__typename == 'nn.ConcatTable' then
-      print('nn.ConcatTable')
+      print(string.format('(%d) nn.ConcatTable', i))
       BN_absorber(x.modules[i])
     else
       assert(x.modules[i].__typename ~= 'cudnn.BatchNormalization', 
@@ -45,22 +46,31 @@ local function BN_absorber(x)
            x.modules[i-1].__typename == 'nn.SpatialConvolution' or
            x.modules[i-1].__typename == 'cudnn.SpatialConvolution' or
            x.modules[i-1].__typename == 'nn.SpatialConvolutionMM') then
+
+          if x.modules[i-1].gradWeight then
+            x.modules[i-1].gradWeight = nil
+          end
+          if x.modules[i-1].gradBias then
+            x.mdoules[i-1].gradBias = nil
+          end
+
            -- force weight to be in 2-dim
           local weight = x.modules[i-1].weight
           weight = weight:view(weight:size(1), weight:nElement()/weight:size(1))
 
-          -- remove BN
+          -- in ConvInit:init_model_weight.lua
+          -- all bias term in cudnn.SpatialConvolution are removed so that
+          -- we need to initialize it with a zero vector
+          if cudnn.version >= 4000 and x.modules[i-1].bias == nil then
+            x.modules[i-1].bias = torch.CudaTensor(x.modules[i-1].nOutputPlane):zero()
+          end
+
           if x.modules[i].__typename == 'nn.SpatialBatchNormalization' or
              x.modules[i].__typename == 'nn.BatchNormalization' then
-             -- do not remove
-             dummy = 1
+             -- (TODO) does not work. I dont know
+            dmy = 1
           else
-            -- in ConvInit:init_model_weight.lua
-            -- all bias term in cudnn.SpatialConvolution are removed so that
-            -- we need to initialize it with a zero vector
-            if cudnn.version >= 4000 and x.modules[i-1].bias == nil then
-              x.modules[i-1].bias = torch.CudaTensor(x.modules[i-1].nOutputPlane):zero()
-            end
+            -- remove BN
             absorb_bn(weight,
               x.modules[i-1].bias,
               x.modules[i].running_mean,

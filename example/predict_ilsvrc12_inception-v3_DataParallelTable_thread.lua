@@ -5,6 +5,9 @@ require 'image'
 require 'nn'
 require 'cunn'
 require 'cudnn'
+cudnn.fastest = true
+cudnn.benchmark = true
+cudnn.verbose = true
 local Threads = require 'threads'
 paths.dofile('../utils/util.lua')
 paths.dofile('../utils/imagenet_utils.lua')
@@ -14,7 +17,9 @@ paths.dofile('../utils/image_utils.lua')
 --cutorch.setDevice(1)
 
 local model_filename = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_33.bn_removed.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_33.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_31.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Sat_Jan_30_17_16_06_2016/model_16.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Wed_Jan_27_22_47_34_2016/model_10.bn_removed.t7'
@@ -44,7 +49,8 @@ collectgarbage()
 
 print '===> Load classes conf.'
 local class_filename = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/classes.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/classes.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/classes.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/classes.t7'
 class_conf = torch.load(class_filename)
 
