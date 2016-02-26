@@ -36,7 +36,7 @@ function makeDataParallel(model, gpus)
   local fastest, benchmark, verbose = 
     cudnn.fastest, cudnn.benchmark, cudnn.verbose
   local parallel_model = nn.DataParallelTable(1, true, true)
-  net:add(model, gpus):threads(
+  parallel_model:add(model, gpus):threads(
     function()
       local cudnn = require 'cudnn'
       cudnn.fastest, cudnn.benchmark, cudnn.verbose = fastest, benchmark, verbose
