@@ -9,10 +9,11 @@ require 'nn'
 --local opts = paths.dofile('opts/opts_mnist.lua')
 --local opts = paths.dofile('opts/opts_ilsvrc.lua')
 --local opts = paths.dofile('opts/opts_ilsvrc_inception-v3.lua')
-local opts = paths.dofile('opts/opts_ilsvrc_inception-v3_random.lua')
+--local opts = paths.dofile('opts/opts_ilsvrc_inception-v3_random.lua')
+opt = paths.dofile('opts/opts_ilsvrc-inception-v3-random.lua')
 --local opts = paths.dofile('opts/opts_clothes.lua')
 --local opts = paths.dofile('opts/opts_det.lua')
-opt = opts.parse(arg)
+--opt = opts.parse(arg)
 
 torch.setdefaulttensortype('torch.FloatTensor')
 torch.manualSeed(opt.manualSeed)

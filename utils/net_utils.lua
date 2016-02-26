@@ -1,8 +1,9 @@
 
-local _sanitize = paths.dofile('sanitize.lua')
+local net_utils = {}
 -- clear the intermediate states in the model before saving to disk
 -- this saves lots of disk space
-function sanitize(net)
+function net_utils.sanitize(net)
+  local _sanitize = paths.dofile('sanitize.lua')
   --[[
   local list = net:listModules()
   for _,val in ipairs(list) do
@@ -60,6 +61,18 @@ function paramsForEpoch(regimes, epoch)
       return { learningRate=row[3], weightDecay=row[4] }, epoch == row[1]
     end
   end
+end
+
+
+function paramsForIter(regimes, epoch, iter)
+  local cnn_learning_rate
+  if iter > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
+    local frac = (iter - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
+    local decay_factor = math.pow(0.5, frac)
+    learning_rate = learning_rate * decay_factor
+    cnn_learning_rate = cnn_learning_rate * decay_factor
+  end
+  return {learningRate = cnn_learning_rate}
 end
 
 

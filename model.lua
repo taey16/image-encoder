@@ -2,7 +2,6 @@
 paths.dofile('models/init_model_weight.lua')
 paths.dofile('utils/parallel_utils.lua')
 
-
 model = {}
 feature_encoder = {}
 classifier = {}
@@ -48,7 +47,6 @@ else
   model = createModel()
   MSRinit(model)
 end
-
 
 if #opt.nGPU > 1 then
   model = makeDataParallel(model, opt.nGPU)

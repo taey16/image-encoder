@@ -32,23 +32,11 @@ end
 
 
 trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
-local batchNumber
+local batchNumber = 0
 local top1_epoch, loss_epoch
 
 
 function train()
-  print('===> Epoch: '..epoch)
-  if opt.solver ~= 'adam' then
-    local params, newRegime = paramsForEpoch(opt.regimes, epoch)
-    optimState.learningRate = params.learningRate
-    optimState.weightDecay = params.weightDecay
-    if newRegime then
-      optimState = reset_optimState(params)
-      print('===> Reset optimState')
-    end
-  end
-  -- reset batchNumber
-  batchNumber = 0
   cutorch.synchronize()
 
   model:training()
@@ -56,7 +44,7 @@ function train()
   local tm = torch.Timer()
   top1_epoch = 0
   loss_epoch = 0
-  for i=1,opt.epochSize do
+  for iter = 1,opt.epochSize do
     donkeys:addjob(
       function()
         local  inputs, labels = trainLoader:sample(opt.batchSize)
@@ -104,6 +92,14 @@ function trainBatch(inputsThread, labelsThread)
   local dataLoadingTime = dataTimer:time().real
   timer:reset()
 
+  -- decay the learning rate for both LM and CNN
+  local learning_rate = optimState.learningRate
+  if batchNumber > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
+    local frac = (batchNumber - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
+    local decay_factor = math.pow(0.5, frac)
+    optimState.learningRate = learning_rate * decay_factor
+  end
+
   receiveTensor(inputsThread, inputsCPU)
   receiveTensor(labelsThread, labelsCPU)
   inputs:resize(inputsCPU:size()):copy(inputsCPU)
@@ -132,16 +128,6 @@ function trainBatch(inputsThread, labelsThread)
     optim.nag(feval, parameters, optimState)
   end
 
-  --[[
-  -- DataParallelTable's syncParameters
-  model:apply(
-    function(m) 
-      if m.syncParameters then m:syncParameters() end 
-    end
-  )
-  cutorch.synchronize()
-  --]]
-
   batchNumber= batchNumber + 1
   loss_epoch = loss_epoch + loss 
 
@@ -151,11 +137,6 @@ function trainBatch(inputsThread, labelsThread)
   local top1= err / opt.batchSize * 100
   top1_epoch= top1_epoch + err
 
-  --[[
-  if batchNumber == 1 and opt.use_stn then
-    save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
-  end
-  --]]
 
   if batchNumber % opt.display == 0 then
     local elapsed_batch = timer:time().real
@@ -166,12 +147,8 @@ function trainBatch(inputsThread, labelsThread)
       batchNumber, opt.epochSize, loss, top1, 
       optimState.learningRate, optimState.weightDecay, opt.solver,
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
-    if opt.use_stn and batchNumber > 6000 then
-    --if opt.use_stn then
-      save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
-      --print(model:get(1):get(1):get(1):get(1):get(2):get(25).output[{{1,opt.batchSize/2},{}}]:float())
-    end
   end
+  optimState.learningRate = learning_rate
   if batchNumber % opt.snapshot == 0 then
     conditional_save(model, optimState, epoch)
   end

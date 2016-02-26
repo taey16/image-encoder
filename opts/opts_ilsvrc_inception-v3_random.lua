@@ -33,6 +33,8 @@ function M.parse(arg)
 
   local solver = 'nag'
   local LR = 0.045
+  local learning_rate_decay_start = 0
+  local learning_rate_decay_every = 100000
   local regimes = {
     -- start, end,    LR,   WD,
     {  1,     14*1,   LR, 0.00002 },
