@@ -1,8 +1,8 @@
 require 'cutorch'
 require 'cudnn'
 
-
-function makeDataParallel(model, gpus)
+local parallel_utils = {}
+function parallel_utils.makeDataParallel(model, gpus)
   --[[
   DataParallelTable(dim, [flattenParams], [useNCCL])
 
@@ -48,7 +48,7 @@ function makeDataParallel(model, gpus)
 end
 
 
-function makeDataParallel_cudnn_v3(model, nGPU, primary_gpu_id)
+function parallel_utils.makeDataParallel_cudnn_v3(model, nGPU, primary_gpu_id)
   if #nGPU > 1 then
     print('===> Converting module to nn.DataParallelTable')
     assert(#nGPU <= cutorch.getDeviceCount(), 
@@ -73,11 +73,12 @@ function makeDataParallel_cudnn_v3(model, nGPU, primary_gpu_id)
 end
 
 
-function splitDataParallelTable(model)
+function parallel_utils.splitDataParallelTable(model)
   local feature = model:get(1):get(1)
   local classifier = model:get(2)
 
   return feature, classifier
 end
 
+return parallel_utils
 

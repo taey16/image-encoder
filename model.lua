@@ -1,6 +1,6 @@
 
 paths.dofile('models/init_model_weight.lua')
-paths.dofile('utils/parallel_utils.lua')
+local parallel_utils = require 'utils.parallel_utils'
 
 model = {}
 feature_encoder = {}
@@ -49,7 +49,7 @@ else
 end
 
 if #opt.nGPU > 1 then
-  model = makeDataParallel(model, opt.nGPU)
+  model = parallel_utils.makeDataParallel(model, opt.nGPU)
 end
 
 model:cuda()
