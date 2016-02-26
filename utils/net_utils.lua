@@ -1,8 +1,7 @@
 
-local net_utils = {}
 -- clear the intermediate states in the model before saving to disk
 -- this saves lots of disk space
-function net_utils.sanitize(net)
+function sanitize(net)
   local _sanitize = paths.dofile('sanitize.lua')
   --[[
   local list = net:listModules()
