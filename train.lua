@@ -141,7 +141,7 @@ function trainBatch(inputsThread, labelsThread)
   if batchNumber % opt.display == 0 then
     local elapsed_batch = timer:time().real
     local elapsed_whole = elapsed_batch + dataLoadingTime
-    local time_left = (opt.epochSize - batchNumber) * elapsed_whole
+    local time_left = (opt.epochSize - (batchNumber % opt.epochSize)) * elapsed_whole
     io.flush(print(
       ('%04d/%04d loss %.6f err: %03.4f lr: %.8f wc: %.8f solver: %s, elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
       batchNumber, opt.epochSize, loss, top1, 

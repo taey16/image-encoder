@@ -41,9 +41,6 @@ else
     'File not found: '..model_filepath)
   paths.dofile(model_filepath)
   print('===> Creating model from file: '..model_filepath)
-  --feature_encoder, classifier = createModel()
-  --MSRinit(feature_encoder)
-  --MSRinit(classifier)
   model = createModel()
   MSRinit(model)
 end
