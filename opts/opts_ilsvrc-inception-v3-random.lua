@@ -13,7 +13,7 @@ local network =
   'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local nGPU = {1}
+local nGPU = {1, 2}
 local current_epoch = 18
 local test_initialization = false
 local nClasses = 1000
