@@ -20,6 +20,10 @@ function MSRinit(net)
       local n = v.kW * v.kH * v.nOutputPlane
       -- \sqrt{2/n}
       v.weight:normal(0,math.sqrt(2/n))
+      -- As FAIR did (fb.ResNet.torch)
+      -- All of the cudnn.SpatialConv. layers are followered by 
+      -- cudnn.SpaatialBatchNorm.
+      -- which means we did not need to set a bias vector in conv. layers
       if cudnn.version >= 4000 then
         v.bias = nil
         v.gradBias = nil

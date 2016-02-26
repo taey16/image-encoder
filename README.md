@@ -10,9 +10,10 @@ This is a train / inference(prediction) system for vision-networks which is orig
 - includes training with Batch-normalizaation(BN; around 5.5 days reaching 69% on ILSVRC2012 val. set(BN-inception5, single-crop)) [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](http://arxiv.org/abs/1502.03167)
 - includes absorbing BN parameters into convolutional parameter(in inference(prediction) step, all of the nn.(Spatial)BatchNormalization layers are removed so that elapsed time is impressively reduced)
   [How does it works?](https://github.com/taey16/image-encoder/blob/master/example/logs/BN-absorb_derivation.png)
-- In our experiment, best accuracy was reached around top1: ~75% on ILSVRC2012 val. set with single-crops, single-scale, [resception-net](https://github.com/taey16/image-encoder/blob/master/models/resception.lua)
-- The google brain team's experiment result on inception-ResNet, inception-v4: [open-review, ICLR, 2016](http://beta.openreview.net/pdf?id=q7kqBkL33f8LEkD3t7X9)
+- In our experiment, best accuracy was reached around top1: ~75% on ILSVRC2012 val. set with single-crop, single-scale, and [resception-net](https://github.com/taey16/image-encoder/blob/master/models/resception.lua)
+- The google brain team's experiment result on inception-ResNet: [open-review, ICLR, 2016](http://beta.openreview.net/pdf?id=q7kqBkL33f8LEkD3t7X9)
 - cudnn-v4 supports (in our case, 1.6x faster in conv. than cudnn-v3's conv. with cudnn.fastest=true, cudnn.benchmark=true)
+- We think google's inception style net is more efficient than MSRA's residual shortcut net in terms of both processing time and memory consumption. Their representation power is almost tie.
 
 # Acknowledgements
 - Soumith's great works [imagenet-multiGPU.torch](https://github.com/soumith/imagenet-multiGPU.torch)

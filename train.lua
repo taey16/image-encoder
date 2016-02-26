@@ -50,7 +50,6 @@ function train()
   -- reset batchNumber
   batchNumber = 0
   cutorch.synchronize()
-
   model:training()
 
   local tm = torch.Timer()
@@ -132,14 +131,6 @@ function trainBatch(inputsThread, labelsThread)
     optim.nag(feval, parameters, optimState)
   end
 
-  -- DataParallelTable's syncParameters
-  model:apply(
-    function(m) 
-      if m.syncParameters then m:syncParameters() end 
-    end
-  )
-  cutorch.synchronize()
-
   batchNumber= batchNumber + 1
   loss_epoch = loss_epoch + loss 
 
@@ -148,12 +139,6 @@ function trainBatch(inputsThread, labelsThread)
   local err = (opt.batchSize - preds:eq(labelsCPU):sum())
   local top1= err / opt.batchSize * 100
   top1_epoch= top1_epoch + err
-
-  --[[
-  if batchNumber == 1 and opt.use_stn then
-    save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
-  end
-  --]]
 
   if batchNumber % opt.display == 0 then
     local elapsed_batch = timer:time().real
@@ -164,12 +149,8 @@ function trainBatch(inputsThread, labelsThread)
       batchNumber, opt.epochSize, loss, top1, 
       optimState.learningRate, optimState.weightDecay, opt.solver,
       elapsed_batch, dataLoadingTime, time_left / 3600 )))
-    if opt.use_stn and batchNumber > 6000 then
-    --if opt.use_stn then
-      save_images(model:get(1):get(1):get(1).output:float(), opt.batchSize/2, 'save_image_'..batchNumber..'.png')
-      --print(model:get(1):get(1):get(1):get(1):get(2):get(25).output[{{1,opt.batchSize/2},{}}]:float())
-    end
   end
+
   if batchNumber % opt.snapshot == 0 then
     conditional_save(model, optimState, epoch)
   end
