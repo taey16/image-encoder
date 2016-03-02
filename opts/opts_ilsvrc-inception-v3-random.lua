@@ -13,13 +13,12 @@ local network =
   'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local nGPU = {1, 2}
-local current_epoch = 20
+local nGPU = {1}
+local current_epoch = 18
 local test_initialization = true
 local nClasses = 1000
 local retrain_path = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
-  --false
+  false
 if retrain_path then
   initial_model = 
     paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
@@ -34,8 +33,8 @@ local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.0045
 local weight_decay = 0.0001
-local learning_rate_decay_start = 0
-local learning_rate_decay_every = 160000
+local learning_rate_decay_start = 40037 * 5
+local learning_rate_decay_every = 40037 * 5
 local experiment_id = string.format(
   '%s_X_gpu%d_%s_%s_lr%.5f_decay_start%d_every%d', dataset_name, #nGPU, network, solver, learning_rate, learning_rate_decay_start, learning_rate_decay_every
 )
