@@ -8,7 +8,6 @@ local tablex = require 'pl.tablex'
 local argcheck = require 'argcheck'
 require 'sys'
 require 'xlua'
-require 'image'
 
 local dataset = torch.class('dataLoader')
 
@@ -54,7 +53,6 @@ local initcheck = argcheck{
 function dataset:__init(...)
   -- argcheck
   local args =  initcheck(...)
-  print(args)
   for k,v in pairs(args) do self[k] = v end
 
   if not self.loadSize then 

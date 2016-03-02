@@ -1,7 +1,7 @@
 
 paths.dofile('../dataset.lua')
 paths.dofile('../utils/util.lua')
-paths.dofile('../utils/image_utils.lua')
+local image_utils = require 'utils.image_utils'
 
 local trainCache = paths.concat(opt.cache, 'trainCache.t7')
 local testCache  = paths.concat(opt.cache, 'testCache.t7')
@@ -17,9 +17,9 @@ end
 -- function to load the image, jitter it appropriately
 local trainHook = function(self, path)
   collectgarbage()
-  local input = loadImage(path, self.loadSize)
-  local output = random_jitter(input, self.sampleSize)
-  output = mean_std_norm(output, mean, std)
+  local input = image_utils.loadImage(path, self.loadSize)
+  local output = image_utils.random_jitter(input, self.sampleSize)
+  output = image_utils.mean_std_norm(output, mean, std)
   return output
 end
 
@@ -61,7 +61,7 @@ local testHook = function(self, path)
   collectgarbage()
   local input = loadImage(path, self.loadSize)
   local output= center_crop(input, self.sampleSize)
-  output = mean_std_norm(output, mean, std)
+  output = image_utils.mean_std_norm(output, mean, std)
   return output
 end
 

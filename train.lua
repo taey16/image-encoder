@@ -32,7 +32,7 @@ end
 
 
 trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
-local batchNumber = 0
+local iter_batch = 0
 local top1_epoch, loss_epoch
 
 
@@ -89,13 +89,13 @@ local parameters, gradParameters = model:getParameters()
 function trainBatch(inputsThread, labelsThread)
   cutorch.synchronize()
   collectgarbage()
-  local dataLoadingTime = dataTimer:time().real
+  local elapsed_batch_loading = dataTimer:time().real
   timer:reset()
 
   -- decay the learning rate for both LM and CNN
   local learning_rate = optimState.learningRate
-  if batchNumber > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
-    local frac = (batchNumber - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
+  if iter_batch > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
+    local frac = (iter_batch - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
     local decay_factor = math.pow(0.5, frac)
     optimState.learningRate = learning_rate * decay_factor
   end
@@ -128,7 +128,7 @@ function trainBatch(inputsThread, labelsThread)
     optim.nag(feval, parameters, optimState)
   end
 
-  batchNumber= batchNumber + 1
+  iter_batch = iter_batch + 1
   loss_epoch = loss_epoch + loss 
 
   local outputsCPU = outputs:float()
@@ -138,18 +138,19 @@ function trainBatch(inputsThread, labelsThread)
   top1_epoch= top1_epoch + err
 
 
-  if batchNumber % opt.display == 0 then
+  if iter_batch % opt.display == 0 then
     local elapsed_batch = timer:time().real
-    local elapsed_whole = elapsed_batch + dataLoadingTime
-    local time_left = (opt.epochSize - (batchNumber % opt.epochSize)) * elapsed_whole
+    local elapsed_whole = elapsed_batch + elapsed_batch_loading
+    local time_left = (opt.epochSize - (iter_batch % opt.epochSize)) * elapsed_whole
     io.flush(print(
-      ('%04d/%04d loss %.6f err: %03.4f lr: %.8f wc: %.8f solver: %s, elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
-      batchNumber, opt.epochSize, loss, top1, 
+      ('%04d/%04d %.2f loss %.6f err: %03.4f lr: %.8f wc: %.8f solver: %s, elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
+      iter_batch, opt.epochSize, iter_batch / opt.epochSize, 
+      loss, top1, 
       optimState.learningRate, optimState.weightDecay, opt.solver,
-      elapsed_batch, dataLoadingTime, time_left / 3600 )))
+      elapsed_batch, elapsed_batch_loading, time_left / 3600 )))
   end
   optimState.learningRate = learning_rate
-  if batchNumber % opt.snapshot == 0 then
+  if iter_batch % opt.snapshot == 0 then
     conditional_save(model, optimState, epoch)
   end
 

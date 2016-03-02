@@ -18,9 +18,7 @@ local current_epoch = 18
 local test_initialization = false
 local nClasses = 1000
 local retrain_path = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Mon_Feb_15_22_41_32_2016'
-  --false
+  false
 if retrain_path then
   initial_model = 
     paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
