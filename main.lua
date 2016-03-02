@@ -1,6 +1,9 @@
 
 require 'torch'
 require 'cutorch'
+require 'cudnn'
+cudnn.fastest = true
+cudnn.benchmark = true
 require 'paths'
 require 'xlua'
 require 'optim'

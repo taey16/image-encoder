@@ -3,6 +3,8 @@
 local dataset_root = paths.concat('/data2/ImageNet/ILSVRC2012/')
 local checkpoint_path = paths.concat(dataset_root, 'torch_cache');
 local data_dir  = paths.concat(dataset_root, './')
+local filename_train= '/data2/ImageNet/ILSVRC2012/train_local.txt'
+local filename_test = '/data2/ImageNet/ILSVRC2012/val_synset.txt'
 
 local dataset_name = 'ILSVRC2012'
 local total_train_samples = 1281167 - 1
@@ -13,8 +15,8 @@ local network =
   'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local nGPU = {1}
-local current_epoch = 18
+local nGPU = {1,2,3,4}
+local current_epoch = 1
 local test_initialization = true
 local nClasses = 1000
 local retrain_path = 
@@ -31,12 +33,12 @@ end
 
 local solver = 'nag'
 local num_max_epoch = 500
-local learning_rate = 0.0045
-local weight_decay = 0.0001
+local learning_rate = 0.045
+local weight_decay = 0.00002
 local learning_rate_decay_start = 40037 * 5
 local learning_rate_decay_every = 40037 * 5
 local experiment_id = string.format(
-  '%s_X_gpu%d_%s_%s_lr%.5f_decay_start%d_every%d', dataset_name, #nGPU, network, solver, learning_rate, learning_rate_decay_start, learning_rate_decay_every
+  '%s_X_gpu%d_%s_epoch%d_%s_lr%.5f_decay_start%d_every%d', dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_start, learning_rate_decay_every
 )
 
 cmd = torch.CmdLine()
@@ -49,6 +51,8 @@ cmd:text('Options')
 cmd:option('-cache', checkpoint_path, 'subdirectory in which to save/log experiments')
 cmd:option('-data', dataset_root, 'root of dataset')
 cmd:option('-nClasses', nClasses, '# of classes')
+cmd:option('-filename_train',filename_train,'')
+cmd:option('-filename_test', filename_test, '')
 
 -- training specific
 cmd:option('-nEpochs', num_max_epoch, 'Number of total epochs to run')
@@ -85,6 +89,10 @@ local opt = cmd:parse(arg)
 opt.loadSize = loadSize
 opt.sampleSize= sampleSize
 opt.nGPU = nGPU
+
+if not os.execute('cd ' .. opt.data) then
+  error(("could not chdir to '%s'"):format(opt.data))
+end
 
 opt.save = paths.concat(opt.cache, experiment_id)
 os.execute('mkdir -p ' ..opt.save)
