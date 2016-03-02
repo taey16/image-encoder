@@ -3,8 +3,6 @@ paths.dofile('models/init_model_weight.lua')
 local parallel_utils = require 'utils.parallel_utils'
 
 model = {}
-feature_encoder = {}
-classifier = {}
 criterion = {}
 
 if opt.retrain then
@@ -13,12 +11,8 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   model = torch.load(opt.retrain)
-  feature_encoder = model:get(1)
-  classifier = model:get(2)
-  feature_encoder:add(model:get(2):get(1))
-  feature_encoder:add(model:get(2):get(2))
-  feature_encoder:add(model:get(2):get(3))
-  model = feature_encoder
+  model.modules[#model] = nil
+  model:add(cudnn.LogSoftMax())
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)

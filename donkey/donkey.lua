@@ -59,8 +59,8 @@ end
 -- function to load the image
 local testHook = function(self, path)
   collectgarbage()
-  local input = loadImage(path, self.loadSize)
-  local output= center_crop(input, self.sampleSize)
+  local input = image_utils.loadImage(path, self.loadSize)
+  local output= image_utils.center_crop(input, self.sampleSize)
   output = image_utils.mean_std_norm(output, mean, std)
   return output
 end

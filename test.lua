@@ -75,11 +75,10 @@ function testBatch(inputsThread, labelsThread)
   local err = opt.test_batchSize - preds:eq(labelsCPU):sum()
   top1_center = top1_center + err
 
-  --[[
   if iter_batch % (opt.display*4) == 0 then
     local cumulated_samples = iter_batch * opt.test_batchSize
     print(('%04d loss: %.6f err: %.6f'):format(
       iter_batch, loss / cumulated_samples, top1_center / cumulated_samples))
   end
-  --]]
+
 end -- end of testBatch
