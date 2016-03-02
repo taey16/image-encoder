@@ -16,11 +16,13 @@ local network =
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
 local nGPU = {1,2,3,4}
-local current_epoch = 1
+local current_epoch = 20
 local test_initialization = true
 local nClasses = 1000
 local retrain_path = 
-  false
+  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
+  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
+  --false
 if retrain_path then
   initial_model = 
     paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 

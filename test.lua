@@ -78,7 +78,7 @@ function testBatch(inputsThread, labelsThread)
 
   if iter_batch % (opt.display*4) == 0 then
     io.flush(print(('%04d loss: %.6f err: %.6f'):format(
-      iter_batch, loss / iter_batch, top1_center / iter_batch)))
+      iter_batch, loss_batch , top1_center / iter_batch)))
   end
 
 end -- end of testBatch
