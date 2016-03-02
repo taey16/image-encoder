@@ -40,7 +40,7 @@ function test()
   cutorch.synchronize()
 
   top1_center = top1_center * 100 / nTest
-  loss = loss / nTest
+  loss = loss / (nTest/opt.test_batchSize)
   local elapsed = timer:time().real
   testLogger:add{
     ['time'] = elapsed, 
