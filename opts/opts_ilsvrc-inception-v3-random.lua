@@ -16,13 +16,13 @@ local network =
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
 local nGPU = {1,2,3,4}
-local current_epoch = 20
-local test_initialization = true
+local current_epoch = 1
+local test_initialization = false
 local nClasses = 1000
 local retrain_path = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
-  --false
+  false
 if retrain_path then
   initial_model = 
     paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
@@ -37,10 +37,11 @@ local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.045
 local weight_decay = 0.00002
-local learning_rate_decay_start = 40037 * 5
-local learning_rate_decay_every = 40037 * 5
+local learning_rate_decay_seed = 0.96--0.5
+local learning_rate_decay_start = 0--40037 * 5
+local learning_rate_decay_every = 40037 * 2
 local experiment_id = string.format(
-  '%s_X_gpu%d_%s_epoch%d_%s_lr%.5f_decay_start%d_every%d', dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_start, learning_rate_decay_every
+  '%s_X_gpu%d_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
 )
 
 cmd = torch.CmdLine()
@@ -70,6 +71,8 @@ cmd:option('-optimState', initial_optimState, 'provide path to an optimState to 
 cmd:option('-solver', solver, 'nag | adam | sgd')
 cmd:option('-LR', learning_rate, 
   'learning rate; if set, overrides default LR/WD recipe')
+cmd:option('-learning_rate_decay_seed', learning_rate_decay_seed,
+  'decay_factor = math.pow(opt.learning_rate_decay_seed, frac)')
 cmd:option('-learning_rate_decay_start', learning_rate_decay_start,
   'at what iteration to start decaying learning rate? (-1 = dont)')
 cmd:option('-learning_rate_decay_every', learning_rate_decay_every,
