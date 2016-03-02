@@ -8,12 +8,12 @@ local testDataIterator = function()
   return function() return testLoader:get_batch(false) end
 end
 
-local batchNumber
+local iter_batch
 local top1_center, loss
 local timer = torch.Timer()
 
 function test()
-  batchNumber = 0
+  iter_batch = 0
   cutorch.synchronize()
   timer:reset()
 
@@ -58,7 +58,7 @@ local inputs = torch.CudaTensor()
 local labels = torch.CudaTensor()
 
 function testBatch(inputsThread, labelsThread)
-  batchNumber = batchNumber + opt.test_batchSize
+  iter_batch = iter_batch + opt.test_batchSize
 
   receiveTensor(inputsThread, inputsCPU)
   receiveTensor(labelsThread, labelsCPU)
@@ -76,10 +76,10 @@ function testBatch(inputsThread, labelsThread)
   top1_center = top1_center + err
 
   --[[
-  if batchNumber % (opt.display*4) == 0 then
-    local cumulated_samples = batchNumber * opt.test_batchSize
+  if iter_batch % (opt.display*4) == 0 then
+    local cumulated_samples = iter_batch * opt.test_batchSize
     print(('%04d loss: %.6f err: %.6f'):format(
-      batchNumber, loss / cumulated_samples, top1_center / cumulated_samples))
+      iter_batch, loss / cumulated_samples, top1_center / cumulated_samples))
   end
   --]]
 end -- end of testBatch
