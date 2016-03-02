@@ -96,7 +96,7 @@ function trainBatch(inputsThread, labelsThread)
   local learning_rate = optimState.learningRate
   if iter_batch > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
     local frac = (iter_batch - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
-    local decay_factor = math.pow(0.5, frac)
+    local decay_factor = math.pow(opt.learning_rate_decay_seed, frac)
     optimState.learningRate = learning_rate * decay_factor
   end
 
