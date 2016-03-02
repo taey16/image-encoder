@@ -3,10 +3,12 @@ paths.dofile('utils/util.lua')
 
 testLogger = optim.Logger(paths.concat(opt.save, 'test.log'))
 
+--[[
 local testDataIterator = function()
   testLoader:reset()
   return function() return testLoader:get_batch(false) end
 end
+--]]
 
 local iter_batch
 local top1_center, loss
@@ -38,7 +40,7 @@ function test()
   cutorch.synchronize()
 
   top1_center = top1_center * 100 / nTest
-  loss = loss / (nTest/opt.test_batchSize)
+  loss = loss / nTest
   local elapsed = timer:time().real
   testLogger:add{
     ['time'] = elapsed, 
@@ -70,15 +72,13 @@ function testBatch(inputsThread, labelsThread)
   cutorch.synchronize()
 
   loss = loss + loss_batch
-  local outputsCPU = outputs:float()
-  local _, preds = outputsCPU:max(2)
-  local err = opt.test_batchSize - preds:eq(labelsCPU):sum()
+  local _, preds = outputs:max(2)
+  local err = opt.test_batchSize - preds:eq(labels):sum()
   top1_center = top1_center + err
 
   if iter_batch % (opt.display*4) == 0 then
-    local cumulated_samples = iter_batch * opt.test_batchSize
-    print(('%04d loss: %.6f err: %.6f'):format(
-      iter_batch, loss / cumulated_samples, top1_center / cumulated_samples))
+    io.flush(print(('%04d loss: %.6f err: %.6f'):format(
+      iter_batch, loss / iter_batch, top1_center / iter_batch)))
   end
 
 end -- end of testBatch

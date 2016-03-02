@@ -131,12 +131,10 @@ function trainBatch(inputsThread, labelsThread)
   iter_batch = iter_batch + 1
   loss_epoch = loss_epoch + loss 
 
-  local outputsCPU = outputs:float()
-  local _, preds = outputsCPU:max(2)
-  local err = (opt.batchSize - preds:eq(labelsCPU):sum())
+  local _, preds = outputs:max(2)
+  local err = opt.batchSize - preds:eq(labels):sum()
   local top1= err / opt.batchSize * 100
   top1_epoch= top1_epoch + err
-
 
   if iter_batch % opt.display == 0 then
     local elapsed_batch = timer:time().real

@@ -222,53 +222,7 @@ function dataset:__init(...)
   os.execute('rm -f "' .. combinedFindList .. '"')
   --==========================================================================
 
-  if self.split == 100 then
-    self.testIndicesSize = 0
-  else
-    print('Splitting training and test sets to a ratio of '
-      .. self.split .. '/' .. (100-self.split))
-    self.classListTrain = {}
-    self.classListTest  = {}
-    self.classListSample = self.classListTrain
-    local totalTestSamples = 0
-    -- split the classList into classListTrain and classListTest
-    for i=1,#self.classes do
-      local list = self.classList[i]
-      local count = self.classList[i]:size(1)
-      local splitidx = math.floor((count * self.split / 100) + 0.5) -- +round
-      local perm = torch.randperm(count)
-      self.classListTrain[i] = torch.LongTensor(splitidx)
-      for j=1,splitidx do
-        self.classListTrain[i][j] = list[perm[j]]
-      end
-      if splitidx == count then -- all samples were allocated to train set
-        self.classListTest[i]  = torch.LongTensor()
-      else
-        self.classListTest[i]  = torch.LongTensor(count-splitidx)
-        totalTestSamples = totalTestSamples + self.classListTest[i]:size(1)
-        local idx = 1
-        for j=splitidx+1,count do
-          self.classListTest[i][idx] = list[perm[j]]
-          idx = idx + 1
-        end
-      end
-    end
-    -- Now combine classListTest into a single tensor
-    self.testIndices = torch.LongTensor(totalTestSamples)
-    self.testIndicesSize = totalTestSamples
-    local tdata = self.testIndices:data()
-    local tidx = 0
-    for i=1,#self.classes do
-      local list = self.classListTest[i]
-      if list:dim() ~= 0 then
-        local ldata = list:data()
-        for j=0,list:size(1)-1 do
-          tdata[tidx] = ldata[j]
-          tidx = tidx + 1
-        end
-      end
-    end
-  end
+  self.testIndicesSize = 0
 end
 
 -- size(), size(class)

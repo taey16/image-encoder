@@ -36,7 +36,6 @@ else
     paths = {paths.concat(opt.data, 'train')},
     loadSize  = opt.loadSize,
     sampleSize= opt.sampleSize,
-    split = 100,
     verbose = true
   }
   --print(trainLoader)
@@ -78,7 +77,6 @@ else
     paths = {paths.concat(opt.data, 'val')},
     loadSize  = opt.loadSize,
     sampleSize= opt.sampleSize,
-    split = 100,
     verbose = true,
     -- force consistent class indices between trainLoader and testLoader
     forceClasses = trainLoader.classes
