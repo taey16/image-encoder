@@ -2,6 +2,7 @@
 require 'torch'
 require 'image'
 require 'nn'
+local gm = require 'graphicsmagick'
 
 local image_utils = {}
 
@@ -110,7 +111,8 @@ end
 
 function image_utils.loadImage(path, loadSize)
   local loadSize = loadSize or nil
-  local input = image.load(path)
+  --local input = image.load(path)
+  local input = gm.load(path)
   if input:dim() == 2 then
     input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
   elseif input:dim() == 3 and input:size(1) == 1 then
@@ -151,7 +153,8 @@ image_utils.load_image_inception_v3 = load_image_inception_v3
 
 function image_utils.loadImage(path, loadSize, aspect_ratio)
   local loadSize = loadSize or nil
-  local input = image.load(path)
+  --local input = image.load(path)
+  local input = gm.load(path)
   if input:dim() == 2 then
     input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
   elseif input:dim() == 3 and input:size(1) == 1 then

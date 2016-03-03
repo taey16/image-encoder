@@ -1,5 +1,6 @@
 
 require 'torch'
+torch.setdefaulttensortype('torch.FloatTensor')
 local ffi = require 'ffi'
 local class = require('pl.class')
 local dir = require 'pl.dir'
@@ -72,9 +73,7 @@ function dataset:__init(...)
 
   local function tableFind(t, o) 
     for k, v in pairs(t) do 
-      if v == o then 
-        return k 
-      end 
+      if v == o then return k end 
     end 
   end
 
@@ -106,7 +105,6 @@ function dataset:__init(...)
   local cut = 'cut'
   local find= 'find'
 
-  ----------------------------------------------------------------------
   -- Options for the GNU find command
   local extensionList = {'jpg', 'png','JPG','PNG','JPEG', 'ppm', 'PPM', 'bmp', 'BMP'}
   local findOptions = ' -iname "*.' .. extensionList[1] .. '"'
@@ -124,7 +122,8 @@ function dataset:__init(...)
   -- the main list used when sampling data
   self.classListSample = self.classList
 
-  print('running "find" on each class directory, and concatenate all'
+  print(
+    'running "find" on each class directory, and concatenate all'
     .. ' those filenames into a single file containing all image paths for a given class')
   -- so, generates one file per class
   local classFindFiles = {}
@@ -160,14 +159,12 @@ function dataset:__init(...)
   os.execute('bash ' .. tmpfile)
   os.execute('rm -f ' .. tmpfile)
 
-  --==========================================================================
   print('load the large concatenated list of sample paths to self.imagePath')
-  local maxPathLength = tonumber(sys.fexecute(wc .. " -L '"
-                                                 .. combinedFindList .. "' |"
-                                                 .. cut .. " -f1 -d' '")) + 1
-  local length = tonumber(sys.fexecute(wc .. " -l '"
-                                          .. combinedFindList .. "' |"
-                                          .. cut .. " -f1 -d' '"))
+  local maxPathLength = 
+    tonumber(sys.fexecute(wc .. " -L '" .. combinedFindList .. "' |" .. cut .. " -f1 -d' '")) + 1
+  local length = 
+    tonumber(sys.fexecute(wc .. " -l '" .. combinedFindList .. "' |" .. cut .. " -f1 -d' '"))
+
   assert(length > 0, "Could not find any image file in the given input paths")
   assert(maxPathLength > 0, "paths of files are length 0?")
   self.imagePath:resize(length, maxPathLength):fill(0)
@@ -184,7 +181,6 @@ function dataset:__init(...)
 
   self.numSamples = self.imagePath:size(1)
   if self.verbose then print(self.numSamples ..  ' samples found.') end
-  --==========================================================================
   print('Updating classList and imageClass appropriately')
   self.imageClass:resize(self.numSamples)
   local runningIndex = 0
@@ -202,7 +198,6 @@ function dataset:__init(...)
     runningIndex = runningIndex + length
   end
 
-  --==========================================================================
   -- clean up temporary files
   print('Cleaning up temporary files')
   local tmpfilelistall = ''
@@ -215,12 +210,12 @@ function dataset:__init(...)
   end
   os.execute('rm -f '  .. tmpfilelistall)
   os.execute('rm -f "' .. combinedFindList .. '"')
-  --==========================================================================
 
   self.testIndicesSize = 0
 end
 
--- size(), size(class)
+
+-- class:= {'class_name_1', 'class_name_2', ...}
 function dataset:size(class, list)
   list = list or self.classList
   if not class then
@@ -232,6 +227,7 @@ function dataset:size(class, list)
   end
 end
 
+
 function dataset:getByClass(class)
   local index = 
     math.ceil(torch.uniform() * self.classListSample[class]:nElement())
@@ -239,6 +235,7 @@ function dataset:getByClass(class)
     ffi.string(torch.data(self.imagePath[self.classListSample[class][index]]))
   return self:sampleHookTrain(imgpath)
 end
+
 
 -- converts a table of samples (and corresponding labels) to a clean tensor
 local function tableToOutput(self, dataTable, scalarTable)
@@ -257,15 +254,14 @@ end
 
 
 function dataset:stratified_sample(quantity)
-  assert(quantity > 0)
-  local ratio = self:size(0) / self:size(1)
+  local ratio = self:size('button') / self:size('non_button')
   local dataTable = {}
   local scalarTable = {}
   for i=1,quantity do
     local _rnd = torch.uniform()
     local class
-    if ratio > _rand then class = 1
-    else class = 0 end
+    if ratio < _rnd then class = 1
+    else class = 2 end
     local out = self:getByClass(class)
     table.insert(dataTable, out)
     table.insert(scalarTable, class)
@@ -275,9 +271,8 @@ function dataset:stratified_sample(quantity)
 end
 
 
--- sampler, samples from the training set.
 function dataset:sample(quantity)
-  assert(quantity > 0)
+  --assert(quantity > 0)
   local dataTable = {}
   local scalarTable = {}
   for i=1,quantity do
@@ -294,8 +289,6 @@ end
 function dataset:get(i1, i2)
   local indices = torch.range(i1, i2);
   local quantity = i2 - i1 + 1;
-  assert(quantity > 0)
-  -- now that indices has been initialized, get the samples
   local dataTable = {}
   local scalarTable = {}
   for i=1,quantity do

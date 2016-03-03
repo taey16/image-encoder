@@ -12,7 +12,9 @@ if opt.retrain then
   -- for single-gpu
   model = torch.load(opt.retrain)
   model.modules[#model] = nil
-  model:add(cudnn.LogSoftMax())
+  model:get(1):add(nn.View(2048))
+  model:get(1):add(nn.Linear(2048,2))
+  model:get(1):add(cudnn.LogSoftMax())
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
@@ -41,6 +43,8 @@ end
 
 if #opt.nGPU > 1 then
   model = parallel_utils.makeDataParallel(model, opt.nGPU)
+else
+  cudnn.fastest, cudnn.benchmark = true, true
 end
 
 model:cuda()
