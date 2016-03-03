@@ -2,23 +2,18 @@
 
 local dataset_root = paths.concat('/data2/ImageNet/ILSVRC2012/')
 local checkpoint_path = paths.concat(dataset_root, 'torch_cache');
-local data_dir  = paths.concat(dataset_root, './')
-local filename_train= '/data2/ImageNet/ILSVRC2012/train_local.txt'
-local filename_test = '/data2/ImageNet/ILSVRC2012/val_synset.txt'
 
 local dataset_name = 'ILSVRC2012'
 local total_train_samples = 1281167 - 1
-local batchsize = 32
-local test_batchsize = 25
-local network = 
-  --'inception_v3'
-  'resception'
+local nClasses = 1000
+local forceClasses = nil
+
+local network = 'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
 local nGPU = {1,2,3,4}
 local current_epoch = 1
 local test_initialization = false
-local nClasses = 1000
 local retrain_path = 
   --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
@@ -33,6 +28,8 @@ else
   initial_optimState = false
 end
 
+local batchsize = 32
+local test_batchsize = 25
 local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.045

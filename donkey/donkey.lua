@@ -36,7 +36,8 @@ else
     paths = {paths.concat(opt.data, 'train')},
     loadSize  = opt.loadSize,
     sampleSize= opt.sampleSize,
-    verbose = true
+    verbose = true,
+    forceClasses = opt.forceClasses
   }
   --print(trainLoader)
   torch.save(trainCache, trainLoader)
