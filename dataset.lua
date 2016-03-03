@@ -1,6 +1,5 @@
 
 require 'torch'
-torch.setdefaulttensortype('torch.FloatTensor')
 local ffi = require 'ffi'
 local class = require('pl.class')
 local dir = require 'pl.dir'
@@ -30,8 +29,6 @@ local initcheck = argcheck{
    end,
    name="paths", type="table", help="Multiple paths of directories with images"}, 
   {name="sampleSize", type="table", help="a consistent sample size to resize the images"},
-  {name="split", type="number", help="Percentage of split to go to Training" },
-  {name="samplingMode", type="string", help="Sampling mode: random | balanced ", default = "balanced"},
   {name="verbose", type="boolean", help="Verbose mode during initialization", default = false},
   {name="loadSize", type="table", help="a size to load the images to, initially", opt = true},
   {name="forceClasses",
@@ -40,13 +37,11 @@ local initcheck = argcheck{
        .. "pass a classes table that has {classname : classindex} pairs."
        .. " For example: {3 : 'dog', 5 : 'cat'}"
        .. "This function is very useful when you want two loaders to have the same "
-       .. "class indices (trainLoader/testLoader for example)",
-     opt = true},
+       .. "class indices (trainLoader/testLoader for example)", opt = true},
   {name="sampleHookTrain",
      type="function",
      help="applied to sample during training(ex: for lighting jitter). "
-          .."It takes the image path as input",
-     opt = true},
+          .."It takes the image path as input", opt = true},
   {name="sampleHookTest", type="function", help="applied to sample during testing", opt = true},
 }
 
@@ -130,7 +125,7 @@ function dataset:__init(...)
   self.classListSample = self.classList
 
   print('running "find" on each class directory, and concatenate all'
-        .. ' those filenames into a single file containing all image paths for a given class')
+    .. ' those filenames into a single file containing all image paths for a given class')
   -- so, generates one file per class
   local classFindFiles = {}
   for i=1,#self.classes do
@@ -237,10 +232,11 @@ function dataset:size(class, list)
   end
 end
 
--- getByClass
 function dataset:getByClass(class)
-  local index = math.ceil(torch.uniform() * self.classListSample[class]:nElement())
-  local imgpath = ffi.string(torch.data(self.imagePath[self.classListSample[class][index]]))
+  local index = 
+    math.ceil(torch.uniform() * self.classListSample[class]:nElement())
+  local imgpath = 
+    ffi.string(torch.data(self.imagePath[self.classListSample[class][index]]))
   return self:sampleHookTrain(imgpath)
 end
 
@@ -249,8 +245,8 @@ local function tableToOutput(self, dataTable, scalarTable)
   local data, scalarLabels, labels
   local quantity = #scalarTable
   assert(dataTable[1]:dim() == 3)
-  data = torch.Tensor(quantity, 
-           self.sampleSize[1], self.sampleSize[2], self.sampleSize[3])
+  data = torch.Tensor(
+    quantity, self.sampleSize[1], self.sampleSize[2], self.sampleSize[3])
   scalarLabels = torch.LongTensor(quantity):fill(-1111)
   for i=1,#dataTable do
     data[i]:copy(dataTable[i])
@@ -258,6 +254,26 @@ local function tableToOutput(self, dataTable, scalarTable)
   end
   return data, scalarLabels
 end
+
+
+function dataset:stratified_sample(quantity)
+  assert(quantity > 0)
+  local ratio = self:size(0) / self:size(1)
+  local dataTable = {}
+  local scalarTable = {}
+  for i=1,quantity do
+    local _rnd = torch.uniform()
+    local class
+    if ratio > _rand then class = 1
+    else class = 0 end
+    local out = self:getByClass(class)
+    table.insert(dataTable, out)
+    table.insert(scalarTable, class)
+  end
+  local data, scalarLabels = tableToOutput(self, dataTable, scalarTable)
+  return data, scalarLabels
+end
+
 
 -- sampler, samples from the training set.
 function dataset:sample(quantity)
