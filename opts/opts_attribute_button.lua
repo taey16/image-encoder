@@ -1,5 +1,5 @@
 
-local dataset_root = paths.concat('/storage/freebee/')
+local dataset_root = '/storage/freebee/'
 local checkpoint_path = paths.concat(dataset_root, 'torch_cache');
 
 local dataset_name = 'attribute'

@@ -1,6 +1,5 @@
 
-
-local dataset_root = paths.concat('/data2/ImageNet/ILSVRC2012/')
+local dataset_root = '/data2/ImageNet/ILSVRC2012/'
 local checkpoint_path = paths.concat(dataset_root, 'torch_cache');
 
 local dataset_name = 'ILSVRC2012'
