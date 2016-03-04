@@ -12,7 +12,7 @@ local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
 local nGPU = {1}
 local current_epoch = 34
-local test_initialization = true
+local test_initialization = false
 local retrain_path = 
   '/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
 if retrain_path then
@@ -31,7 +31,7 @@ local test_batchsize = 32
 local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.0225/2
-local weight_decay = 0.00002
+local weight_decay = 0.0001
 local learning_rate_decay_seed = 0.96--0.5
 local learning_rate_decay_start = 0--40037 * 5
 local learning_rate_decay_every = 2837 * 2

@@ -1,5 +1,5 @@
 
-local ffi = require 'ffi'
+--local ffi = require 'ffi'
 local Threads = require 'threads'
 
 do 
@@ -32,6 +32,7 @@ do
   end
 end
 
+--[[
 nClasses= nil
 classes = nil
 donkeys:addjob(
@@ -59,4 +60,4 @@ donkeys:addjob(
 donkeys:synchronize()
 assert(nTest > 0, "Failed to get nTest")
 print('===> nTest: ', nTest)
-
+--]]
