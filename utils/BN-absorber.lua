@@ -36,22 +36,30 @@ local function BN_absorber(x)
       print(string.format('(%d) nn.ConcatTable', i))
       BN_absorber(x.modules[i])
     else
-      assert(x.modules[i].__typename ~= 'cudnn.BatchNormalization', 
-        'cudnn.torch R4 doesnot support per-activation BN')
       if x.modules[i].__typename == 'nn.SpatialBatchNormalization' or
          x.modules[i].__typename == 'nn.BatchNormalization' or 
-         x.modules[i].__typename == 'cudnn.SpatialBatchNormalization' then
+         x.modules[i].__typename == 'cudnn.SpatialBatchNormalization' or
+         x.modules[i].__typename == 'cudnn.BatchNormalization' then
         if x.modules[i-1] and
           (x.modules[i-1].__typename == 'nn.Linear' or
            x.modules[i-1].__typename == 'nn.SpatialConvolution' or
            x.modules[i-1].__typename == 'cudnn.SpatialConvolution' or
            x.modules[i-1].__typename == 'nn.SpatialConvolutionMM') then
 
+          -- remove weight layer's grad vecs
           if x.modules[i-1].gradWeight then
             x.modules[i-1].gradWeight = nil
           end
           if x.modules[i-1].gradBias then
             x.mdoules[i-1].gradBias = nil
+          end
+
+          -- remove bn layer's grad vecs
+          if x.modules[i].gradWeight then
+            x.modules[i].gradWeight = nil
+          end
+          if x.modules[i].gradBias then
+            x.mdoules[i].gradBias = nil
           end
 
            -- force weight to be in 2-dim

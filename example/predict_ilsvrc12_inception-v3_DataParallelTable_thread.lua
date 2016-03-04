@@ -1,23 +1,22 @@
 
 require 'torch'
 require 'cutorch'
-require 'image'
 require 'nn'
 require 'cunn'
 require 'cudnn'
+require 'image'
 cudnn.fastest = true
 cudnn.benchmark = true
 cudnn.verbose = true
 local Threads = require 'threads'
 paths.dofile('../utils/util.lua')
 paths.dofile('../utils/imagenet_utils.lua')
-paths.dofile('../utils/image_utils.lua')
+local parallel_utils = paths.dofile('../utils/parallel_utils.lua')
 
---torch.setnumthreads(4)
---cutorch.setDevice(1)
 
 local model_filename = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_33.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_31.bn_removed.t7'
@@ -27,21 +26,9 @@ local model_filename =
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_8.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_6.bn_removed.t7'
 print(string.format('===> Loading model: %s', model_filename))
-local original_model = torch.load(model_filename)
-local feature_encoder = original_model:get(1)
-local classifier = original_model:get(2)
-local model = nn.Sequential()
-model:add(feature_encoder):add(classifier)
---[[
-local replica = model
-model = nn.DataParallelTable(1)
-for gpu_id=1,2 do
-  cutorch.setDevice(gpu_id)
-  model:add(replica:clone():cuda(), gpu_id)
-end
-cutorch.setDevice(1)
---]]
-  
+local model = torch.load(model_filename)
+model = parallel_utils.makeDataParallel(model, {1,2,3,4})
+
 print(model)
 model:cuda()
 model:evaluate()

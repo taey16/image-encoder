@@ -2,7 +2,6 @@
 require 'optim'
 paths.dofile('utils/net_utils.lua')
 paths.dofile('utils/util.lua')
-paths.dofile('utils/image_utils.lua')
 
 local optimState = {
   learningRate = opt.LR,
@@ -30,56 +29,46 @@ if opt.optimState then
   print('optimState.weightDecay: '..optimState.weightDecay)
 end
 
-
-trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
-local batchNumber
-local top1_epoch, loss_epoch
-
+local trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
+-- iter_batch should not be reseted in function train()
+local iter_batch = 0
+local error_for_all_batch
+local loss_for_all_batch
 
 function train()
-  print('===> Epoch: '..epoch)
-  if opt.solver ~= 'adam' then
-    local params, newRegime = paramsForEpoch(opt.regimes, epoch)
-    optimState.learningRate = params.learningRate
-    optimState.weightDecay = params.weightDecay
-    if newRegime then
-      optimState = reset_optimState(params)
-      print('===> Reset optimState')
-    end
-  end
-  -- reset batchNumber
-  batchNumber = 0
   cutorch.synchronize()
   model:training()
-
   local tm = torch.Timer()
-  top1_epoch = 0
-  loss_epoch = 0
-  for i=1,opt.epochSize do
+
+  error_for_all_batch = 0
+  loss_for_all_batch = 0
+  for iter = 1,opt.epochSize do
     donkeys:addjob(
       function()
         local  inputs, labels = trainLoader:sample(opt.batchSize)
+        --local  inputs, labels = trainLoader:stratified_sample(opt.batchSize)
         return sendTensor(inputs), sendTensor(labels)
       end,
       trainBatch
     )
   end
-
   donkeys:synchronize()
   cutorch.synchronize()
 
-  top1_epoch = top1_epoch / (opt.batchSize * opt.epochSize) * 100
-  loss_epoch = loss_epoch / opt.epochSize
+  error_for_all_batch = 
+    error_for_all_batch / (opt.batchSize * opt.epochSize) * 100
+  loss_for_all_batch = 
+    loss_for_all_batch / opt.epochSize
 
   local elapsed = tm:time().real
   trainLogger:add{
     ['time'] = elapsed,
     ['epoch']= epoch,
-    ['loss'] = loss_epoch,
-    ['err']= top1_epoch,
+    ['loss'] = loss_for_all_batch,
+    ['err']= error_for_all_batch,
   }
   print(('epoch: %d trn loss: %.6f err: %.6f solver: %s, elapsed: %.4f'):format(
-    epoch, loss_epoch, top1_epoch, opt.solver, elapsed))
+    epoch, loss_for_all_batch, error_for_all_batch, opt.solver, elapsed))
 
   conditional_save(model, optimState, epoch)
   collectgarbage()
@@ -100,8 +89,16 @@ local parameters, gradParameters = model:getParameters()
 function trainBatch(inputsThread, labelsThread)
   cutorch.synchronize()
   collectgarbage()
-  local dataLoadingTime = dataTimer:time().real
+  local elapsed_batch_loading = dataTimer:time().real
   timer:reset()
+
+  -- decay the learning rate for both LM and CNN
+  local learning_rate = optimState.learningRate
+  if iter_batch > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
+    local frac = (iter_batch - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
+    local decay_factor = math.pow(opt.learning_rate_decay_seed, frac)
+    optimState.learningRate = learning_rate * decay_factor
+  end
 
   receiveTensor(inputsThread, inputsCPU)
   receiveTensor(labelsThread, labelsCPU)
@@ -131,27 +128,29 @@ function trainBatch(inputsThread, labelsThread)
     optim.nag(feval, parameters, optimState)
   end
 
-  batchNumber= batchNumber + 1
-  loss_epoch = loss_epoch + loss 
+  iter_batch = iter_batch + 1
+  loss_for_all_batch = loss_for_all_batch + loss 
 
-  local outputsCPU = outputs:float()
-  local _, preds = outputsCPU:max(2)
-  local err = (opt.batchSize - preds:eq(labelsCPU):sum())
-  local top1= err / opt.batchSize * 100
-  top1_epoch= top1_epoch + err
+  local _, preds = outputs:max(2)
+  local err_count = opt.batchSize - preds:eq(labels):sum()
+  local top1_error= err_count / opt.batchSize * 100
+  error_for_all_batch = error_for_all_batch + err_count
 
-  if batchNumber % opt.display == 0 then
+  if iter_batch % opt.display == 0 then
     local elapsed_batch = timer:time().real
-    local elapsed_whole = elapsed_batch + dataLoadingTime
-    local time_left = (opt.epochSize - batchNumber) * elapsed_whole
+    local elapsed_whole = elapsed_batch + elapsed_batch_loading
+    local time_left = (opt.epochSize - (iter_batch % opt.epochSize)) * elapsed_whole
     io.flush(print(
-      ('%04d/%04d loss %.6f err: %03.4f lr: %.8f wc: %.8f solver: %s, elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
-      batchNumber, opt.epochSize, loss, top1, 
+      ('%04d/%04d %.2f loss %.6f err: %03.4f lr: %.8f wc: %.8f solver: %s, elapsed: %.4f(%.3f), time-left: %.2f hr.'):format( 
+      iter_batch, opt.epochSize, iter_batch / opt.epochSize, 
+      loss, top1_error, 
       optimState.learningRate, optimState.weightDecay, opt.solver,
-      elapsed_batch, dataLoadingTime, time_left / 3600 )))
+      elapsed_batch, elapsed_batch_loading, time_left / 3600 )))
   end
 
-  if batchNumber % opt.snapshot == 0 then
+  optimState.learningRate = learning_rate
+
+  if iter_batch % opt.snapshot == 0 then
     conditional_save(model, optimState, epoch)
   end
 
