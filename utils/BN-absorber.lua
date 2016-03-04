@@ -51,7 +51,7 @@ local function BN_absorber(x)
             x.modules[i-1].gradWeight = nil
           end
           if x.modules[i-1].gradBias then
-            x.mdoules[i-1].gradBias = nil
+            x.modules[i-1].gradBias = nil
           end
 
           -- remove bn layer's grad vecs
@@ -59,7 +59,7 @@ local function BN_absorber(x)
             x.modules[i].gradWeight = nil
           end
           if x.modules[i].gradBias then
-            x.mdoules[i].gradBias = nil
+            x.modules[i].gradBias = nil
           end
 
            -- force weight to be in 2-dim
