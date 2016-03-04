@@ -228,15 +228,6 @@ function dataset:size(class, list)
 end
 
 
-function dataset:getByClass(class)
-  local index = 
-    math.ceil(torch.uniform() * self.classListSample[class]:nElement())
-  local imgpath = 
-    ffi.string(torch.data(self.imagePath[self.classListSample[class][index]]))
-  return self:sampleHookTrain(imgpath)
-end
-
-
 -- converts a table of samples (and corresponding labels) to a clean tensor
 local function tableToOutput(self, dataTable, scalarTable)
   local data, scalarLabels, labels
@@ -250,6 +241,15 @@ local function tableToOutput(self, dataTable, scalarTable)
     scalarLabels[i] = scalarTable[i]
   end
   return data, scalarLabels
+end
+
+
+function dataset:getByClass(class)
+  local index = 
+    math.ceil(torch.uniform() * self.classListSample[class]:nElement())
+  local imgpath = 
+    ffi.string(torch.data(self.imagePath[self.classListSample[class][index]]))
+  return self:sampleHookTrain(imgpath)
 end
 
 

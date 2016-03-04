@@ -30,7 +30,8 @@ if opt.optimState then
 end
 
 local trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
-local iter_batch
+-- iter_batch should not be reseted in function train()
+local iter_batch = 0
 local error_for_all_batch
 local loss_for_all_batch
 
@@ -39,7 +40,6 @@ function train()
   model:training()
   local tm = torch.Timer()
 
-  iter_batch = 0
   error_for_all_batch = 0
   loss_for_all_batch = 0
   for iter = 1,opt.epochSize do
