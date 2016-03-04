@@ -2,7 +2,7 @@
 paths.dofile('models/init_model_weight.lua')
 local parallel_utils = require 'utils.parallel_utils'
 
-model = {}
+protos = {}
 criterion = {}
 
 if opt.retrain then
@@ -10,11 +10,18 @@ if opt.retrain then
     'File not found: ' .. opt.retrain)
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
-  model = torch.load(opt.retrain)
-  model.modules[#model] = nil
-  model:get(1):add(nn.View(2048))
-  model:get(1):add(nn.Linear(2048,2))
-  model:get(1):add(cudnn.LogSoftMax())
+  protos.encoder = torch.load(opt.retrain)
+  protos.encoder.modules[#protos.encoder] = nil
+  protos.encoder:get(1):add(nn.View(2048))
+  protos.classifier = nn.Sequential()
+  protos.classifier:add(nn.Linear(2048,256))
+  protos.classifier:add(cudnn.BatchNormalization(256,0.001,nil,true))
+  protos.classifier:add(cudnn.ReLU(true))
+  protos.classifier:add(nn.Linear(256,256))
+  protos.classifier:add(cudnn.BatchNormalization(256,0.001,nil,true))
+  protos.classifier:add(cudnn.ReLU(true))
+  protos.classifier:add(nn.Linear(256,2))
+  protos.classifier:add(cudnn.LogSoftMax())
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
@@ -42,15 +49,17 @@ else
 end
 
 if #opt.nGPU > 1 then
-  model = parallel_utils.makeDataParallel(model, opt.nGPU)
+  protos.encoder = parallel_utils.makeDataParallel(protos.encoder, opt.nGPU)
 else
   cudnn.fastest, cudnn.benchmark = true, true
 end
 
-model:cuda()
+protos.encoder:cuda()
+protos.classifier:cuda()
 criterion = nn.ClassNLLCriterion():cuda()
 
-print(model)
+print(protos.encoder)
+print(protos.classifier)
 print(criterion)
 print('===> Loading model complete')
 

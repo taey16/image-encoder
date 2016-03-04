@@ -37,7 +37,8 @@ local loss_for_all_batch
 
 function train()
   cutorch.synchronize()
-  model:training()
+  protos.encoder:training()
+  protos.classifier:training()
   local tm = torch.Timer()
 
   error_for_all_batch = 0
@@ -70,7 +71,7 @@ function train()
   print(('epoch: %d trn loss: %.6f err: %.6f solver: %s, elapsed: %.4f'):format(
     epoch, loss_for_all_batch, error_for_all_batch, opt.solver, elapsed))
 
-  conditional_save(model, optimState, epoch)
+  conditional_save(protos.classifier, optimState, epoch)
   collectgarbage()
 
 end -- of train()
@@ -85,7 +86,7 @@ local timer = torch.Timer()
 local dataTimer = torch.Timer()
 
 
-local parameters, gradParameters = model:getParameters()
+local parameters, gradParameters = protos.classifier:getParameters()
 function trainBatch(inputsThread, labelsThread)
   cutorch.synchronize()
   collectgarbage()
@@ -107,11 +108,12 @@ function trainBatch(inputsThread, labelsThread)
 
   local loss, outputs
   feval = function(x)
-    model:zeroGradParameters()
-    outputs = model:forward(inputs)
+    protos.classifier:zeroGradParameters()
+    local feat = protos.encoder:forward(inputs)
+    outputs = protos.classifier:forward(feat)
     loss = criterion:forward(outputs, labels)
     local gradOutputs = criterion:backward(outputs, labels)
-    model:backward(inputs, gradOutputs)
+    protos.classifier:backward(inputs, gradOutputs)
     return loss, gradParameters
   end
 
@@ -151,7 +153,7 @@ function trainBatch(inputsThread, labelsThread)
   optimState.learningRate = learning_rate
 
   if iter_batch % opt.snapshot == 0 then
-    conditional_save(model, optimState, epoch)
+    conditional_save(protos.classifier, optimState, epoch)
   end
 
   dataTimer:reset()

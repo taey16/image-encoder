@@ -18,7 +18,8 @@ local num_samples = num_batches * opt.test_batchSize
 local timer = torch.Timer()
 function test()
   cutorch.synchronize()
-  model:evaluate()
+  protos.encoder:evaluate()
+  protos.classifier:evaluate()
   timer:reset()
 
   iter_batch = 0
@@ -66,7 +67,8 @@ function testBatch(inputsThread, labelsThread)
   inputs:resize(inputsCPU:size()):copy(inputsCPU)
   labels:resize(labelsCPU:size()):copy(labelsCPU)
 
-  local outputs = model:forward(inputs)
+  local feat = protos.encoder:forward(inputs)
+  local outputs = protos.classifier:forward(feat)
   local loss_batch = criterion:forward(outputs, labels)
   cutorch.synchronize()
 
