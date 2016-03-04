@@ -1,8 +1,5 @@
 
 require 'cudnn'
-cudnn.benchmark = true
-cudnn.fastest = true
-cudnn.verbose = true
 require 'cunn'
 paths.dofile('inception_module.lua')
 

@@ -4,12 +4,9 @@ require('nn')
 require('cunn')
 require('cudnn')
 
-
 local sanitize = {}
-
 -- common obj name to be freed
 local common = {'output', 'gradInput'}
-
 -- temporary buffer name other than output/gradInput
 local t = {
   -- convolution
@@ -65,33 +62,30 @@ local function is_member(name, t)
     if name == value then
       return true
     end
-   end
-   return false
+  end
+  return false
 end
 
 
 -- Taken and modified from Soumith's imagenet-multiGPU.torch code
 -- https://github.com/soumith/imagenet-multiGPU.torch/blob/master/train.lua
 function sanitize.sanitize(model)
-   local list = model:listModules()
-   for _,val in ipairs(list) do
+  local list = model:listModules()
+  for _,val in ipairs(list) do
     for name,field in pairs(val) do
-
-     -- remove ffi obj
-     if torch.type(field) == 'cdata' then
-      val[name] = nil
-
-     -- remove common obj
-     elseif is_member(name, common) then
-      free_table_or_tensor(val, name, field)
-
-     -- remove specific obj
-     elseif is_member(name, t[val.__typename]) then
-      free_table_or_tensor(val, name, field)
-     end
+      -- remove ffi obj
+      if torch.type(field) == 'cdata' then
+        val[name] = nil
+      -- remove common obj
+      elseif is_member(name, common) then
+        free_table_or_tensor(val, name, field)
+      -- remove specific obj
+      elseif is_member(name, t[val.__typename]) then
+        free_table_or_tensor(val, name, field)
+      end
     end
-   end
-   return model
+  end
+  return model
 end
 
 return sanitize

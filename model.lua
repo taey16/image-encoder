@@ -1,11 +1,8 @@
 
 paths.dofile('models/init_model_weight.lua')
-paths.dofile('utils/parallel_utils.lua')
-
+local parallel_utils = require 'utils.parallel_utils'
 
 model = {}
-feature_encoder = {}
-classifier = {}
 criterion = {}
 
 if opt.retrain then
@@ -14,12 +11,10 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   model = torch.load(opt.retrain)
-  feature_encoder = model:get(1)
-  classifier = model:get(2)
-  feature_encoder:add(model:get(2):get(1))
-  feature_encoder:add(model:get(2):get(2))
-  feature_encoder:add(model:get(2):get(3))
-  model = feature_encoder
+  model.modules[#model] = nil
+  model:get(1):add(nn.View(2048))
+  model:get(1):add(nn.Linear(2048,2))
+  model:get(1):add(cudnn.LogSoftMax())
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
@@ -42,16 +37,14 @@ else
     'File not found: '..model_filepath)
   paths.dofile(model_filepath)
   print('===> Creating model from file: '..model_filepath)
-  --feature_encoder, classifier = createModel()
-  --MSRinit(feature_encoder)
-  --MSRinit(classifier)
   model = createModel()
   MSRinit(model)
 end
 
-
 if #opt.nGPU > 1 then
-  model = makeDataParallel(model, opt.nGPU)
+  model = parallel_utils.makeDataParallel(model, opt.nGPU)
+else
+  cudnn.fastest, cudnn.benchmark = true, true
 end
 
 model:cuda()

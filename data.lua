@@ -1,5 +1,5 @@
 
-local ffi = require 'ffi'
+--local ffi = require 'ffi'
 local Threads = require 'threads'
 
 do 
@@ -17,15 +17,13 @@ do
         local seed = opt.manualSeed + idx
         torch.manualSeed(seed)
         local cu_seed = opt.manualSeed + 321 + idx
-        cutorch.manualSeed(seed)
+        cutorch.manualSeedAll(seed)
         print(
-          ('===> Starting donkey with id: %d seed: %d, cu_seed: %d'):format(tid-1, seed, cu_seed)
-        )
+          ('===> Starting donkey with id: %d seed: %d, cu_seed: %d'):format(tid-1, seed, cu_seed))
         paths.dofile('donkey/donkey.lua')
       end
     )
   else 
-    -- single threaded data loading. useful for debugging
     paths.dofile('donkey/donkey.lua')
     donkeys = {}
     -- f1: main callback ,f2: ending callback
@@ -34,6 +32,7 @@ do
   end
 end
 
+--[[
 nClasses= nil
 classes = nil
 donkeys:addjob(
@@ -61,4 +60,4 @@ donkeys:addjob(
 donkeys:synchronize()
 assert(nTest > 0, "Failed to get nTest")
 print('===> nTest: ', nTest)
-
+--]]

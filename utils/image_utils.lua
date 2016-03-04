@@ -2,9 +2,11 @@
 require 'torch'
 require 'image'
 require 'nn'
+local gm = require 'graphicsmagick'
 
+local image_utils = {}
 
-function local_contrast_norm( rgb, kernel_size )
+function image_utils.local_contrast_norm( rgb, kernel_size )
   local rgb = rgb:double()
   local kernel_size = kernel_size or 7
   local normalization = 
@@ -24,7 +26,7 @@ end
 
 
 -- used in vgg16Caffe
-function preprocess(im)
+function image_utils.preprocess(im)
   local input = image.scale(im,256,256,'bilinear')*255
   if input:dim() == 2 then
     input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
@@ -50,7 +52,7 @@ function preprocess(im)
 end
 
 
-function save_images(x, n, file, padding, nrow, symmetric)
+function image_utils.save_images(x, n, file, padding, nrow, symmetric)
   local padding = padding or 2
   local nrow = nrow or 8
   local symmetric = symmetric or true
@@ -63,7 +65,7 @@ function save_images(x, n, file, padding, nrow, symmetric)
 end
 
 
-function augment_image(input, loadSize, sampleSize)
+function image_utils.augment_image(input, loadSize, sampleSize)
   local oH = sampleSize[2]
   local oW = sampleSize[3]
   local iH = loadSize[2]
@@ -86,7 +88,7 @@ function augment_image(input, loadSize, sampleSize)
 end
 
 
-function resize_crop(input, loadSize, preserve_aspect_ratio)
+function image_utils.resize_crop(input, loadSize, preserve_aspect_ratio)
   local output = torch.FloatTensor()
   local preserve_aspect_ratio = 
     preserve_aspect_ratio or torch.uniform()
@@ -107,9 +109,10 @@ function resize_crop(input, loadSize, preserve_aspect_ratio)
 end
 
 
-function loadImage(path, loadSize)
+function image_utils.loadImage(path, loadSize)
   local loadSize = loadSize or nil
-  local input = image.load(path)
+  --local input = image.load(path)
+  local input = gm.load(path)
   if input:dim() == 2 then
     input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
   elseif input:dim() == 3 and input:size(1) == 1 then
@@ -123,12 +126,9 @@ function loadImage(path, loadSize)
   end
 
   if loadSize then
-    input = resize_crop(input, loadSize)
+    input = image_utils.resize_crop(input, loadSize)
   end
 
-  --if not input:iscontiguous() then
-  --  input = input:contiguous()
-  --end
   return input
 end
 
@@ -148,11 +148,13 @@ local load_image_inception_v3 = function(path)
   -- due to batch normalization we must use minibatches
   return img:float():view(1, img:size(1), img:size(2), img:size(3))
 end
+image_utils.load_image_inception_v3 = load_image_inception_v3
 
 
-function loadImage(path, loadSize, aspect_ratio)
+function image_utils.loadImage(path, loadSize, aspect_ratio)
   local loadSize = loadSize or nil
-  local input = image.load(path)
+  --local input = image.load(path)
+  local input = gm.load(path)
   if input:dim() == 2 then
     input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
   elseif input:dim() == 3 and input:size(1) == 1 then
@@ -164,13 +166,13 @@ function loadImage(path, loadSize, aspect_ratio)
     print(#input)
     error('loadImage: not 2-channel or 3-channel image')
   end
-  input = resize_crop(input, loadSize, aspect_ratio)
+  input = image_utils.resize_crop(input, loadSize, aspect_ratio)
 
   return input
 end
 
 
-function random_RST(img_data, output_resolution)
+function image_utils.random_RST(img_data, output_resolution)
   local resolution = img_data:size(2)
   local nChannels = img_data:size(1)
   local rotationFactor = 4
@@ -199,7 +201,7 @@ function random_RST(img_data, output_resolution)
 end
 
 
-function random_flip(input, do_flip)
+function image_utils.random_flip(input, do_flip)
   local do_flip = do_flip or torch.uniform()
   if do_flip > 0.5 then
     input = image.hflip(input)
@@ -208,7 +210,7 @@ function random_flip(input, do_flip)
 end
 
 
-function random_jitter(input, sampleSize)
+function image_utils.random_jitter(input, sampleSize)
   local iW = input:size(3)
   local iH = input:size(2)
   local oW = sampleSize[3]
@@ -219,12 +221,12 @@ function random_jitter(input, sampleSize)
   assert(output:size(3) == oW)
   assert(output:size(2) == oH)
 
-  output = random_flip(output)
+  output = image_utils.random_flip(output)
 
   return output
 end
 
-function mean_std_norm(input, mean, std)
+function image_utils.mean_std_norm(input, mean, std)
   for i=1,3 do
     if mean then input[{{i},{},{}}]:add(-mean[i]) end
     if  std then input[{{i},{},{}}]:div(std[i]) end
@@ -233,7 +235,7 @@ function mean_std_norm(input, mean, std)
 end
 
 
-function center_crop(input, sampleSize)
+function image_utils.center_crop(input, sampleSize)
   local oH = sampleSize[2]
   local oW = sampleSize[3]
   local iW = input:size(3)
@@ -244,4 +246,5 @@ function center_crop(input, sampleSize)
   return output
 end
 
+return image_utils
 
