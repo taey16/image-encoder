@@ -3,9 +3,10 @@ local dataset_root = '/storage/product/det/'
 local checkpoint_path = paths.concat(dataset_root, 'torch_cache');
 
 local dataset_name = 'det'
-local total_train_samples = 9734 + 
+local total_train_samples = 9734 + 21220 + 4964 + 18206 + 7274 + 12630 + 19567 + 20396 + 20460 + 14181 + 20048 + 19726 + 15895 + 39438 + 17304
 local nClasses = 2
-local forceClasses = {'blouse', 'non_button'}
+local forceClasses = 
+  {'blouse', 'cardigan', 'coat', 'hat', 'jacket', 'jumper', 'neat', 'onepiece', 'pants', 'shirt', 'shoes', 'skirt', 'swimwear', 'T-shirt', 'underwear'}
 
 local network = 'resception'
 local loadSize  = {3, 342, 342}
