@@ -12,10 +12,18 @@ if opt.retrain then
   -- for single-gpu
   model = torch.load(opt.retrain)
   print(model)
+  -- resception
   model:remove(22)
   model:remove(21)
   model:add(nn.Linear(2048,opt.nClasses))
   model:add(cudnn.LogSoftMax())
+  --[[
+  -- inception-v3-2015-12-06
+  model.modules[#model] = nil
+  model:get(1):add(nn.View(2048))
+  model:get(1):add(nn.Linear(2048,opt.nClasses))
+  model:get(1):add(cudnn.LogSoftMax())
+  --]]
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
