@@ -8,7 +8,7 @@ paths.dofile('../utils/net_utils.lua')
 --cutorch.setDevice(1)
 print '===> Loading model'
 local model_filename =
-  '/storage/product/det/torch_cache/det_X_gpu2__epoch1_nag_lr0.01125_decay_seed0.500_start40785_every40785/model_3.t7'
+  '/storage/product/det/torch_cache/det_X_gpu2_resception_epoch1_nag_lr0.01125_decay_seed0.500_start37040_every37040/model_15.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_33.t7'
@@ -28,7 +28,7 @@ local model_filename =
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_40.t7'
   --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.t7'
 local output_model_filename =
-  '/storage/product/det/torch_cache/det_X_gpu2__epoch1_nag_lr0.01125_decay_seed0.500_start40785_every40785/model_3.bn_removed.t7'
+  string.format('%s.bn_removed.t7', model_filename)
   --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_33.bn_removed.t7'
@@ -47,6 +47,8 @@ local output_model_filename =
   --'/storage/product/clothes/torch_cache/inception7/clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015MonDec2117:51:172015/model_1.bn_removed.t7'
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7/digits_gpu_2_lr0.045SatDec514:08:122015/model_40.bn_removed.t7'
   --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
+
+--nn.DataParallelTable.deserializeNGPUs = true
 local model = torch.load(model_filename)
 print(model)
 model = model:get(1)
