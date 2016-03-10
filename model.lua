@@ -11,8 +11,10 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   protos.encoder = torch.load(opt.retrain)
+  print(protos.encoder)
   protos.encoder.modules[#protos.encoder] = nil
-  protos.encoder:get(1):add(nn.View(2048))
+  protos.encoder.modules[#protos.encoder] = nil
+  --protos.encoder:get(1):add(nn.View(2048))
   protos.classifier = nn.Sequential()
   protos.classifier:add(nn.Linear(2048,256))
   protos.classifier:add(cudnn.BatchNormalization(256,0.001,nil,true))
