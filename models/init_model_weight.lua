@@ -43,8 +43,8 @@ function MSRinit(net)
   init'nn.SpatialConvolution'
   init'nn.SpatialConvolutionMM'
   init'cudnn.SpatialConvolution'
+  BNinit'cudnn.BatchNormalization'
   BNinit'nn.SpatialBatchNormalization'
-  BNinit'cudnn.SpatialBatchNormalization'
   BNinit'nn.BatchNormalization'
   Linearinit'nn.Linear'
 end
