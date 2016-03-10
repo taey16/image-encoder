@@ -76,10 +76,12 @@ function testBatch(inputsThread, labelsThread)
   local err = opt.test_batchSize - preds:eq(labels):sum()
   error_for_all_batch = error_for_all_batch + err
 
-  if iter_batch % (opt.display*4) == 0 then
+  --[[
+  if iter_batch % (opt.display*50) == 0 then
     io.flush(print(('%04d loss: %.6f err: %.6f'):format(
       iter_batch, loss_batch , err / opt.test_batchSize)))
   end
+  --]]
 
 end -- end of testBatch
 

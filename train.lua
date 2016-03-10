@@ -32,6 +32,10 @@ end
 local trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
 -- iter_batch should not be reseted in function train()
 local iter_batch = 0
+if opt.iter_batch ~= -1 then
+  io.flush(print(string.format('===> reset iter_batch: %d', opt.iter_batch)))
+  iter_batch = opt.iter_batch
+end
 local error_for_all_batch
 local loss_for_all_batch
 
