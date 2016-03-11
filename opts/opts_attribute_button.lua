@@ -10,7 +10,7 @@ local forceClasses = {'button', 'non_button'}
 local network = 'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local nGPU = {1,2}
+local nGPU = {1,2,3,4}
 local current_epoch = 20
 local test_initialization = false
 local retrain_path = 
@@ -32,15 +32,15 @@ local batchsize = 32
 local test_batchsize = 32
 local solver = 'nag'
 local num_max_epoch = 500
-local learning_rate = 0.1--0.01125
+local learning_rate = 0.1
 local weight_decay = 0.0001
-local learning_rate_decay_seed = 0.94--0.5
-local learning_rate_decay_start = 0--40037 * 5
+local learning_rate_decay_seed = 0.94
+local learning_rate_decay_start = 0
 local learning_rate_decay_every = 2837 * 1
 
 local experiment_id = string.format(
   '%s_X_gpu%d_%s_epoch%d_%s_stratified_sample_lr%.5f_decay_seed%.3f_start%d_every%d', 
-    dataset_name, #nGPU, network, current_epoch, solver, tostring(stratified_sample, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every)
+    dataset_name, #nGPU, network, current_epoch, solver, tostring(stratified_sample), learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every)
 
 
 cmd = torch.CmdLine()
