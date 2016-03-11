@@ -46,8 +46,12 @@ function train()
   for iter = 1,opt.epochSize do
     donkeys:addjob(
       function()
-        --local  inputs, labels = trainLoader:sample(opt.batchSize)
-        local  inputs, labels = trainLoader:stratified_sample(opt.batchSize)
+        local inputs, labels
+        if opts.stratified_sample then
+          inputs, labels = trainLoader:stratified_sample(opt.batchSize)
+        else
+          inputs, labels = trainLoader:sample(opt.batchSize)
+        end
         return sendTensor(inputs), sendTensor(labels)
       end,
       trainBatch
