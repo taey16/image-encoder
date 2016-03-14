@@ -47,7 +47,7 @@ function train()
     donkeys:addjob(
       function()
         local inputs, labels
-        if opts.stratified_sample then
+        if opt.stratified_sample then
           inputs, labels = trainLoader:stratified_sample(opt.batchSize)
         else
           inputs, labels = trainLoader:sample(opt.batchSize)
