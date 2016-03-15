@@ -1,16 +1,28 @@
 
 local dataset_root = '/storage/freebee/'
-local checkpoint_path = paths.concat(dataset_root, 'torch_cache');
+local dataset_name = 
+  'attribute_button'
+  --'attribute_china_collar'
+  --'attribute_slit_collar'
+local checkpoint_path = paths.concat(dataset_root..'/'..dataset_name, 'torch_cache');
+local mode_dev = false
 
-local dataset_name = 'attribute'
-local total_train_samples = 25916 + 64875
+local total_train_samples = 
+  -- button
+  25916 + 64875 
+  -- china_collar
+  --1013 + 89496
+  -- slit_collar
+  --796 + 89715
 local nClasses = 2
-local forceClasses = {'button', 'non_button'}
+local forceClasses = 
+  {'button', 'non_button'}
+  --{'china_collar', 'non_china_collar'}
+  --{'slit_collar', 'non_slit_collar'}
 
 local network = 'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local nGPU = {1,2,3,4}
 local current_epoch = 20
 local test_initialization = false
 local retrain_path = 
@@ -27,6 +39,7 @@ else
 end
 current_epoch = 1
 
+local nGPU = {1,2}
 local stratified_sample = false
 local batchsize = 32
 local test_batchsize = 32
@@ -34,13 +47,16 @@ local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.1
 local weight_decay = 0.0001
-local learning_rate_decay_seed = 0.94
-local learning_rate_decay_start = 0
+local learning_rate_decay_seed = 0.94--0.5
+local learning_rate_decay_start = 0--40037 * 5
 local learning_rate_decay_every = 2837 * 1
 
 local experiment_id = string.format(
-  '%s_X_gpu%d_%s_epoch%d_%s_stratified_sample_lr%.5f_decay_seed%.3f_start%d_every%d', 
-    dataset_name, #nGPU, network, current_epoch, solver, tostring(stratified_sample), learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every)
+  'dev%s_%s_X_gpu%d_%s_epoch%d_stratified_sample%s_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 
+    tostring(mode_dev), dataset_name, #nGPU, 
+    network, current_epoch, tostring(stratified_sample), 
+    solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
+)
 
 
 cmd = torch.CmdLine()
@@ -50,7 +66,8 @@ cmd:text()
 cmd:text('Options')
 
 -- dataset specific
-cmd:option('-cache', checkpoint_path, 'subdirectory in which to save/log experiments')
+cmd:option('-cache', checkpoint_path, 
+  'subdirectory in which to save/log experiments')
 cmd:option('-data', dataset_root, 'root of dataset')
 cmd:option('-nClasses', nClasses, '# of classes')
 
@@ -71,7 +88,8 @@ cmd:option('-retrain', initial_model,
   'provide path to model to retrain with')
 cmd:option('-optimState', initial_optimState, 
   'provide path to an optimState to reload from')
-cmd:option('-stratified_sample', stratified_sample, 'stratified_sample or not')
+cmd:option('-stratified_sample', stratified_sample, 
+  'stratified_sample or not')
 
 -- optimizer specific
 cmd:option('-solver', solver, 'nag | adam | sgd')

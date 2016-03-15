@@ -1,5 +1,4 @@
 
---local ffi = require 'ffi'
 local Threads = require 'threads'
 
 do 
@@ -31,6 +30,20 @@ do
     function donkeys:synchronize() end
   end
 end
+
+class_ids= -1
+donkeys:addjob(
+  function()
+    return trainLoader.classes
+  end,
+  function(class_id)
+    class_ids = class_id
+  end
+)
+donkeys:synchronize()
+print(class_ids)
+assert(#class_ids == opt.nClasses, 'Check total number of classes')
+torch.save(paths.concat(opt.save, 'classes.t7'), class_ids)
 
 --[[
 nClasses= nil
