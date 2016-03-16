@@ -2,8 +2,7 @@
 package.path = '../?.lua;'..package.path
 local image_utils = require 'utils.image_utils'
 
-loader = {}
-
+local loader = {}
 local testHook = function(path, loadSize, sampleSize, mean, std)
   local input = image_utils.loadImage(path, loadSize)
   local output= image_utils.center_crop(input, sampleSize)
@@ -11,6 +10,7 @@ local testHook = function(path, loadSize, sampleSize, mean, std)
   return output
 end
 loader.testHook = testHook
+
 
 local inception7_aug20 = function(filename, loadSize, sampleSize, mean, std)
   local input = image_utils.loadImage(filename, loadSize, 0)
@@ -26,6 +26,16 @@ local inception7_aug20 = function(filename, loadSize, sampleSize, mean, std)
   return output 
 end
 loader.inception7_aug20 = inception7_aug20
+
+
+local inception7_aug10 = function(filename, loadSize, sampleSize, mean, std)
+  local input = image_utils.loadImage(filename, loadSize, 0)
+  input = image_utils.mean_std_norm(input, mean, std)
+  input = image_utils.augment_image(input, loadSize, sampleSize )
+
+  return input
+end
+loader.inception7_aug10 = inception7_aug10
 
 return loader
 
