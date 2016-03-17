@@ -1,24 +1,28 @@
 
 local dataset_root = '/storage/freebee/'
 local dataset_name = 
-  'attribute_button'
+  'attribute_tshirts_shirts_blous_knit'
   --'attribute_china_collar'
   --'attribute_slit_collar'
+  --'attribute_button'
 local checkpoint_path = paths.concat(dataset_root..'/'..dataset_name, 'torch_cache');
 local mode_dev = false
 
 local total_train_samples = 
-  -- button
-  25916 + 64875 
+  -- tshirts_shirts_blous_knit
+  43965 + 21383 + 11665 + 13738 --val: 3917 + 1840 + 1005 + 1225
   -- china_collar
   --1013 + 89496
   -- slit_collar
   --796 + 89715
-local nClasses = 2
+  -- button
+  --25916 + 64875 
+local nClasses = 4
 local forceClasses = 
-  {'button', 'non_button'}
+  {'tshirts', 'shirts', 'blous', 'knit'}
   --{'china_collar', 'non_china_collar'}
   --{'slit_collar', 'non_slit_collar'}
+  --{'button', 'non_button'}
 
 local network = 'resception'
 local loadSize  = {3, 342, 342}
@@ -47,8 +51,8 @@ local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.1
 local weight_decay = 0.0001
-local learning_rate_decay_seed = 0.94--0.5
-local learning_rate_decay_start = 0--40037 * 5
+local learning_rate_decay_seed = 0.94
+local learning_rate_decay_start = 0
 local learning_rate_decay_every = 2837 * 1
 
 local experiment_id = string.format(

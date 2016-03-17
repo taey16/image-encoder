@@ -13,14 +13,45 @@ local agent = require 'agent.agent_attribute'
 local attribute_utils= require 'utils.attribute_utils'
 
 attribute_id = 
-  'button'
+  'china_collar'
+  --'slit_collar'
+  --'button'
+attribute_name = 
+  '차이나카라'
+  --'슬릿카라'
+  --'단추'
 local image_list, label_list = attribute_utils.get_val(attribute_id)
 
-for n, filename in ipairs(image_lists) do
+local output_fp = io.open(string.format(
+  'log_rnn_classifier_finetune-1_%s.log.txt', attribute_id), 'w')
+
+for n, filename in ipairs(image_list) do
   print(filename)
-  local sents = agent.get_attribute(filename)
-  print(sents)
+  local sents, logprob
+  sents, logprob = agent.get_attribute(filename)
+  if logprob then
+    local prob = torch.exp(logprob)
+    print(sents[1])
+    print(label_list[n])
+    local attribute_names = string.split(sents[1], ' ')
+    local line
+    for i=1,#attribute_names do
+      print(attribute_names[i])
+      print(prob[i][1])
+      if attribute_name == attribute_names[i] then
+        line = string.format(
+          '%d %f %d\n', n, prob[i][1], label_list[n])
+      end
+    end
+    if line == nil then
+      line = string.format(
+        '%d 0.0 %d\n', n, label_list[n])
+    end
+    output_fp:write(line)
+  end
 end
+
+output_fp:close()
 
 io.flush(print('Done'))
 

@@ -8,6 +8,7 @@ local cjson = require 'cjson'
 package.path = '/works/vision_language/?.lua;' .. package.path
 require 'misc.DataLoaderRaw'
 require 'models.LanguageModel'
+require 'models.FeatExpander'
 local net_utils = require 'misc.net_utils'
 
 
