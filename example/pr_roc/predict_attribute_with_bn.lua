@@ -1,4 +1,3 @@
-
 require 'torch'
 require 'cutorch'
 require 'nn'
@@ -9,30 +8,30 @@ package.path = '../../?.lua;'..package.path
 local parallel_utils = require 'utils.parallel_utils'
 local attribute_utils= require 'utils.attribute_utils'
 
-
 local gpus = {1,2}
 local attribute_id = 
   'slit_collar'
   --'button'
-  --'china_collar'
-local model_filename = 
-  -- slit_collar'
-  '/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_59.bn_removed.t7'  
+local encoder_model_filename =
+  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.t7'
+local classifier_model_filename = 
+  -- slit_collar
+  '/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_59.t7'
   -- button
-  --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_98.bn_removed.t7'
-  -- china collar
-  --'/storage/freebee/attribute_china_collar/torch_cache/devtrue_attribute_china_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_109.bn_removed.t7'
-print(string.format('===> Loading model: %s', model_filename))
-local model = torch.load(model_filename)
-local encoder = model:get(1):clone()
-local classifier = model:get(2):clone()
+  --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_98.t7'
+local encoder = torch.load(encoder_model_filename)
+local classifier = torch.load(classifier_model_filename)
+encoder:remove(#encoder.modules)
+encoder:remove(#encoder.modules)
+classifier:remove(#classifier.modules)
+classifier:add(cudnn.SoftMax())
 cudnn.fastest = true
 cudnn.benchmark = true
 cudnn.verbose = true
 if #gpus > 1 then
   encoder = parallel_utils.makeDataParallel(encoder, gpus)
 else
-  model:cuda()
+  encoder:cuda()
 end
 classifier:cuda()
 model = {}
@@ -43,6 +42,7 @@ model.classifier:evaluate()
 print(model.encoder)
 print(model.classifier)
 collectgarbage()
+
 
 print '===> Loading mean, std' 
 local mean_std = torch.load(
