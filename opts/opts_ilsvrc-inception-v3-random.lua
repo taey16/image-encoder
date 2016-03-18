@@ -11,12 +11,15 @@ local network = 'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
 local nGPU = {1,2,3,4}
-local current_epoch = 1
-local test_initialization = false
+local current_epoch = 49
+local current_iter = 1925000--1241145
+local test_initialization = true--false
 local retrain_path = 
+  '/data2/ImageNet/ILSVRC2012/torch_cache/ILSVRC2012_X_gpu4_resception_epoch32_nag_lr0.04500_decay_seed0.940_start0_every80074'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/ILSVRC2012_X_gpu4_resception_epoch1_nag_lr0.04500_decay_seed0.940_start0_every80074'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
-  false
+  --false
 if retrain_path then
   initial_model = 
     paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
@@ -33,7 +36,7 @@ local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.045
 local weight_decay = 0.00002
-local learning_rate_decay_seed = 0.96--0.5
+local learning_rate_decay_seed = 0.94--0.5
 local learning_rate_decay_start = 0--40037 * 5
 local learning_rate_decay_every = 40037 * 2
 local experiment_id = string.format(
@@ -50,13 +53,12 @@ cmd:text('Options')
 cmd:option('-cache', checkpoint_path, 'subdirectory in which to save/log experiments')
 cmd:option('-data', dataset_root, 'root of dataset')
 cmd:option('-nClasses', nClasses, '# of classes')
-cmd:option('-filename_train',filename_train,'')
-cmd:option('-filename_test', filename_test, '')
 
 -- training specific
 cmd:option('-nEpochs', num_max_epoch, 'Number of total epochs to run')
 cmd:option('-epochSize', math.ceil(total_train_samples/batchsize), 'Number of batches per epoch')
 cmd:option('-epochNumber', current_epoch,'Manual epoch number (useful on restarts)')
+cmd:option('-iter_batch', current_iter,'Manual iter number (useful on restarts and lr anneal)')
 cmd:option('-batchSize', batchsize, 'mini-batch size (1 = pure stochastic)')
 cmd:option('-test_batchSize', test_batchsize, 'test mini-batch size')
 cmd:option('-test_initialization', test_initialization, 'test_initialization')
