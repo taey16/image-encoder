@@ -11,7 +11,7 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   model = torch.load(opt.retrain)
-  print(model)
+  --print(model)
   -- resception
   model:remove(22)
   model:remove(21)

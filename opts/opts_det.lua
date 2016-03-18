@@ -33,13 +33,13 @@ local test_batchsize = 32
 local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.045/2/2
-local weight_decay = 0.0001
+local weight_decay = 0.0002
 local learning_rate_decay_seed = 0.5
 local learning_rate_decay_start = math.floor(total_train_samples/batchsize + 0.5) * 5
-local learning_rate_decay_every = math.floor(total_train_samples/batchsize + 0.5) * 5 
+local learning_rate_decay_every = math.floor(total_train_samples/batchsize + 0.5) * 5
 local experiment_id = string.format(
-  '%s_X_gpu%d_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 
-    dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every)
+  '%s_X_gpu%d_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d_wc%f', 
+    dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every, weight_decay)
 
 
 cmd = torch.CmdLine()
