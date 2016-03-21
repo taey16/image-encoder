@@ -2,9 +2,9 @@
 local dataset_root = '/storage/freebee/'
 local dataset_name = 
   --'attribute_tshirts_shirts_blous_knit'
-  --'attribute_china_collar'
+  'attribute_china_collar'
   --'attribute_slit_collar'
-  'attribute_button'
+  --'attribute_button'
 local checkpoint_path = paths.concat(dataset_root..'/'..dataset_name, 'torch_cache');
 local mode_dev = false
 
@@ -12,17 +12,17 @@ local total_train_samples =
   -- tshirts_shirts_blous_knit
   --43965 + 21383 + 11665 + 13738 --val: 3917 + 1840 + 1005 + 1225
   -- china_collar
-  --1013 + 89496
+  977 + 83906
   -- slit_collar
   --796 + 89715
   -- button
-  25916 + 64875 
+  --25916 + 64875 
 local nClasses = 2
 local forceClasses = 
   --{'tshirts', 'shirts', 'blous', 'knit'}
-  --{'china_collar', 'non_china_collar'}
+  {'non_china_collar', 'china_collar'}
   --{'slit_collar', 'non_slit_collar'}
-  {'non_button', 'button'}
+  --{'non_button', 'button'}
 
 local network = 'resception'
 local loadSize  = {3, 342, 342}
@@ -53,7 +53,7 @@ local learning_rate = 0.1
 local weight_decay = 0.0001
 local learning_rate_decay_seed = 0.94
 local learning_rate_decay_start = 0
-local learning_rate_decay_every = 2837 * 1
+local learning_rate_decay_every = 2653 * 1
 
 local experiment_id = string.format(
   'dev%s_%s_X_gpu%d_%s_epoch%d_stratified_sample%s_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 

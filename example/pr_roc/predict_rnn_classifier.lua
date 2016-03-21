@@ -23,7 +23,7 @@ attribute_name =
 local image_list, label_list = attribute_utils.get_test(attribute_id)
 
 local output_fp = io.open(string.format(
-  'log_rnn_classifier_shuffle_cutoff100_finetune-1_%s.log.txt', attribute_id), 'w')
+  'log_rnn_classifier_shuffle_cutoff100_finetune0_%s.log.txt', attribute_id), 'w')
 
 for n, filename in ipairs(image_list) do
   print(filename)
