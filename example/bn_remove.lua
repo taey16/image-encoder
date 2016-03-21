@@ -8,20 +8,23 @@ paths.dofile('../utils/net_utils.lua')
 
 print '===> Loading model'
 local encoder_model_filename =
-  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.bn_removed.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_29.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.bn_removed.t7'
 local classifier_model_filename = 
   -- slit collar
-  '/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_59.t7'
+  --'/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_59.t7'
   -- china_collar
   --'/storage/freebee/attribute_china_collar/torch_cache/devtrue_attribute_china_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_109.t7'
   -- button
+  '/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_37.t7'
   --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_98.t7'
 local output_model_filename =
   -- slit collar
-  '/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_59.bn_removed.t7'
+  --'/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_59.bn_removed.t7'
   -- china_collar
   --'/storage/freebee/attribute_china_collar/torch_cache/devtrue_attribute_china_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_109.bn_removed.t7'
   -- button
+  '/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_29.bn_removed.classifier_37.bn_removed.t7'
   --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_98.bn_removed.t7'
 local encoder = torch.load(encoder_model_filename)
 local classifier= torch.load(classifier_model_filename)

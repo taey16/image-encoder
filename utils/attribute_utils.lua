@@ -24,4 +24,26 @@ function attribute_utils.get_val(attribute_id)
   return image_list, label_list
 end
 
+
+function attribute_utils.get_test(attribute_id)
+  local filename = string.format(
+    '/storage/freebee/tshirts_shirts_blous_knit.image_sentence.txt.shuffle.txt.cutoff100.json.%s.test.txt', attribute_id)
+  local file = io.open(filename)
+  if file == nil then
+    error(string.format(
+      'attribute_utils.get_test, check filename: %s', filename))
+  end
+  local image_list = {}
+  local label_list = {}
+  while true do
+    local line = file:read()
+    if not line then break end
+    local item = string.split(line, ' ')
+    table.insert(image_list, item[1])
+    table.insert(label_list, tonumber(item[2]))
+  end
+  file.close()
+  return image_list, label_list
+end
+
 return attribute_utils

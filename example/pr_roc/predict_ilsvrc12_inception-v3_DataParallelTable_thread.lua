@@ -12,13 +12,14 @@ local attribute_utils= require 'utils.attribute_utils'
 
 local gpus = {1,2}
 local attribute_id = 
-  'slit_collar'
-  --'button'
+  --'slit_collar'
+  'button'
   --'china_collar'
 local model_filename = 
   -- slit_collar'
-  '/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_59.bn_removed.t7'  
+  --'/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_59.bn_removed.t7'  
   -- button
+  '/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_29.bn_removed.classifier_37.bn_removed.t7'
   --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_98.bn_removed.t7'
   -- china collar
   --'/storage/freebee/attribute_china_collar/torch_cache/devtrue_attribute_china_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_109.bn_removed.t7'
@@ -28,7 +29,7 @@ local encoder = model:get(1):clone()
 local classifier = model:get(2):clone()
 cudnn.fastest = true
 cudnn.benchmark = true
-cudnn.verbose = true
+cudnn.verbose = false
 if #gpus > 1 then
   encoder = parallel_utils.makeDataParallel(encoder, gpus)
 else
@@ -49,7 +50,7 @@ local mean_std = torch.load(
   '/storage/freebee/attribute_button/torch_cache/meanstdCache.t7'
 )
 
-local image_list, label_list = attribute_utils.get_val(attribute_id)
+local image_list, label_list = attribute_utils.get_test(attribute_id)
 
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
@@ -88,10 +89,10 @@ local testBatch = function(n, inputs, label)
   scores, classes = score:sort(true)
 
   trials = trials + 1
-  if classes[1] == label then top1 = top1 + 1 end
+  if classes[1] == label+1 then top1 = top1 + 1 end
   io.flush(print(
     ("%d %s %d top1: %d/%d = %.5f, %.4f(%.3f)"):format(
-      n, score[1], label, top1 , trials, top1 / trials * 100,
+      n, score[2], label, top1 , trials, top1 / trials * 100,
       elapsed_process, elapsed_loading )
     )
   )
