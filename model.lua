@@ -16,13 +16,13 @@ if opt.retrain then
   protos.encoder.modules[#protos.encoder] = nil
   --protos.encoder:get(1):add(nn.View(2048))
   protos.classifier = nn.Sequential()
-  protos.classifier:add(nn.Linear(2048,256))
-  protos.classifier:add(cudnn.BatchNormalization(256,0.0001,nil,true))
+  protos.classifier:add(nn.Linear(2048,384))
+  protos.classifier:add(cudnn.BatchNormalization(384,0.0001,nil,true))
   protos.classifier:add(cudnn.ReLU(true))
-  protos.classifier:add(nn.Linear(256,256))
-  protos.classifier:add(cudnn.BatchNormalization(256,0.0001,nil,true))
+  protos.classifier:add(nn.Linear(384,384))
+  protos.classifier:add(cudnn.BatchNormalization(384,0.0001,nil,true))
   protos.classifier:add(cudnn.ReLU(true))
-  protos.classifier:add(nn.Linear(256,2))
+  protos.classifier:add(nn.Linear(384,2))
   protos.classifier:add(cudnn.LogSoftMax())
   MSRinit(protos.classifier)
   --[[

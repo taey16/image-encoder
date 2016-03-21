@@ -1,40 +1,40 @@
 
 local dataset_root = '/storage/freebee/'
 local dataset_name = 
-  'attribute_tshirts_shirts_blous_knit'
+  --'attribute_tshirts_shirts_blous_knit'
   --'attribute_china_collar'
   --'attribute_slit_collar'
-  --'attribute_button'
+  'attribute_button'
 local checkpoint_path = paths.concat(dataset_root..'/'..dataset_name, 'torch_cache');
 local mode_dev = false
 
 local total_train_samples = 
   -- tshirts_shirts_blous_knit
-  43965 + 21383 + 11665 + 13738 --val: 3917 + 1840 + 1005 + 1225
+  --43965 + 21383 + 11665 + 13738 --val: 3917 + 1840 + 1005 + 1225
   -- china_collar
   --1013 + 89496
   -- slit_collar
   --796 + 89715
   -- button
-  --25916 + 64875 
-local nClasses = 4
+  25916 + 64875 
+local nClasses = 2
 local forceClasses = 
-  {'tshirts', 'shirts', 'blous', 'knit'}
+  --{'tshirts', 'shirts', 'blous', 'knit'}
   --{'china_collar', 'non_china_collar'}
   --{'slit_collar', 'non_slit_collar'}
-  --{'button', 'non_button'}
+  {'non_button', 'button'}
 
 local network = 'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local current_epoch = 20
+local current_epoch = 30
 local test_initialization = false
 local retrain_path = 
   '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000'
   --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
 if retrain_path then
   initial_model = 
-    paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
+    paths.concat(retrain_path, ('model_%d.bn_removed.t7'):format(current_epoch-1)) 
   initial_optimState = 
     false
 else
