@@ -12,14 +12,17 @@ local attribute_utils= require 'utils.attribute_utils'
 
 local gpus = {1,2}
 local attribute_id = 
+  'long_line'
   --'slit_collar'
-  'button'
+  --'button'
   --'china_collar'
 local model_filename = 
+  -- long line
+  '/storage/freebee/attribute_long_line/torch_cache/devfalse_attribute_long_line_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2653/model_reception_29.bn_removed.classifier_66.bn_removed.t7'
   -- slit_collar'
   --'/storage/freebee/attribute_slit_collar/torch_cache/devfalse_attribute_slit_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_59.bn_removed.t7'  
   -- button
-  '/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_29.bn_removed.classifier_37.bn_removed.t7'
+  --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_29.bn_removed.classifier_37.bn_removed.t7'
   --'/storage/freebee/attribute_button/torch_cache/devfalse_attribute_button_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_98.bn_removed.t7'
   -- china collar
   --'/storage/freebee/attribute_china_collar/torch_cache/devtrue_attribute_china_collar_X_gpu2_resception_epoch1_stratified_samplefalse_nag_lr0.10000_decay_seed0.940_start0_every2837/model_reception_19.bn_removed.classifier_109.bn_removed.t7'
@@ -47,7 +50,8 @@ collectgarbage()
 
 print '===> Loading mean, std' 
 local mean_std = torch.load(
-  '/storage/freebee/attribute_button/torch_cache/meanstdCache.t7'
+  '/storage/freebee/attribute_long_line/torch_cache/meanstdCache.t7'
+  --'/storage/freebee/attribute_button/torch_cache/meanstdCache.t7'
 )
 
 local image_list, label_list = attribute_utils.get_test(attribute_id)

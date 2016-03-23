@@ -15,11 +15,13 @@ local attribute_utils= require 'utils.attribute_utils'
 attribute_id = 
   --'china_collar'
   --'slit_collar'
-  'button'
+  --'button'
+  'long_line'
 attribute_name = 
   --'차이나카라'
   --'슬릿카라'
-  '단추'
+  --'단추'
+  '롱라인'
 local image_list, label_list = attribute_utils.get_test(attribute_id)
 
 local output_fp = io.open(string.format(
