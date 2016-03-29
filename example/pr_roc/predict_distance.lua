@@ -16,8 +16,8 @@ local metric = 'L2'
 local model_path = 
   '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
 local model_filename = 
-  paths.concat(model_path, 'model_29.bn_removed.t7')
-  --paths.concat(model_path, 'model_29.t7')
+  --paths.concat(model_path, 'model_29.bn_removed.t7')
+  paths.concat(model_path, 'model_29.t7')
 print(string.format( '===> Loading model: %s', model_filename))
 local model = torch.load(model_filename)
 model:remove(#model.modules)
@@ -28,8 +28,8 @@ elseif metric == 'L1' then
   model:add(nn.Normalize(1))
 end
 model:evaluate()
-cudnn.fastest = false
-cudnn.benchmark = false
+cudnn.fastest = true
+cudnn.benchmark = true
 cudnn.verbose = false
 if #gpus > 1 then
   model = parallel_utils.makeDataParallel(model, gpus)
