@@ -15,7 +15,9 @@ local gpus = {1}
 local metric = 'L2'
 local model_path = 
   '/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
-local model_filename = paths.concat(model_path, 'model_29.bn_removed.t7')
+local model_filename = 
+  paths.concat(model_path, 'model_29.bn_removed.t7')
+  --paths.concat(model_path, 'model_29.t7')
 print(string.format( '===> Loading model: %s', model_filename))
 local model = torch.load(model_filename)
 model:remove(#model.modules)
