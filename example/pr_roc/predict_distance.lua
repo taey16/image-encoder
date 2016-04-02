@@ -36,21 +36,27 @@ if #gpus > 1 then
 else model:cuda() end
 print(model)
 collectgarbage()
+print(string.format(
+  '===> Complete loading model: %s', model_filename))
 
-local logger = optim.Logger(string.format(
-  '%s.distance.%s.log', model_filename, metric))
+local log_filename = string.format(
+  '%s.distance.%s.log', model_filename, metric)
+local logger = optim.Logger(log_filename)
+print(string.format(
+  '===> log_filename will be in : %s', log_filename))
 
-print '===> Loading mean, std' 
-local mean_std = torch.load(
+local mean_std_filename = 
   '/data2/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7'
-)
+local mean_std = torch.load(mean_std_filename)
+print(string.format(
+  '===> Loading mean, std in %s', mean_std_filename))  
 
 local image_list_q, image_list_ref, label_list = fashion_pair_utils.get_test()
 
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
 
-local nThreads = 4
+local nThreads = 1
 local donkeys = Threads( 
   nThreads, 
   function() 
@@ -107,6 +113,7 @@ for n, filename in ipairs(image_list_q) do
       local query_filename = filename
       local ref_filename = image_list_ref[n]
       local label = label_list[n]
+      io.flush(print(query_filename .. ' ' .. ref_filename))
       local img_q  = loader.inception7_aug10(
         query_filename, loadSize, sampleSize, mean_std.mean, mean_std.std)
       local img_ref= loader.inception7_aug10(
