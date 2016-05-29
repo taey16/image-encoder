@@ -10,16 +10,12 @@ local forceClasses = nil
 local network = 'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
-local nGPU = {1,2,3,4}
-local current_epoch = 49
-local current_iter = 1925000--1241145
-local test_initialization = true--false
+local nGPU = {1,2}
+local current_epoch = 1
+local current_iter = 0
+local test_initialization = false
 local retrain_path = 
-  '/data2/ImageNet/ILSVRC2012/torch_cache/ILSVRC2012_X_gpu4_resception_epoch32_nag_lr0.04500_decay_seed0.940_start0_every80074'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/ILSVRC2012_X_gpu4_resception_epoch1_nag_lr0.04500_decay_seed0.940_start0_every80074'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/'
-  --'/storage/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/'
-  --false
+  false
 if retrain_path then
   initial_model = 
     paths.concat(retrain_path, ('model_%d.t7'):format(current_epoch-1)) 
@@ -36,11 +32,11 @@ local solver = 'nag'
 local num_max_epoch = 500
 local learning_rate = 0.045
 local weight_decay = 0.00002
-local learning_rate_decay_seed = 0.94--0.5
-local learning_rate_decay_start = 0--40037 * 5
+local learning_rate_decay_seed = 0.94
+local learning_rate_decay_start = -1 --0
 local learning_rate_decay_every = 40037 * 2
 local experiment_id = string.format(
-  '%s_X_gpu%d_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
+  '%s_X_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
 )
 
 cmd = torch.CmdLine()

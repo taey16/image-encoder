@@ -2,9 +2,9 @@
 require 'torch'
 require 'paths'
 
---opt = paths.dofile('opts/opts_ilsvrc-inception-v3-random.lua')
+opt = paths.dofile('opts/opts_ilsvrc-inception-v3-random.lua')
 --opt = paths.dofile('opts/opts_attribute_button.lua')
-opt = paths.dofile('opts/opts_det.lua')
+--opt = paths.dofile('opts/opts_det.lua')
 
 paths.dofile('model.lua')
 paths.dofile('data.lua')
