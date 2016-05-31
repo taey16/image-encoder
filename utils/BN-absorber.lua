@@ -83,6 +83,7 @@ local function BN_absorber(x)
               x.modules[i-1].bias,
               x.modules[i].running_mean,
               x.modules[i].running_std,
+              --x.modules[i].running_var,
               x.modules[i].affine,
               x.modules[i].weight,
               x.modules[i].bias)

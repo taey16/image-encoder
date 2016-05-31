@@ -32,9 +32,12 @@ do
   end
 end
 
+<<<<<<< HEAD
 --[[
 nClasses= nil
 classes = nil
+=======
+>>>>>>> renewal
 donkeys:addjob(
   function() 
     return trainLoader.classes 
@@ -43,12 +46,12 @@ donkeys:addjob(
     classes = c 
   end)
 donkeys:synchronize()
-nClasses = #classes
-assert(nClasses, "Failed to get nClasses")
-print('===> nClasses: ', nClasses)
-assert(nClasses == opt.nClasses, 'nClasses is mismatched')
+assert(#classes, "Failed to get nClasses")
+print('===> nClasses: ', #classes)
+assert(#classes == opt.nClasses, 'nClasses is mismatched')
 torch.save(paths.concat(opt.save, 'classes.t7'), classes)
 
+--[[
 nTest = 0
 donkeys:addjob(
   function() 

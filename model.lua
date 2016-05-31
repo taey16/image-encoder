@@ -11,10 +11,29 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   model = torch.load(opt.retrain)
+<<<<<<< HEAD
   model.modules[#model] = nil
   model:get(1):add(nn.View(2048))
   model:get(1):add(nn.Linear(2048,2))
   model:get(1):add(cudnn.LogSoftMax())
+=======
+  model = model:get(1)
+  --[[
+  --print(model)
+  -- resception
+  model:remove(22)
+  model:remove(21)
+  model:add(nn.Linear(2048,opt.nClasses))
+  model:add(cudnn.LogSoftMax())
+  --]]
+  --[[
+  -- inception-v3-2015-12-06
+  model.modules[#model] = nil
+  model:get(1):add(nn.View(2048))
+  model:get(1):add(nn.Linear(2048,opt.nClasses))
+  model:get(1):add(cudnn.LogSoftMax())
+  --]]
+>>>>>>> renewal
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)
@@ -41,10 +60,16 @@ else
   MSRinit(model)
 end
 
+<<<<<<< HEAD
 if #opt.nGPU > 1 then
   model = parallel_utils.makeDataParallel(model, opt.nGPU)
 else
   cudnn.fastest, cudnn.benchmark = true, true
+=======
+cudnn.fastest, cudnn.benchmark = true, true
+if #opt.nGPU > 1 then
+  model = parallel_utils.makeDataParallel(model, opt.nGPU)
+>>>>>>> renewal
 end
 
 model:cuda()
