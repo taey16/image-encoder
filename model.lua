@@ -11,12 +11,15 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   model = torch.load(opt.retrain)
+  model = model:get(1)
+  --[[
   --print(model)
   -- resception
   model:remove(22)
   model:remove(21)
   model:add(nn.Linear(2048,opt.nClasses))
   model:add(cudnn.LogSoftMax())
+  --]]
   --[[
   -- inception-v3-2015-12-06
   model.modules[#model] = nil
