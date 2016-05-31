@@ -11,12 +11,6 @@ if opt.retrain then
   print('===> Loading model from file: '..opt.retrain);
   -- for single-gpu
   model = torch.load(opt.retrain)
-<<<<<<< HEAD
-  model.modules[#model] = nil
-  model:get(1):add(nn.View(2048))
-  model:get(1):add(nn.Linear(2048,2))
-  model:get(1):add(cudnn.LogSoftMax())
-=======
   model = model:get(1)
   --[[
   --print(model)
@@ -33,7 +27,6 @@ if opt.retrain then
   model:get(1):add(nn.Linear(2048,opt.nClasses))
   model:get(1):add(cudnn.LogSoftMax())
   --]]
->>>>>>> renewal
   --[[
   -- for inception-v3-2015-12-05
   feature_encoder = torch.load(opt.retrain)

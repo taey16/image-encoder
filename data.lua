@@ -32,7 +32,6 @@ do
   end
 end
 
-<<<<<<< HEAD
 --[[
 nClasses= nil
 classes = nil

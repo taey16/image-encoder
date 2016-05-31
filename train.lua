@@ -32,13 +32,10 @@ end
 local trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
 -- iter_batch should not be reseted in function train()
 local iter_batch = 0
-<<<<<<< HEAD
-=======
 if opt.iter_batch ~= -1 then
   io.flush(print(string.format('===> reset iter_batch: %d', opt.iter_batch)))
   iter_batch = opt.iter_batch
 end
->>>>>>> renewal
 local error_for_all_batch
 local loss_for_all_batch
 
@@ -53,7 +50,6 @@ function train()
     donkeys:addjob(
       function()
         local  inputs, labels = trainLoader:sample(opt.batchSize)
-        --local  inputs, labels = trainLoader:stratified_sample(opt.batchSize)
         return sendTensor(inputs), sendTensor(labels)
       end,
       trainBatch
