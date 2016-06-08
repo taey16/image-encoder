@@ -1,5 +1,5 @@
 
-paths.dofile('models/init_model_weight.lua')
+local init_utils = require 'models.init_model_weight'
 local parallel_utils = require 'utils.parallel_utils'
 
 model = {}
@@ -50,19 +50,12 @@ else
   paths.dofile(model_filepath)
   print('===> Creating model from file: '..model_filepath)
   model = createModel()
-  MSRinit(model)
+  --init_utils.MSRinit(model)
 end
 
-<<<<<<< HEAD
-if #opt.nGPU > 1 then
-  model = parallel_utils.makeDataParallel(model, opt.nGPU)
-else
-  cudnn.fastest, cudnn.benchmark = true, true
-=======
 cudnn.fastest, cudnn.benchmark = true, true
 if #opt.nGPU > 1 then
   model = parallel_utils.makeDataParallel(model, opt.nGPU)
->>>>>>> renewal
 end
 
 model:cuda()
