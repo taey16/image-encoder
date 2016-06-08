@@ -30,7 +30,7 @@ if opt.optimState then
 end
 
 local trainLogger = optim.Logger(paths.concat(opt.save, 'train.log'))
--- iter_batch should not be reseted in function train()
+-- NOTE iter_batch should not be reset in function train()
 local iter_batch = 0
 if opt.iter_batch ~= -1 then
   io.flush(print(string.format('===> reset iter_batch: %d', opt.iter_batch)))
@@ -38,6 +38,7 @@ if opt.iter_batch ~= -1 then
 end
 local error_for_all_batch
 local loss_for_all_batch
+
 
 function train()
   cutorch.synchronize()
@@ -95,7 +96,7 @@ function trainBatch(inputsThread, labelsThread)
   local elapsed_batch_loading = dataTimer:time().real
   timer:reset()
 
-  -- decay the learning rate for both LM and CNN
+  -- decay the learning rate for CNN
   local learning_rate = optimState.learningRate
   if iter_batch > opt.learning_rate_decay_start and opt.learning_rate_decay_start >= 0 then
     local frac = (iter_batch - opt.learning_rate_decay_start) / opt.learning_rate_decay_every
@@ -151,6 +152,7 @@ function trainBatch(inputsThread, labelsThread)
       elapsed_batch, elapsed_batch_loading, time_left / 3600 )))
   end
 
+  -- reset learning_rate
   optimState.learningRate = learning_rate
 
   if iter_batch % opt.snapshot == 0 then
