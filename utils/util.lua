@@ -38,8 +38,7 @@ function sendTensor(inputs)
   local size = inputs:size()
   local ttype= inputs:type()
   local i_stg= tonumber(
-    ffi.cast('intptr_t', 
-      torch.pointer(inputs:storage()))
+    ffi.cast('intptr_t', torch.pointer(inputs:storage()))
   )
   inputs:cdata().storage = nil
   return {i_stg, size, ttype}

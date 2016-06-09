@@ -2,8 +2,8 @@
 require 'torch'
 require 'paths'
 
-opt = paths.dofile('opts/opts_ilsvrc-inception-v3-random.lua')
---opt = paths.dofile('opts/opts_ilsvrc-resception-default.lua') -- default opts for resception
+--opt = paths.dofile('opts/opts_ilsvrc-inception-v3-random.lua')
+opt = paths.dofile('opts/opts_ilsvrc-resception-default.lua') -- default opts for resception
 
 paths.dofile('model.lua') -- creating model
 paths.dofile('data.lua') -- perpare ilsvrc2012 train/test cache

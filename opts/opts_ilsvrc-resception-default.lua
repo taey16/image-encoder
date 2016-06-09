@@ -37,7 +37,7 @@ local learning_rate_decay_seed = 0.94 -- following google;s paper (Rethinking bl
 local learning_rate_decay_start = 0 -- starting learning rate decaying(annealing) for the first iteration
 local learning_rate_decay_every = 40037 * 2 -- reduce learning rate every 2 epoch(40037*2 iterations) factor of 0.94
 local experiment_id = string.format(
-  '%s_X_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 
+  '%s_default_opts_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 
   dataset_name, 
   #nGPU, 
   network, 
