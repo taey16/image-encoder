@@ -12,7 +12,7 @@ local testHook = function(path, loadSize, sampleSize, mean, std)
 end
 loader.testHook = testHook
 
-local inception7_aug20 = function(filename, loadSize, sampleSize, mean, std)
+local inception_v3_aug20 = function(filename, loadSize, sampleSize, mean, std)
   local input = image_utils.loadImage(filename, loadSize, 0)
   local input1= image_utils.loadImage(filename, loadSize, 1)
   input = image_utils.mean_std_norm(input, mean, std)
@@ -25,7 +25,8 @@ local inception7_aug20 = function(filename, loadSize, sampleSize, mean, std)
 
   return output 
 end
-loader.inception7_aug20 = inception7_aug20
+loader.inception_v3_aug20 = inception_v3_aug20
+
 
 return loader
 

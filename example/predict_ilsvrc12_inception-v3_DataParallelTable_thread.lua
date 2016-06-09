@@ -10,7 +10,7 @@ cudnn.benchmark = true
 cudnn.verbose = true
 local Threads = require 'threads'
 paths.dofile('../utils/util.lua')
-paths.dofile('../utils/imagenet_utils.lua')
+local imagenet_utils = paths.dofile('../utils/imagenet_utils.lua')
 local parallel_utils = paths.dofile('../utils/parallel_utils.lua')
 
 
@@ -52,8 +52,8 @@ local mean_std = torch.load(
 local dataset_root = 
   '/storage/ImageNet/ILSVRC2012/val'
 print '===> Loading synsets'
-local synset_words = load_synset()
-local image_list, label_list, synset_list = get_val()
+local synset_words = imagenet_utils.load_synset()
+local image_list, label_list, synset_list = imagenet_utils.get_val()
 
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
@@ -117,7 +117,7 @@ for n, fname in ipairs(image_list) do
       local filename = paths.concat(dataset_root, fname)
       local label = tonumber(label_list[n]) + 1
       --print(filename)
-      img = loader.inception7_aug20(filename, loadSize, sampleSize, mean_std.mean, mean_std.std)
+      img = loader.inception_v3_aug20(filename, loadSize, sampleSize, mean_std.mean, mean_std.std)
       return n, img, label
     end,
     testBatch
