@@ -5,9 +5,9 @@ require 'image'
 require 'nn'
 require 'cunn'
 require 'cudnn'
-paths.dofile('../../utils/imagenet_utils.lua')
-paths.dofile('../../utils/image_utils.lua')
-paths.dofile('/works/nt2/misc/optim_updates.lua')
+local imagenet_utils = paths.dofile('../../utils/imagenet_utils.lua')
+local image_utils = paths.dofile('../../utils/image_utils.lua')
+paths.dofile('../../optim_updates.lua')
 
 print '===> Loading model'
 local model_filename = 
