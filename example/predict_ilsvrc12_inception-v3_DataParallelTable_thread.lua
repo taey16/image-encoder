@@ -15,18 +15,11 @@ local parallel_utils = paths.dofile('../utils/parallel_utils.lua')
 
 
 local model_filename = 
-  '/storage/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_29.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/model_19.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/model_17.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_33.bn_removed.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/ILSVRC2012_X_gpu2_cudnn-v5_resception_epoch7_nag_lr0.04500_decay_seed0.940_start0_every80074_iter240220/model_199.t7'
   --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_31.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Sat_Jan_30_17_16_06_2016/model_16.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Wed_Jan_27_22_47_34_2016/model_10.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Wed_Jan_27_22_47_34_2016/model_9.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_8.bn_removed.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/model_6.bn_removed.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/model_31.t7'
 print(string.format('===> Loading model: %s', model_filename))
+--local model = torch.load(model_filename):get(1)
 local model = torch.load(model_filename)
 model = parallel_utils.makeDataParallel(model, {1,2})
 
@@ -37,16 +30,14 @@ collectgarbage()
 
 print '===> Load classes conf.'
 local class_filename = 
-  '/storage/ImageNet/ILSVRC2012/torch_cache/X_gpu1_resception_nag_lr0.00450_decay_start0_every160000/classes.t7'
-  --'/storage/ImageNet/ILSVRC2012/torch_cache/resception/X_gpu1_resception_nag_0.04500_bninit_linearinit_Tue_Feb_16_13_01_55_2016/classes.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/classes.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/inception-v3-2015-12-05/digits_gpu2_inception-v3-2015-12-05_Thu_Jan_21_08_48_49_2016/classes.t7'
+  --'/data2/ImageNet/ILSVRC2012/torch_cache/ILSVRC2012_X_gpu2_cudnn-v5_resception_epoch7_nag_lr0.04500_decay_seed0.940_start0_every80074_iter240220/classes.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/inception7_residual/digits_gpu1_inception-v3-2015-12-05_lr0.045_Mon_Jan_18_13_23_03_2016/classes.t7'
 class_conf = torch.load(class_filename)
 
 print '===> Loading mean, std' 
 local mean_std = torch.load(
-  '/storage/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7'
-  --'/data2/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7'
+  --'/storage/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7'
+  '/data2/ImageNet/ILSVRC2012/torch_cache/meanstdCache.t7'
 )
 
 local dataset_root = 
@@ -58,7 +49,7 @@ local image_list, label_list, synset_list = imagenet_utils.get_val()
 local loadSize = {3, 342, 342}
 local sampleSize={3, 299, 299}
 
-local nThreads = 8
+local nThreads = 4
 local donkeys = Threads( 
   nThreads, 
   function() 
