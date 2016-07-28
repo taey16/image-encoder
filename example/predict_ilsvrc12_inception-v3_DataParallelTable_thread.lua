@@ -21,6 +21,7 @@ local model_filename =
 print(string.format('===> Loading model: %s', model_filename))
 --local model = torch.load(model_filename):get(1)
 local model = torch.load(model_filename)
+cudnn.convert(model, cudnn)
 model = parallel_utils.makeDataParallel(model, {1,2})
 
 print(model)
