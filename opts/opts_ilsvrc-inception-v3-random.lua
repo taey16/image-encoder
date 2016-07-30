@@ -7,7 +7,9 @@ local total_train_samples = 1281167 - 1
 local nClasses = 1000
 local forceClasses = nil
 
-local network = 'resception'
+local network = 
+  'resception_elu'
+  --'resception'
 local loadSize  = {3, 342, 342}
 local sampleSize= {3, 299, 299}
 local nGPU = {1,2}
@@ -30,13 +32,18 @@ local batchsize = 32
 local test_batchsize = 25
 local solver = 'nag'
 local num_max_epoch = 500
-local learning_rate = 0.045
-local weight_decay = 0.00002
+local learning_rate = 0.01
+local weight_decay = 0.0005
 local learning_rate_decay_seed = 0.94
-local learning_rate_decay_start = -1 --0
+local learning_rate_decay_start = 0
 local learning_rate_decay_every = 40037 * 2
 local experiment_id = string.format(
-  '%s_X_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', dataset_name, #nGPU, network, current_epoch, solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
+  '%s_X_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 
+  dataset_name, 
+  #nGPU, 
+  network, 
+  current_epoch, 
+  solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
 )
 
 cmd = torch.CmdLine()
