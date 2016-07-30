@@ -36,13 +36,15 @@ local weight_decay = 0.00002 -- we think weight-decay(L2-regularizer) can be set
 local learning_rate_decay_seed = 0.94 -- following google;s paper (Rethinking bla~bla~)
 local learning_rate_decay_start = 0 -- starting learning rate decaying(annealing) for the first iteration
 local learning_rate_decay_every = 40037 * 2 -- reduce learning rate every 2 epoch(40037*2 iterations) factor of 0.94
+local grad_clip = -1 -- clip gradient
 local experiment_id = string.format(
-  '%s_default_opts_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_decay_seed%.3f_start%d_every%d', 
+  '%s_default_opts_gpu%d_cudnn-v5_%s_epoch%d_%s_lr%.5f_clip%.3f_decay_seed%.3f_start%d_every%d', 
   dataset_name, 
   #nGPU, 
   network, 
   current_epoch, 
-  solver, learning_rate, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
+  solver, 
+  learning_rate, grad_clip, learning_rate_decay_seed, learning_rate_decay_start, learning_rate_decay_every
 )
 
 cmd = torch.CmdLine()
@@ -79,6 +81,7 @@ cmd:option('-learning_rate_decay_every', learning_rate_decay_every,
   'every how many iterations thereafter to drop LR by half?')
 cmd:option('-momentum', 0.9,  'momentum')
 cmd:option('-weightDecay', weight_decay, 'weight decay')
+cmd:option('-grad_clip', grad_clip, 'gradient cliping(-1 = dont)')
 
 -- network specific
 cmd:option('-netType', network, 'Options: [inception_v3 | resception]')
